@@ -1,0 +1,6 @@
+models:
+  default:
+    name: "sideral-multimodels"
+    cycle: "12"
+    forecast_hours: "0,6,12,18,24,30"
+    output_dir: "output"
