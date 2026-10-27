@@ -33,6 +33,7 @@ jobs:
     env:
       GFS_REQUEST_DELAY_SECONDS: "10"
       LOG_LEVEL: INFO
+
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
@@ -49,29 +50,45 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Instalar pacote local do motor
-        working-directory: sideral-multimodels-05
+      - name: Detectar diretório do projeto
+        id: project_dir
+        shell: bash
         run: |
+          if [ -d "sideral-multimodels-05" ]; then
+            echo "dir=sideral-multimodels-05" >> "$GITHUB_OUTPUT"
+          elif [ -f "pyproject.toml" ]; then
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          else
+            echo "ERRO: diretório do projeto não encontrado"
+            ls -la
+            exit 1
+          fi
+
+      - name: Instalar dependências
+        shell: bash
+        run: |
+          DIR="${{ steps.project_dir.outputs.dir }}"
+          cd "$DIR"
           python -m pip install --upgrade pip
           python -m pip install -e ".[test]"
 
       - name: Testes unitários
-        working-directory: sideral-multimodels-05
-        env:
-          PYTHONPATH: src
-        run: python -m pytest -q
+        shell: bash
+        run: |
+          DIR="${{ steps.project_dir.outputs.dir }}"
+          cd "$DIR"
+          PYTHONPATH=src python -m pytest -q
 
       - name: Executar geração de frames multimodelo
-        working-directory: sideral-multimodels-05
+        shell: bash
         env:
-          PYTHONPATH: src
           RUN_DATE: ${{ inputs.run_date }}
           RUN_CYCLE: ${{ inputs.run_cycle }}
           FORECAST_HOURS: ${{ inputs.forecast_hours }}
-        shell: bash
         run: |
-          set -euo pipefail
-          python -m sideral_multimodels run \
+          DIR="${{ steps.project_dir.outputs.dir }}"
+          cd "$DIR"
+          PYTHONPATH=src python -m sideral_multimodels run \
             --config config.yml \
             --date "${RUN_DATE:-}" \
             --cycle "${RUN_CYCLE:-}" \
@@ -80,10 +97,10 @@ jobs:
             --output-dir output
 
       - name: Validar continuidade dos frames PNG/JSON
-        working-directory: sideral-multimodels-05
         shell: bash
         run: |
-          set -euo pipefail
+          DIR="${{ steps.project_dir.outputs.dir }}"
+          cd "$DIR"
           python - <<'PY'
           import json
           from pathlib import Path
@@ -125,8 +142,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add --all sideral-multimodels-05/output
-
+          git add --all output
           if git diff --cached --quiet; then
             echo "Nenhuma alteração para publicar na branch."
             exit 0
@@ -139,6 +155,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sideral-multimodels-05-${{ github.run_id }}
-          path: sideral-multimodels-05/output/
+          path: output/
           if-no-files-found: error
           retention-days: 14
+
