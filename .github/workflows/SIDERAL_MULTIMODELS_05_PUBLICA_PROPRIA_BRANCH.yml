@@ -143,11 +143,115 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Normalizar produtos por lead e registrar disponibilidade
+        if: always()
+        env:
+          FORECAST_HOURS: ${{ inputs.forecast_hours }}
+        working-directory: sideral-multimodels-05
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          output_dir = Path("output")
+          forecast_dir = output_dir / "forecast"
+          forecast_dir.mkdir(parents=True, exist_ok=True)
+
+          requested = []
+          for item in os.environ.get("FORECAST_HOURS", "").split(","):
+              value = item.strip()
+              if not value:
+                  continue
+              try:
+                  lead = int(value)
+              except ValueError:
+                  continue
+              if lead >= 0:
+                  requested.append(lead)
+          requested = sorted(set(requested))
+
+          def lead_from_path(path: Path):
+              match = re.search(r"f(\d{1,3})", path.name, flags=re.IGNORECASE)
+              if not match:
+                  return None
+              return int(match.group(1))
+
+          png_by_lead = {}
+          for candidate in output_dir.rglob("*.png"):
+              lead = lead_from_path(candidate)
+              if lead is not None and lead not in png_by_lead:
+                  png_by_lead[lead] = candidate
+
+          json_by_lead = {}
+          for candidate in output_dir.rglob("*.json"):
+              if candidate.name.lower() in {"manifest.json", "qc.json"}:
+                  continue
+              lead = lead_from_path(candidate)
+              if lead is not None and lead not in json_by_lead:
+                  json_by_lead[lead] = candidate
+
+          manifest = {
+              "requested": requested,
+              "processed": [],
+              "published": [],
+              "unavailable": [],
+              "generated_at": None,
+              "output_root": str(output_dir),
+          }
+
+          for lead in requested:
+              target_png = forecast_dir / f"f{lead:03d}.png"
+              target_json = forecast_dir / f"f{lead:03d}.json"
+              source_png = png_by_lead.get(lead)
+              source_json = json_by_lead.get(lead)
+
+              if source_png is not None:
+                  target_png.write_bytes(source_png.read_bytes())
+              if source_json is not None:
+                  target_json.write_bytes(source_json.read_bytes())
+
+              if target_png.exists() and target_json.exists():
+                  manifest["processed"].append({
+                      "lead": lead,
+                      "png": str(target_png),
+                      "json": str(target_json),
+                  })
+                  manifest["published"].append({
+                      "lead": lead,
+                      "png": str(target_png),
+                      "json": str(target_json),
+                  })
+              else:
+                  manifest["unavailable"].append({
+                      "lead": lead,
+                      "reason": "source product not available in generated output",
+                      "png_present": target_png.exists(),
+                      "json_present": target_json.exists(),
+                      "has_source_png": source_png is not None,
+                      "has_source_json": source_json is not None,
+                  })
+
+          with (output_dir / "manifest.json").open("w", encoding="utf-8") as handle:
+              json.dump(manifest, handle, indent=2, sort_keys=True)
+
+          print(json.dumps({
+              "requested": requested,
+              "processed": [entry["lead"] for entry in manifest["processed"]],
+              "unavailable": [entry["lead"] for entry in manifest["unavailable"]],
+          }, indent=2))
+          PY
+
+          echo "Produtos por lead normalizados em ${PWD}/output/forecast"
+
       - name: Não publicar saídas grandes na branch
         shell: bash
         run: |
           set -euo pipefail
-          echo "A geração foi publicada como artefato do workflow para evitar o limite de 100 MB do GitHub."
+          echo "As saídas geradas foram publicadas como artefato do workflow para evitar o limite de 100 MB do GitHub."
           echo "Nenhum arquivo grande foi enviado para a branch; o diretório output permanece apenas no runner."
 
 # Runtime payload SHA-256: b2c61474d2aa46d609c3db5dd466f83e22c8321566663340745e620dddde8c82
