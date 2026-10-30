@@ -1,6 +1,6 @@
-# Arquivo autossuficiente para repasse.
-# Para ativar, copie para .github/workflows/metbr-clickpoint-skewt-batch.yml.
-# Os fontes Python e o logo oficial estão codificados dentro deste próprio YAML.
+# Workflow autossuficiente do METBR Click-to-Point, executado neste repositório.
+# Lê metadata.json e WRFOUTs operacionais de progames12301-hash/sideral-backend.
+# Publica PNGs, manifestos e status em releases deste repositório.
 name: METBR Click-to-Point Skew-T — lote sob demanda
 
 on:
@@ -73,7 +73,8 @@ jobs:
           else:
               raise SystemExit("Rodada inválida. Use latest, 00, 06, 12, 18 ou 21.")
 
-          url = f"https://raw.githubusercontent.com/{os.environ['GITHUB_REPOSITORY']}/{branch}/metadata.json"
+          source_repository = "progames12301-hash/sideral-backend"
+          url = f"https://raw.githubusercontent.com/{source_repository}/{branch}/metadata.json"
           request = urllib.request.Request(url, headers={"User-Agent": "Sideral-METBR-SkewT/1.0"})
           with urllib.request.urlopen(request, timeout=30) as response:
               metadata = json.load(response)
@@ -1989,15 +1990,15 @@ jobs:
       - name: Baixar somente o WRFOUT da validade solicitada
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
+          SOURCE_REPOSITORY: progames12301-hash/sideral-backend
           SOURCE_TAG: ${{ needs.prepare.outputs.source_tag }}
           WRFOUT_ASSET: ${{ matrix.file }}
         run: |
           set -euo pipefail
           mkdir -p input
-          gh release download "$SOURCE_TAG" --repo "$GH_REPO" \
-            --pattern "$WRFOUT_ASSET" --dir input --clobber
+          SOURCE_URL="https://github.com/${SOURCE_REPOSITORY}/releases/download/${SOURCE_TAG}/${WRFOUT_ASSET}"
+          curl --fail --location --retry 5 --retry-all-errors --retry-delay 3 --connect-timeout 30 \
+            "$SOURCE_URL" --output "input/$WRFOUT_ASSET"
           test -s "input/$WRFOUT_ASSET"
 
       - name: Gerar Skew-T nativo do ponto e validade
