@@ -1,0 +1,254 @@
+PROMPT PARA INTEGRAR O SKEW-T CLICK-TO-POINT NOS HTMLs EXISTENTES E NO RENDER
+===============================================================================
+
+Você vai trabalhar no projeto Sideral Meteorologia. Vou fornecer os HTMLs
+existentes dos quatro modelos. Sua tarefa é implementar neles o mesmo sistema
+de Skew-T Click-to-Point do METBR, com a mesma experiência visual e o mesmo
+fluxo funcional, mas conectado aos quatro novos runners listados abaixo.
+
+ATENÇÃO: NÃO CRIE NOVOS HTMLs.
+Use exatamente os HTMLs que eu fornecer. Não recrie a interface, não migre
+para outro framework, não crie uma página paralela e não substitua o layout.
+Inspecione o HTML de cada modelo, preserve seus cabeçalhos, menus, mapas,
+controles, identidade visual, CSS, responsividade e funcionalidades existentes.
+Adicione o Click-to-Point dentro da interface que já existe.
+
+MODELOS E RUNNERS
+-----------------
+Repositório GitHub: progames12301-hash/sideral-backend
+Branch dos workflows: main
+
+1. WRF TARC 3 km
+   Workflow: .github/workflows/wrf-skewt-clickpoint-tarc-3km.yml
+   model_key: tarc_wrf_3km
+   dados: tarc-json-data
+   checkpoint: tarc-wrf-3km-checkpoint-{sourceRunId}
+   release de saída: tarc-skewt-click-{request_id}
+   limite máximo conhecido: F048
+
+2. WRF SIDERAL Sudeste 4 km
+   Workflow: .github/workflows/wrf-skewt-clickpoint-sideral-4km-sudeste.yml
+   model_key: sideral_wrf_4km_sudeste
+   dados: sideral-wrf-4km-sudeste-data
+   checkpoint: sideral-wrf-4km-sudeste-checkpoint-{sourceRunId}
+   release de saída: sideral-4km-sudeste-skewt-click-{request_id}
+   limite máximo conhecido: F048
+
+3. WRF SIDERAL Sudeste 5 km
+   Workflow: .github/workflows/wrf-skewt-clickpoint-sideral-5km-sudeste.yml
+   model_key: sideral_wrf_5km_sudeste
+   dados: sideral-wrf-5km-sudeste-data
+   checkpoint: sideral-wrf-5km-sudeste-checkpoint-{sourceRunId}
+   release de saída: sideral-5km-sudeste-skewt-click-{request_id}
+   limite máximo conhecido: F048
+
+4. WRF CBR 4 km
+   Workflow: .github/workflows/wrf-skewt-clickpoint-cbr-4km.yml
+   model_key: cbr_wrf_4km
+   dados: cbr-json-data
+   checkpoint: cbr-wrf-4km-checkpoint-{sourceRunId}
+   release de saída: cbr-skewt-click-{request_id}
+   limite máximo conhecido: F042
+
+O limite real de validades deve sempre vir do manifest/status da execução e
+dos frames disponíveis; não invente validades além das publicadas.
+
+FONTE DE VERDADE: SISTEMA METBR EXISTENTE
+-----------------------------------------
+Antes de editar:
+1. Inspecione o HTML METBR atual e o código JavaScript do Click-to-Point.
+2. Inspecione o endpoint/backend METBR no Render, o módulo
+   backend/metbr_skewt_batch.py e o workflow
+   .github/workflows/metbr-clickpoint-skewt-batch.yml.
+3. Reproduza o mesmo fluxo de interação, estados visuais, carregamento,
+   polling, slider de validade, apresentação da imagem, mensagens de erro e
+   tratamento de lote incompleto.
+4. Reuse o renderizador e o padrão visual do Skew-T METBR. Não desenhe uma
+   segunda versão ou uma aparência diferente para os outros modelos.
+
+Não copie cegamente nomes, tags, branches ou regras exclusivas do METBR. Os
+quatro modelos WRF usam os valores específicos acima.
+
+INTEGRAÇÃO NO RENDER
+--------------------
+Implemente o bridge Python no backend Render já existente. Preferencialmente,
+crie um módulo separado, por exemplo:
+  backend/wrf_skewt_clickpoint_batch.py
+
+Não remova, renomeie ou quebre:
+- /api/wrf/sounding/render
+- as rotas Click-to-Point do METBR
+- os publicadores automáticos de Skew-T das capitais
+- endpoints e HTMLs atuais dos modelos.
+
+Crie rotas específicas para os quatro modelos, ou uma rota comum com model_key
+validado por allowlist. Não sobrescreva a rota METBR existente. Exemplo de
+contrato aceitável:
+
+POST /api/wrf/sounding/clickpoint/batch/request
+Body:
+{
+  "model_key": "tarc_wrf_3km",
+  "latitude": -23.550520,
+  "longitude": -46.633308
+}
+
+Resposta imediata:
+{
+  "status": "queued",
+  "request_id": "<32 caracteres hexadecimais>",
+  "model_key": "tarc_wrf_3km",
+  "latitude": -23.550520,
+  "longitude": -46.633308,
+  "workflow": "wrf-skewt-clickpoint-tarc-3km.yml"
+}
+
+GET /api/wrf/sounding/clickpoint/batch/status/{model_key}/{request_id}
+GET /api/wrf/sounding/clickpoint/batch/image/{model_key}/{request_id}/{forecast_hour}
+GET /api/wrf/sounding/clickpoint/batch/profile/{model_key}/{request_id}/{forecast_hour}
+
+Os caminhos podem ser adaptados às convenções reais do backend, mas não
+conflitem com as rotas atuais do METBR. O HTML não deve chamar a API do GitHub
+diretamente.
+
+O bridge deve:
+- Validar model_key em uma allowlist fixa com os quatro modelos.
+- Validar latitude entre -90 e 90 e longitude entre -180 e 180.
+- Criar request_id com uuid.uuid4().hex.
+- Disparar workflow_dispatch no repositório
+  progames12301-hash/sideral-backend, ref main, usando o workflow correto.
+- Enviar latitude, longitude e request_id nos inputs.
+- Usar token apenas em variável de ambiente do Render. Nunca enviar token ao
+  navegador ou incluí-lo em HTML/JavaScript.
+- Preferir a variável SIDERAL_SKEWT_GITHUB_TOKEN. Para facilitar a migração,
+  pode aceitar METBR_SKEWT_GITHUB_TOKEN como fallback, desde que o token tenha
+  Actions: write no repositório.
+- Tratar HTTP 204 como dispatch aceito; explicar 401/403/404 com erro objetivo.
+- Consultar o status.json e manifest.json da Release cujo prefixo depende do
+  model_key e cujo sufixo é request_id.
+- Quando a Release ainda não existir, responder queued/running, sem tratar um
+  404 inicial como falha definitiva.
+- Ao concluir, devolver as validades disponíveis, a rodada UTC, coordenadas,
+  modelo, status e release_tag.
+- Fazer proxy dos PNGs e JSONs com validação estrita de request_id, model_key,
+  hora e nome do asset. Não aceitar caminhos de arquivo fornecidos livremente
+  pelo cliente.
+- Validar o cabeçalho PNG e tamanho do arquivo, como no módulo METBR.
+- Aplicar rate limit semelhante ao METBR sem criar um bloqueio global indevido
+  entre modelos diferentes.
+- Usar timeouts de rede e tratar falhas de GitHub/Render com mensagens claras.
+- Não afirmar que uma execução foi concluída antes de status.json indicar
+  completed.
+
+DISPATCH: CONFIGURAÇÃO EXATA
+----------------------------
+Use este mapa de configuração no backend:
+
+tarc_wrf_3km:
+  workflow = wrf-skewt-clickpoint-tarc-3km.yml
+  release_prefix = tarc-skewt-click
+
+sideral_wrf_4km_sudeste:
+  workflow = wrf-skewt-clickpoint-sideral-4km-sudeste.yml
+  release_prefix = sideral-4km-sudeste-skewt-click
+
+sideral_wrf_5km_sudeste:
+  workflow = wrf-skewt-clickpoint-sideral-5km-sudeste.yml
+  release_prefix = sideral-5km-sudeste-skewt-click
+
+cbr_wrf_4km:
+  workflow = wrf-skewt-clickpoint-cbr-4km.yml
+  release_prefix = cbr-skewt-click
+
+Todos os workflows recebem os inputs:
+  latitude
+  longitude
+  request_id
+
+A chamada GitHub Actions deve ser:
+POST https://api.github.com/repos/progames12301-hash/sideral-backend/actions/workflows/{workflow_file}/dispatches
+
+Body:
+{
+  "ref": "main",
+  "inputs": {
+    "latitude": "-23.550520",
+    "longitude": "-46.633308",
+    "request_id": "<uuid.hex>"
+  }
+}
+
+INTEGRAÇÃO NOS HTMLs
+-------------------
+Para cada HTML fornecido:
+1. Preserve a interação do mapa existente. Quando o usuário clicar em uma
+   coordenada, capture latitude e longitude usando a API do mapa que o HTML
+   já utiliza.
+2. Adicione a opção Click-to-Point no mesmo local e com o mesmo padrão
+   visual do METBR, sem redesenhar o restante da página.
+3. Dispare a requisição ao Render com o model_key próprio daquele HTML.
+4. Exiba o estado queued/running enquanto o GitHub Actions processa.
+5. Faça polling do endpoint de status em intervalos razoáveis, com limite de
+   tempo e possibilidade de cancelar/descartar uma solicitação antiga.
+6. Quando completed, carregue a lista real de forecast_hours do manifest.
+7. Conecte o slider de validade à lista real, não a uma sequência presumida.
+8. Ao mudar a validade, carregue o PNG correspondente e mostre a sondagem
+   daquele ponto e horário.
+9. Quando existir profile JSON, disponibilize-o para os componentes de
+   dados/diagnóstico já usados na interface, sem inventar campos.
+10. Mostre o ponto selecionado, coordenadas, modelo, resolução, rodada UTC e
+    validade.
+11. Mostre erros retornados pelo Render/GitHub sem mascará-los com uma falsa
+    mensagem de sucesso.
+12. Ao selecionar um novo ponto, impeça que respostas de pedidos antigos
+    sobrescrevam a sondagem mais recente.
+
+A apresentação do Skew-T precisa seguir o METBR: proporções do painel,
+tipografia, cores, margens, legenda, rodapé, controles, barra de validade,
+estado de carregamento e mensagens. Reuse os componentes CSS/JS que já
+existem quando possível. Se houver uma diferença inevitável por causa do
+HTML do modelo, mantenha o máximo de identidade visual com o METBR sem
+quebrar a interface do modelo.
+
+REGRAS DE DADOS METEOROLÓGICOS
+-----------------------------
+- O worker usa WRFOUT nativo e escolhe a célula de grade mais próxima do ponto.
+- Não gere perfil a partir de campos interpolados do JSON compacto.
+- Não sintetize temperaturas, umidade, vento, pressão ou níveis ausentes.
+- Se o ponto estiver fora do domínio ou distante demais da grade, retorne erro
+  explícito.
+- O forecast hour e o horário válido devem ser coerentes com metadata.json.
+- A lista de validades deve vir da execução real; CBR pode ter menos frames
+  disponíveis que os outros modelos.
+- Não assuma que os quatro modelos têm ciclos 00/06/12/18 selecionáveis. Os
+  runners desta entrega usam a metadata mais recente da branch de cada modelo.
+
+TESTES OBRIGATÓRIOS
+-------------------
+- Fazer dispatch real de teste para cada um dos quatro workflows.
+- Confirmar que cada um identifica o modelKey/resolução corretos no metadata.
+- Confirmar que localiza o checkpoint e os WRFOUTs do modelo correto.
+- Confirmar pelo menos F000 e uma validade posterior por modelo.
+- Confirmar que PNG começa com assinatura PNG válida e tem tamanho plausível.
+- Confirmar que profile JSON informa model_key, lat/lon, grade, distância,
+  rodada, forecast_hour e valid_utc corretos.
+- Confirmar que status passa running -> completed ou failed, sem ficar preso
+  indefinidamente em queued.
+- Confirmar que o HTML apresenta os frames no slider e troca de PNG.
+- Repetir um pedido em um ponto fora do domínio e validar mensagem de erro.
+- Verificar especialmente CBR, cujo checkpoint atual pode conter menos
+  validades do que TARC/Sudeste.
+- Testar os quatro HTMLs em desktop e mobile.
+- Verificar os logs do Render e Actions.
+
+RESTRIÇÕES FINAIS
+-----------------
+- Não criar nenhum HTML novo.
+- Não substituir ou simplificar os HTMLs que eu fornecer.
+- Não alterar os runners normais de previsão WRF.
+- Não alterar os publicadores de Skew-T de capitais.
+- Não alterar os agendamentos dos modelos.
+- Não republicar nada no GitHub sem minha autorização explícita.
+- Entregar o diff completo, a lista de arquivos alterados, os testes executados
+  e qualquer variável de ambiente necessária no Render.
+- Não declarar concluído o que não foi testado.

@@ -1,0 +1,522 @@
+name: Reusable WRF Click-to-Point Skew-T
+
+on:
+  workflow_call:
+    inputs:
+      latitude:
+        required: true
+        type: string
+      longitude:
+        required: true
+        type: string
+      request_id:
+        required: true
+        type: string
+      model_key:
+        required: true
+        type: string
+      model_label:
+        required: true
+        type: string
+      resolution_km:
+        required: true
+        type: number
+      data_branch:
+        required: true
+        type: string
+      checkpoint_prefix:
+        required: true
+        type: string
+      wrfout_prefix:
+        required: true
+        type: string
+      release_prefix:
+        required: true
+        type: string
+      max_forecast_hour:
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: wrf-skewt-click-${{ inputs.model_key }}-${{ inputs.request_id }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Preparar ${{ inputs.model_label }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    outputs:
+      matrix: ${{ steps.meta.outputs.matrix }}
+      expected_hours: ${{ steps.meta.outputs.expected_hours }}
+      run_time: ${{ steps.meta.outputs.run_time }}
+      source_tag: ${{ steps.meta.outputs.source_tag }}
+      release_tag: ${{ steps.meta.outputs.release_tag }}
+    steps:
+      - name: Checkout do núcleo Sideral
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Validar coordenadas, branch, metadados e WRFOUTs do checkpoint
+        id: meta
+        shell: bash
+        env:
+          LATITUDE: ${{ inputs.latitude }}
+          LONGITUDE: ${{ inputs.longitude }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          MODEL_KEY: ${{ inputs.model_key }}
+          MODEL_LABEL: ${{ inputs.model_label }}
+          RESOLUTION_KM: ${{ inputs.resolution_km }}
+          DATA_BRANCH: ${{ inputs.data_branch }}
+          CHECKPOINT_PREFIX: ${{ inputs.checkpoint_prefix }}
+          WRFOUT_PREFIX: ${{ inputs.wrfout_prefix }}
+          RELEASE_PREFIX: ${{ inputs.release_prefix }}
+          MAX_FORECAST_HOUR: ${{ inputs.max_forecast_hour }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt
+          import json
+          import math
+          import os
+          import re
+          import urllib.error
+          import urllib.request
+
+          lat = float(os.environ["LATITUDE"])
+          lon = float(os.environ["LONGITUDE"])
+          request_id = os.environ["REQUEST_ID"].strip().lower()
+          if not (-90.0 <= lat <= 90.0 and -180.0 <= lon <= 180.0):
+              raise SystemExit("Latitude/longitude fora dos limites geográficos.")
+          if not re.fullmatch(r"[a-f0-9]{32}", request_id):
+              raise SystemExit("request_id inválido; esperado UUID hexadecimal de 32 caracteres.")
+
+          repo = os.environ["GH_REPO"]
+          branch = os.environ["DATA_BRANCH"]
+          model_key = os.environ["MODEL_KEY"]
+          model_label = os.environ["MODEL_LABEL"]
+          resolution = float(os.environ["RESOLUTION_KM"])
+          checkpoint_prefix = os.environ["CHECKPOINT_PREFIX"]
+          wrfout_prefix = os.environ["WRFOUT_PREFIX"]
+          release_prefix = os.environ["RELEASE_PREFIX"]
+          max_hour = int(float(os.environ["MAX_FORECAST_HOUR"]))
+
+          metadata_url = f"https://raw.githubusercontent.com/{repo}/{branch}/metadata.json"
+          request = urllib.request.Request(
+              metadata_url, headers={"User-Agent": "Sideral-WRF-SkewT-ClickPoint/1.0"}
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  metadata = json.load(response)
+          except Exception as exc:
+              raise SystemExit(f"Não foi possível carregar metadata.json da branch {branch}: {exc}")
+
+          if metadata.get("modelKey") != model_key:
+              raise SystemExit(
+                  f"Branch {branch} contém modelKey={metadata.get('modelKey')!r}; "
+                  f"esperado {model_key!r}."
+              )
+          try:
+              metadata_resolution = float(metadata.get("resolutionKm"))
+          except (TypeError, ValueError):
+              raise SystemExit("metadata.json não informa resolutionKm válido.")
+          if abs(metadata_resolution - resolution) > 0.01:
+              raise SystemExit(
+                  f"Resolução divergente: metadata={metadata_resolution} km; "
+                  f"workflow={resolution} km."
+              )
+
+          run_time = str(metadata.get("initTime") or "").strip()
+          if not run_time:
+              raise SystemExit("metadata.json não informa initTime.")
+          try:
+              parsed_run = dt.datetime.fromisoformat(run_time.replace("Z", "+00:00"))
+              if parsed_run.tzinfo is None:
+                  parsed_run = parsed_run.replace(tzinfo=dt.timezone.utc)
+              parsed_run = parsed_run.astimezone(dt.timezone.utc)
+          except ValueError:
+              raise SystemExit(f"initTime inválido no metadata.json: {run_time}")
+
+          source_run_id = str(metadata.get("sourceRunId") or "").strip()
+          if not source_run_id.isdigit():
+              raise SystemExit("metadata.json não informa sourceRunId numérico.")
+          expected_source_tag = f"{checkpoint_prefix}-{source_run_id}"
+          declared_source_tag = str(metadata.get("sourceReleaseTag") or "").strip()
+          source_tag = declared_source_tag or expected_source_tag
+          if source_tag != expected_source_tag:
+              raise SystemExit(
+                  f"sourceReleaseTag inesperada: {source_tag}; esperado {expected_source_tag}."
+              )
+
+          api_url = f"https://api.github.com/repos/{repo}/releases/tags/{source_tag}"
+          api_request = urllib.request.Request(
+              api_url,
+              headers={
+                  "Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "Sideral-WRF-SkewT-ClickPoint/1.0",
+              },
+          )
+          try:
+              with urllib.request.urlopen(api_request, timeout=30) as response:
+                  release = json.load(response)
+          except urllib.error.HTTPError as exc:
+              raise SystemExit(
+                  f"Checkpoint {source_tag} não está acessível no GitHub (HTTP {exc.code})."
+              )
+          asset_names = [str(asset.get("name") or "") for asset in release.get("assets", [])]
+
+          # Checkpoint files follow <prefix>-<segment>-wrfout_d01_YYYY-MM-DD_HH.MM.SS.
+          time_to_assets = {}
+          asset_pattern = re.compile(
+              r"^" + re.escape(wrfout_prefix)
+              + r"-(\d+)-wrfout_d01_(\d{4}-\d{2}-\d{2})_(\d{2})\.(\d{2})\.(\d{2})$"
+          )
+          for name in asset_names:
+              match = asset_pattern.fullmatch(name)
+              if match:
+                  segment = int(match.group(1))
+                  stamp = f"{match.group(2)}_{match.group(3)}.{match.group(4)}.{match.group(5)}"
+                  time_to_assets.setdefault(stamp, []).append((segment, name))
+
+          frames = metadata.get("frames")
+          if not isinstance(frames, list) or not frames:
+              raise SystemExit("metadata.json não contém frames disponíveis.")
+          include = []
+          seen_hours = set()
+          missing_assets = []
+          for frame in frames:
+              try:
+                  hour = int(frame["forecastHour"])
+                  valid_raw = str(frame.get("time") or frame.get("validTime") or "").strip()
+              except (KeyError, TypeError, ValueError):
+                  continue
+              if hour < 0 or hour > max_hour or hour in seen_hours:
+                  continue
+              if not valid_raw:
+                  raise SystemExit(f"F{hour:03d} sem horário válido em metadata.json.")
+              try:
+                  valid = dt.datetime.fromisoformat(valid_raw.replace("Z", "+00:00"))
+                  if valid.tzinfo is None:
+                      valid = valid.replace(tzinfo=dt.timezone.utc)
+                  valid = valid.astimezone(dt.timezone.utc)
+              except ValueError:
+                  raise SystemExit(f"Horário inválido para F{hour:03d}: {valid_raw}")
+              asset_stamp = valid.strftime("%Y-%m-%d_%H.%M.%S")
+              candidates = time_to_assets.get(asset_stamp, [])
+              if not candidates:
+                  missing_assets.append(f"F{hour:03d} ({asset_stamp})")
+                  continue
+              # When a boundary hour is duplicated, prefer the highest segment index.
+              asset_name = sorted(candidates, key=lambda item: item[0])[-1][1]
+              include.append({
+                  "hour": hour,
+                  "file": asset_name,
+                  "valid_time": valid.strftime("%Y-%m-%dT%H:%M:%SZ"),
+              })
+              seen_hours.add(hour)
+
+          include.sort(key=lambda item: item["hour"])
+          if missing_assets:
+              raise SystemExit(
+                  "WRFOUTs nativos ausentes no checkpoint para: "
+                  + ", ".join(missing_assets[:15])
+              )
+          if not include or 0 not in seen_hours:
+              raise SystemExit("Não há validades utilizáveis ou F000 está ausente.")
+
+          matrix = {"include": include}
+          expected = [item["hour"] for item in include]
+          release_tag = f"{release_prefix}-{request_id}"
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write("matrix=" + json.dumps(matrix, separators=(",", ":")) + "\n")
+              output.write("expected_hours=" + json.dumps(expected, separators=(",", ":")) + "\n")
+              output.write("run_time=" + parsed_run.strftime("%Y-%m-%dT%H:%M:%SZ") + "\n")
+              output.write("source_tag=" + source_tag + "\n")
+              output.write("release_tag=" + release_tag + "\n")
+          print(
+              f"{model_label}: rodada {parsed_run:%Y-%m-%d %HZ}; checkpoint {source_tag}; "
+              f"{len(include)} validades nativas: {expected}"
+          )
+          PY
+
+      - name: Criar release temporária com estado running
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ steps.meta.outputs.release_tag }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          MODEL_LABEL: ${{ inputs.model_label }}
+          MODEL_KEY: ${{ inputs.model_key }}
+          LATITUDE: ${{ inputs.latitude }}
+          LONGITUDE: ${{ inputs.longitude }}
+        run: |
+          set -euo pipefail
+          mkdir -p initial-status
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          payload = {
+              "schema": "sideral-wrf-skewt-click-status-v1",
+              "request_id": os.environ["REQUEST_ID"],
+              "status": "running",
+              "model": os.environ["MODEL_LABEL"],
+              "model_key": os.environ["MODEL_KEY"],
+              "latitude": float(os.environ["LATITUDE"]),
+              "longitude": float(os.environ["LONGITUDE"]),
+              "release_tag": os.environ["RELEASE_TAG"],
+          }
+          Path("initial-status/status.json").write_text(
+              json.dumps(payload, ensure_ascii=False), encoding="utf-8"
+          )
+          PY
+          gh release create "$RELEASE_TAG" initial-status/status.json \
+            --repo "$GH_REPO" \
+            --title "${MODEL_LABEL} Click-to-Point — ${{ inputs.latitude }}, ${{ inputs.longitude }}" \
+            --notes "Sondagens WRF nativas sob demanda. Request: $REQUEST_ID" \
+            --latest=false
+
+  generate:
+    needs: prepare
+    if: ${{ needs.prepare.result == 'success' }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - name: Checkout do núcleo Sideral
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Preparar Python e SHARPpy
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências nativas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --disable-pip-version-check \
+            'numpy==1.26.4' 'netCDF4>=1.7,<2' 'matplotlib>=3.8,<4' \
+            'Pillow>=10,<11' 'SHARPpy @ git+https://github.com/sharppy/SHARPpy.git@main'
+
+      - name: Baixar o WRFOUT exato desta validade
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SOURCE_TAG: ${{ needs.prepare.outputs.source_tag }}
+          WRFOUT_ASSET: ${{ matrix.file }}
+        run: |
+          set -euo pipefail
+          mkdir -p input
+          gh release download "$SOURCE_TAG" --repo "$GH_REPO" \
+            --pattern "$WRFOUT_ASSET" --dir input --clobber
+          test -s "input/$WRFOUT_ASSET"
+
+      - name: Gerar Skew-T nativo do ponto
+        shell: bash
+        env:
+          LATITUDE: ${{ inputs.latitude }}
+          LONGITUDE: ${{ inputs.longitude }}
+          FORECAST_HOUR: ${{ matrix.hour }}
+          RUN_TIME: ${{ needs.prepare.outputs.run_time }}
+          VALID_TIME: ${{ matrix.valid_time }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          MODEL_LABEL: ${{ inputs.model_label }}
+          MODEL_KEY: ${{ inputs.model_key }}
+          RESOLUTION_KM: ${{ inputs.resolution_km }}
+          WRFOUT_ASSET: ${{ matrix.file }}
+        run: |
+          set -euo pipefail
+          mkdir -p output
+          python wrf/skewt_clickpoint_generic.py \
+            --wrfout "input/$WRFOUT_ASSET" \
+            --forecast-hour "$FORECAST_HOUR" \
+            --latitude "$LATITUDE" \
+            --longitude "$LONGITUDE" \
+            --run-time "$RUN_TIME" \
+            --valid-time "$VALID_TIME" \
+            --request-id "$REQUEST_ID" \
+            --model-label "$MODEL_LABEL" \
+            --model-key "$MODEL_KEY" \
+            --resolution-km "$RESOLUTION_KM" \
+            --output-dir output
+          test -s "output/f$(printf '%03d' "$FORECAST_HOUR").png"
+          test -s "output/f$(printf '%03d' "$FORECAST_HOUR").json"
+
+      - name: Guardar PNG e perfil da validade
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clickpoint-${{ inputs.model_key }}-${{ inputs.request_id }}-f${{ matrix.hour }}
+          path: output/*
+          if-no-files-found: ignore
+          retention-days: 1
+
+  publish:
+    if: always()
+    needs: [prepare, generate]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Baixar todas as validades geradas
+        if: ${{ needs.generate.result == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          pattern: clickpoint-${{ inputs.model_key }}-${{ inputs.request_id }}-*
+          path: batch-output
+          merge-multiple: true
+
+      - name: Validar PNGs e montar manifesto/estado final
+        id: result
+        shell: bash
+        env:
+          PREPARE_RESULT: ${{ needs.prepare.result }}
+          GENERATE_RESULT: ${{ needs.generate.result }}
+          EXPECTED_HOURS: ${{ needs.prepare.outputs.expected_hours }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          LATITUDE: ${{ inputs.latitude }}
+          LONGITUDE: ${{ inputs.longitude }}
+          MODEL_LABEL: ${{ inputs.model_label }}
+          MODEL_KEY: ${{ inputs.model_key }}
+          RELEASE_TAG: ${{ inputs.release_prefix }}-${{ inputs.request_id }}
+          RUN_TIME: ${{ needs.prepare.outputs.run_time }}
+        run: |
+          set -euo pipefail
+          mkdir -p batch-output
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+
+          root = Path("batch-output")
+          try:
+              expected = [int(value) for value in json.loads(os.environ.get("EXPECTED_HOURS") or "[]")]
+          except Exception:
+              expected = []
+          found = []
+          for path in sorted(root.glob("f[0-9][0-9][0-9].png")):
+              match = re.fullmatch(r"f(\d{3})\.png", path.name)
+              if match and path.stat().st_size > 10000 and path.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n":
+                  found.append(int(match.group(1)))
+          found = sorted(set(found))
+          missing = sorted(set(expected) - set(found))
+          success = (
+              os.environ.get("PREPARE_RESULT") == "success"
+              and os.environ.get("GENERATE_RESULT") == "success"
+              and bool(expected)
+              and found == expected
+              and all((root / f"f{hour:03d}.json").is_file() for hour in expected)
+          )
+          status_name = "completed" if success else "failed"
+          release_tag = os.environ["RELEASE_TAG"]
+          payload = {
+              "schema": "sideral-wrf-skewt-click-manifest-v1",
+              "request_id": os.environ["REQUEST_ID"],
+              "status": status_name,
+              "model": os.environ["MODEL_LABEL"],
+              "model_key": os.environ["MODEL_KEY"],
+              "latitude": float(os.environ["LATITUDE"]),
+              "longitude": float(os.environ["LONGITUDE"]),
+              "run_utc": os.environ.get("RUN_TIME") or None,
+              "forecast_hours": found,
+              "expected_hours": expected,
+              "missing_hours": missing,
+              "assets": [f"f{hour:03d}.png" for hour in found],
+              "profile_assets": [f"f{hour:03d}.json" for hour in found],
+              "release_tag": release_tag,
+          }
+          (root / "manifest.json").write_text(
+              json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+          )
+          status = {
+              "schema": "sideral-wrf-skewt-click-status-v1",
+              "request_id": os.environ["REQUEST_ID"],
+              "status": status_name,
+              "model": os.environ["MODEL_LABEL"],
+              "model_key": os.environ["MODEL_KEY"],
+              "release_tag": release_tag,
+              "available_hours": found,
+              "expected_hours": expected,
+              "missing_hours": missing,
+              "error": None if success else (
+                  f"Preparação: {os.environ.get('PREPARE_RESULT')}; "
+                  f"geração: {os.environ.get('GENERATE_RESULT')}; "
+                  f"validades ausentes: {missing}"
+              ),
+          }
+          (root / "status.json").write_text(
+              json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8"
+          )
+          print(json.dumps(status, ensure_ascii=False))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write("success=" + ("true" if success else "false") + "\n")
+          PY
+
+      - name: Criar release final se a preparação falhou antes de criá-la
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.release_prefix }}-${{ inputs.request_id }}
+          MODEL_LABEL: ${{ inputs.model_label }}
+          REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          if ! gh release view "$RELEASE_TAG" --repo "$GH_REPO" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" batch-output/status.json \
+              --repo "$GH_REPO" \
+              --title "${MODEL_LABEL} Click-to-Point — falha no lote" \
+              --notes "O lote $REQUEST_ID falhou durante preparação ou geração." \
+              --latest=false
+          fi
+
+      - name: Publicar PNGs, perfis, manifesto e estado
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.release_prefix }}-${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          mapfile -d '' assets < <(
+            find batch-output -maxdepth 1 -type f \
+              \( -name 'f*.png' -o -name 'f*.json' \) -print0 | sort -z
+          )
+          if (( ${#assets[@]} > 0 )); then
+            for ((offset=0; offset<${#assets[@]}; offset+=40)); do
+              chunk=("${assets[@]:offset:40}")
+              gh release upload "$RELEASE_TAG" --repo "$GH_REPO" --clobber "${chunk[@]}"
+            done
+          fi
+          gh release upload "$RELEASE_TAG" --repo "$GH_REPO" --clobber \
+            batch-output/manifest.json batch-output/status.json
+          echo "Resultado publicado: $RELEASE_TAG"
+
+      - name: Falhar a execução se o lote ficou incompleto
+        if: ${{ steps.result.outputs.success != 'true' }}
+        run: |
+          echo "Lote Click-to-Point incompleto. Consulte status.json, manifest.json e os logs das validades."
+          exit 1

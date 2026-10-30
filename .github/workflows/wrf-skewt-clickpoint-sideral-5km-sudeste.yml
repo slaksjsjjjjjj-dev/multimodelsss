@@ -1,0 +1,37 @@
+name: WRF SIDERAL Sudeste 5 km — Click-to-Point Skew-T
+
+on:
+  workflow_dispatch:
+    inputs:
+      latitude:
+        description: Latitude do ponto selecionado no mapa
+        required: true
+        type: string
+      longitude:
+        description: Longitude do ponto selecionado no mapa
+        required: true
+        type: string
+      request_id:
+        description: UUID hexadecimal de 32 caracteres criado pelo Render
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  clickpoint:
+    uses: ./.github/workflows/wrf-skewt-clickpoint-reusable.yml
+    with:
+      latitude: ${{ inputs.latitude }}
+      longitude: ${{ inputs.longitude }}
+      request_id: ${{ inputs.request_id }}
+      model_key: "sideral_wrf_5km_sudeste"
+      model_label: "WRF SIDERAL Sudeste 5 km"
+      resolution_km: 5
+      data_branch: "sideral-wrf-5km-sudeste-data"
+      checkpoint_prefix: "sideral-wrf-5km-sudeste-checkpoint"
+      wrfout_prefix: "tarc-wrfout"
+      release_prefix: "sideral-5km-sudeste-skewt-click"
+      max_forecast_hour: 48
