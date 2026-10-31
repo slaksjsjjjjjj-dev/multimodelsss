@@ -413,6 +413,7 @@ jobs:
           PREPARE_RESULT: ${{ needs.prepare.result }}
           GENERATE_RESULT: ${{ needs.generate.result }}
           EXPECTED_HOURS: ${{ needs.prepare.outputs.expected_hours }}
+          VALIDITIES_MATRIX: ${{ needs.prepare.outputs.matrix }}
           REQUEST_ID: ${{ inputs.request_id }}
           LATITUDE: ${{ inputs.latitude }}
           LONGITUDE: ${{ inputs.longitude }}
@@ -439,6 +440,25 @@ jobs:
                   found.append(int(match.group(1)))
           found = sorted(set(found))
           missing = sorted(set(expected) - set(found))
+          try:
+              matrix_payload = json.loads(os.environ.get("VALIDITIES_MATRIX") or "{}")
+              rows = matrix_payload.get("include", []) if isinstance(matrix_payload, dict) else []
+              frame_by_hour = {
+                  int(row["hour"]): row
+                  for row in rows
+                  if isinstance(row, dict) and "hour" in row
+              }
+          except Exception:
+              frame_by_hour = {}
+          validities = [
+              {
+                  "forecast_hour": hour,
+                  "valid_time": frame_by_hour.get(hour, {}).get("valid_time"),
+                  "png": f"f{hour:03d}.png",
+                  "profile": f"f{hour:03d}.json",
+              }
+              for hour in found
+          ]
           success = (
               os.environ.get("PREPARE_RESULT") == "success"
               and os.environ.get("GENERATE_RESULT") == "success"
@@ -458,6 +478,7 @@ jobs:
               "longitude": float(os.environ["LONGITUDE"]),
               "run_utc": os.environ.get("RUN_TIME") or None,
               "forecast_hours": found,
+              "validities": validities,
               "expected_hours": expected,
               "missing_hours": missing,
               "assets": [f"f{hour:03d}.png" for hour in found],
