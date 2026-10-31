@@ -78,8 +78,7 @@ jobs:
           WRFOUT_PREFIX: ${{ inputs.wrfout_prefix }}
           RELEASE_PREFIX: ${{ inputs.release_prefix }}
           MAX_FORECAST_HOUR: ${{ inputs.max_forecast_hour }}
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
+          SOURCE_REPO: progames12301-hash/sideral-backend
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -99,7 +98,7 @@ jobs:
           if not re.fullmatch(r"[a-f0-9]{32}", request_id):
               raise SystemExit("request_id inválido; esperado UUID hexadecimal de 32 caracteres.")
 
-          repo = os.environ["GH_REPO"]
+          repo = os.environ["SOURCE_REPO"]
           branch = os.environ["DATA_BRANCH"]
           model_key = os.environ["MODEL_KEY"]
           model_label = os.environ["MODEL_LABEL"]
@@ -160,8 +159,7 @@ jobs:
           api_request = urllib.request.Request(
               api_url,
               headers={
-                  "Authorization": "Bearer " + os.environ["GH_TOKEN"],
-                  "Accept": "application/vnd.github+json",
+                      "Accept": "application/vnd.github+json",
                   "X-GitHub-Api-Version": "2022-11-28",
                   "User-Agent": "Sideral-WRF-SkewT-ClickPoint/1.0",
               },
@@ -173,7 +171,11 @@ jobs:
               raise SystemExit(
                   f"Checkpoint {source_tag} não está acessível no GitHub (HTTP {exc.code})."
               )
-          asset_names = [str(asset.get("name") or "") for asset in release.get("assets", [])]
+          asset_by_name = {
+              str(asset.get("name") or ""): str(asset.get("browser_download_url") or "")
+              for asset in release.get("assets", [])
+          }
+          asset_names = list(asset_by_name)
 
           # Checkpoint files follow <prefix>-<segment>-wrfout_d01_YYYY-MM-DD_HH.MM.SS.
           time_to_assets = {}
@@ -218,9 +220,15 @@ jobs:
                   continue
               # When a boundary hour is duplicated, prefer the highest segment index.
               asset_name = sorted(candidates, key=lambda item: item[0])[-1][1]
+              asset_url = asset_by_name.get(asset_name, "")
+              if not asset_url.startswith(
+                  "https://github.com/progames12301-hash/sideral-backend/releases/download/"
+              ):
+                  raise SystemExit(f"URL pública inválida para o WRFOUT {asset_name}.")
               include.append({
                   "hour": hour,
                   "file": asset_name,
+                  "download_url": asset_url,
                   "valid_time": valid.strftime("%Y-%m-%dT%H:%M:%SZ"),
               })
               seen_hours.add(hour)
@@ -296,11 +304,19 @@ jobs:
       max-parallel: 12
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
-      - name: Checkout do núcleo Sideral
+      - name: Checkout do código do workflow
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 1
+
+      - name: Checkout do núcleo nativo WRF e renderizador SPC
+        uses: actions/checkout@v4
+        with:
+          repository: progames12301-hash/sideral-backend
+          ref: main
+          path: sideral-source
+          persist-credentials: false
 
       - name: Preparar Python e SHARPpy
         uses: actions/setup-python@v5
@@ -319,15 +335,14 @@ jobs:
       - name: Baixar o WRFOUT exato desta validade
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          SOURCE_TAG: ${{ needs.prepare.outputs.source_tag }}
+          WRFOUT_URL: ${{ matrix.download_url }}
           WRFOUT_ASSET: ${{ matrix.file }}
         run: |
           set -euo pipefail
           mkdir -p input
-          gh release download "$SOURCE_TAG" --repo "$GH_REPO" \
-            --pattern "$WRFOUT_ASSET" --dir input --clobber
+          curl --fail --location --retry 3 --retry-all-errors \
+            --connect-timeout 30 --max-time 900 \
+            "$WRFOUT_URL" --output "input/$WRFOUT_ASSET"
           test -s "input/$WRFOUT_ASSET"
 
       - name: Gerar Skew-T nativo do ponto
@@ -343,10 +358,11 @@ jobs:
           MODEL_KEY: ${{ inputs.model_key }}
           RESOLUTION_KM: ${{ inputs.resolution_km }}
           WRFOUT_ASSET: ${{ matrix.file }}
+          SIDERAL_SOURCE_DIR: ${{ github.workspace }}/sideral-source
         run: |
           set -euo pipefail
           mkdir -p output
-          python wrf/skewt_clickpoint_generic.py \
+          python .github/workflows/skewt_clickpoint_generic.py \
             --wrfout "input/$WRFOUT_ASSET" \
             --forecast-hour "$FORECAST_HOUR" \
             --latitude "$LATITUDE" \
