@@ -15,8 +15,12 @@ Adicione o Click-to-Point dentro da interface que já existe.
 
 MODELOS E RUNNERS
 -----------------
-Repositório GitHub: progames12301-hash/sideral-backend
+Repositório dos workflows e das Releases de saída: slaksjsjjjjjj-dev/multimodelsss
 Branch dos workflows: main
+
+Repositório-fonte de metadata.json, checkpoints, WRFOUTs nativos, núcleo
+meteorológico e renderizador SPC: progames12301-hash/sideral-backend
+As branches de dados por modelo estão listadas abaixo.
 
 1. WRF TARC 3 km
    Workflow: .github/workflows/wrf-skewt-clickpoint-tarc-3km.yml
@@ -85,7 +89,7 @@ Crie rotas específicas para os quatro modelos, ou uma rota comum com model_key
 validado por allowlist. Não sobrescreva a rota METBR existente. Exemplo de
 contrato aceitável:
 
-POST /api/wrf/sounding/clickpoint/batch/request
+POST /api/wrf/skewt/clickpoint/request
 Body:
 {
   "model_key": "tarc_wrf_3km",
@@ -103,9 +107,9 @@ Resposta imediata:
   "workflow": "wrf-skewt-clickpoint-tarc-3km.yml"
 }
 
-GET /api/wrf/sounding/clickpoint/batch/status/{model_key}/{request_id}
-GET /api/wrf/sounding/clickpoint/batch/image/{model_key}/{request_id}/{forecast_hour}
-GET /api/wrf/sounding/clickpoint/batch/profile/{model_key}/{request_id}/{forecast_hour}
+GET /api/wrf/skewt/clickpoint/status?model_key={model_key}&request_id={request_id}
+GET /api/wrf/skewt/clickpoint/image?model_key={model_key}&request_id={request_id}&fh={forecast_hour}
+GET /api/wrf/skewt/clickpoint/profile?model_key={model_key}&request_id={request_id}&fh={forecast_hour}
 
 Os caminhos podem ser adaptados às convenções reais do backend, mas não
 conflitem com as rotas atuais do METBR. O HTML não deve chamar a API do GitHub
@@ -115,14 +119,18 @@ O bridge deve:
 - Validar model_key em uma allowlist fixa com os quatro modelos.
 - Validar latitude entre -90 e 90 e longitude entre -180 e 180.
 - Criar request_id com uuid.uuid4().hex.
-- Disparar workflow_dispatch no repositório
-  progames12301-hash/sideral-backend, ref main, usando o workflow correto.
+- Disparar workflow_dispatch no repositório slaksjsjjjjjj-dev/multimodelsss,
+  ref main, usando o workflow correto.
+- Ler metadata.json, checkpoints e WRFOUTs nativos no repositório-fonte
+  público progames12301-hash/sideral-backend.
+- Consultar as Releases de saída em slaksjsjjjjjj-dev/multimodelsss, onde os
+  workflows publicam PNGs, profiles JSON, status.json e manifest.json.
 - Enviar latitude, longitude e request_id nos inputs.
 - Usar token apenas em variável de ambiente do Render. Nunca enviar token ao
   navegador ou incluí-lo em HTML/JavaScript.
-- Preferir a variável SIDERAL_SKEWT_GITHUB_TOKEN. Para facilitar a migração,
-  pode aceitar METBR_SKEWT_GITHUB_TOKEN como fallback, desde que o token tenha
-  Actions: write no repositório.
+- Usar SIDERAL_SKEWT_GITHUB_TOKEN apenas no Render, com Actions: write e
+  Contents: read em slaksjsjjjjjj-dev/multimodelsss. Contents: read permite
+  consultar as Releases/assets de saída; metadata e WRFOUTs são públicos.
 - Tratar HTTP 204 como dispatch aceito; explicar 401/403/404 com erro objetivo.
 - Consultar o status.json e manifest.json da Release cujo prefixo depende do
   model_key e cujo sufixo é request_id.
@@ -166,7 +174,7 @@ Todos os workflows recebem os inputs:
   request_id
 
 A chamada GitHub Actions deve ser:
-POST https://api.github.com/repos/progames12301-hash/sideral-backend/actions/workflows/{workflow_file}/dispatches
+POST https://api.github.com/repos/slaksjsjjjjjj-dev/multimodelsss/actions/workflows/{workflow_file}/dispatches
 
 Body:
 {
