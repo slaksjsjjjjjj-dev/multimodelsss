@@ -13,12 +13,19 @@ import datetime as dt
 import importlib.util
 import json
 import math
+import os
 import shutil
 from pathlib import Path
 
 from netCDF4 import Dataset
 
-ROOT = Path(__file__).resolve().parents[1]
+# This script lives in .github/workflows in the workflow repository. The
+# meteorological core is checked out separately by the reusable workflow.
+# Keeping the root configurable avoids coupling the worker to either checkout.
+ROOT = Path(
+    os.environ.get("SIDERAL_SOURCE_DIR")
+    or Path(__file__).resolve().parents[2]
+).resolve()
 NATIVE_PATH = ROOT / "wrf" / "metbr_skewt_south.py"
 
 
