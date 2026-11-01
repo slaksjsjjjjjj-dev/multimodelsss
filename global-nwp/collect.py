@@ -29,14 +29,18 @@ USER_AGENT = "Sideral-Global-NWP/1.0 (+https://github.com/slaksjsjjjjjj-dev/mult
 
 
 def utc_run(date_text: str | None, cycle_text: str | None) -> datetime:
+    # Global products (especially ECMWF Open Data) are not available at the
+    # instant a cycle starts. Select the most recent cycle at least nine hours
+    # old, rather than asking providers for files that are still being built.
+    reference = datetime.now(timezone.utc) - timedelta(hours=9)
     if date_text:
         day = datetime.strptime(date_text, "%Y%m%d").date()
     else:
-        day = datetime.now(timezone.utc).date()
+        day = reference.date()
     if cycle_text:
         cycle = int(cycle_text)
     else:
-        cycle = (datetime.now(timezone.utc).hour // 6) * 6
+        cycle = (reference.hour // 6) * 6
     if cycle not in (0, 6, 12, 18):
         raise ValueError("Ciclo UTC deve ser 00, 06, 12 ou 18.")
     return datetime(day.year, day.month, day.day, cycle, tzinfo=timezone.utc)
@@ -98,8 +102,11 @@ def ensure_request(url: str, destination: Path, timeout: tuple[int, int] = (20, 
 def make_herbie(model: str, product: str, run: datetime, lead: int, save_dir: Path, **kwargs):
     from herbie import Herbie
 
+    # Herbie expects a timezone-naive UTC datetime. Passing aware UTC caused
+    # "can't compare tz-naive and tz-aware datetimes" before any GRIB download.
+    herbie_date = run.astimezone(timezone.utc).replace(tzinfo=None) if run.tzinfo else run
     args = {
-        "date": run,
+        "date": herbie_date,
         "model": model,
         "product": product,
         "fxx": lead,
