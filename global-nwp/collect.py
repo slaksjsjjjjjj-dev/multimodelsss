@@ -7,6 +7,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 import time
 from collections import defaultdict
@@ -236,22 +237,83 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
     try:
         from dwdopen import DWD
         raw_dir.mkdir(parents=True, exist_ok=True)
-        target = raw_dir / f"{upstream}-all-fields-all-steps.grib2"
-        with DWD() as dwd:
+        downloaded: list[Path] = []
+        errors: list[str] = []
+        with DWD(max_connections=12, progress=False) as dwd:
+            available_models = dwd.nwp.models()
+            if upstream not in available_models:
+                raise RuntimeError(
+                    f"DWD não publicou o modelo {upstream!r}. "
+                    f"Modelos disponíveis: {', '.join(available_models)}"
+                )
             model = dwd.nwp.model(upstream)
             parameters = model.parameters()
             if not parameters:
                 raise RuntimeError(f"DWD não informou parâmetros para {upstream}.")
-            query = model.select(parameters=parameters, steps="all")
-            plan = query.resolve()
-            print(f"[{model_key}] plano DWD: {plan}")
-            plan.download(str(target))
-        if not target.is_file() or target.stat().st_size == 0:
-            raise RuntimeError("DWD não gerou o arquivo GRIB2.")
-        return [target], [], []
+            for parameter in parameters:
+                try:
+                    info = model.parameter(parameter)
+                    level_types = list(info.level_types) or [None]
+                    for level_type in level_types:
+                        level_suffix = (
+                            "single" if level_type is None
+                            else str(getattr(level_type, "alias", None) or getattr(level_type, "code", level_type))
+                        )
+                        safe_parameter = re.sub(r"[^A-Za-z0-9_.-]+", "-", parameter)
+                        safe_level = re.sub(r"[^A-Za-z0-9_.-]+", "-", level_suffix)
+                        target = raw_dir / safe_parameter / safe_level / f"{safe_parameter}-{safe_level}-all-members-all-steps.grib2"
+                        try:
+                            options = {"parameters": parameter, "steps": "all"}
+                            if level_type is not None:
+                                options["level_type"] = level_type
+                                options["levels"] = "all"
+                            query = model.select(**options)
+                            # DWD separa parâmetros, níveis e membros na árvore
+                            # de arquivos. Resolver cada coordenada vertical
+                            # separadamente evita escolhas ambíguas e inclui todos
+                            # os membros e passos disponíveis.
+                            plan = query.resolve(require="partial")
+                            if not plan.assets:
+                                continue
+                            plan.download(str(target))
+                            if target.is_file() and target.stat().st_size > 0:
+                                downloaded.append(target)
+                        except Exception as exc:
+                            errors.append(
+                                f"{parameter}/{level_suffix}: {type(exc).__name__}: {exc}"
+                            )
+                except Exception as exc:
+                    errors.append(f"{parameter}: {type(exc).__name__}: {exc}")
+                print(f"[{model_key}] parâmetro {parameter}: concluído.")
+        if not downloaded:
+            raise RuntimeError("DWD não forneceu GRIB2 com os parâmetros/níveis solicitados.")
+
+        # ICON Global/AICON são publicados na grade triangular nativa. O pacote
+        # de pesos oficiais do DWD cria uma grade lon/lat regular para os recortes.
+        weight_dir = Path(os.environ.get("DWD_WEIGHT_DIR", str(ROOT / "dwd-weights")))
+        target_grid = next(weight_dir.rglob("target_grid_world_025.txt"), None)
+        weights_file = next(weight_dir.rglob("weights_icogl2world_025.nc"), None)
+        if target_grid is None or weights_file is None:
+            raise RuntimeError("Pesos oficiais de regrade ICON Global do DWD não encontrados.")
+        regridded_dir = raw_dir / "latlon-0p25"
+        regridded_dir.mkdir(parents=True, exist_ok=True)
+        regridded: list[Path] = []
+        for source in downloaded:
+            destination = regridded_dir / source.name
+            if not destination.is_file() or destination.stat().st_size == 0:
+                command = [
+                    "cdo", "-s", "-f", "grb2",
+                    f"remap,{target_grid},{weights_file}",
+                    str(source), str(destination),
+                ]
+                subprocess.run(command, check=True, timeout=900)
+            if destination.is_file() and destination.stat().st_size > 0:
+                regridded.append(destination)
+        if not regridded:
+            raise RuntimeError("CDO não conseguiu regrar os GRIB2 do DWD.")
+        return sorted(regridded), [], errors
     except Exception as exc:
         return [], [], [f"DWD {upstream}: {type(exc).__name__}: {exc}"]
-
 
 def message_value(gid, key: str, default=None):
     from eccodes import codes_get
