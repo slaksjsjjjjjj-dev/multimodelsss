@@ -129,7 +129,9 @@ def download_herbie_file(model: str, product: str, run: datetime, lead: int,
 
 
 def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
-                   requested: list[int]) -> tuple[list[Path], list[int], list[str]]:
+                   requested: list[int],
+                   process_file: Callable[[Path], None] | None = None
+                   ) -> tuple[list[Path], list[int], list[str]]:
     """Retrieve every available ECMWF parameter/level for each native step.
 
     EPS and AIFS-ENS publish ensemble summary products (mean, spread and
@@ -176,7 +178,10 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
                         target=str(target),
                     )
                 if target.is_file() and target.stat().st_size > 0:
-                    downloaded.append(target)
+                    if process_file:
+                        process_file(target)
+                    else:
+                        downloaded.append(target)
                     lead_downloaded = True
                 else:
                     errors.append(
@@ -195,7 +200,9 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     return sorted(set(downloaded)), sorted(found_hours), errors
 
 
-def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list[int]) -> tuple[list[Path], list[int], list[str]]:
+def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
+                   process_file: Callable[[Path], None] | None = None
+                   ) -> tuple[list[Path], list[int], list[str]]:
     spec = {
         "gfs": [("gfs", "pgrb2.0p25", {}), ("gfs", "pgrb2b.0p25", {})],
         "gfs_ai": [("aigfs", "sfc", {}), ("aigfs", "pres", {})],
@@ -229,7 +236,11 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
                 found = download_herbie_file(
                     source_model, product, run, lead, dest, **options
                 )
-                lead_files.extend(found)
+                if process_file:
+                    for path in found:
+                        process_file(path)
+                else:
+                    lead_files.extend(found)
             except Exception as exc:
                 errors.append(f"F{lead:03d} {source_model}/{product}: {type(exc).__name__}: {exc}")
             time.sleep(0.25)
@@ -266,7 +277,9 @@ def list_grib_links(url: str) -> list[str]:
     return sorted(set(urljoin(url, link) for link in parser.links))
 
 
-def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[int]) -> tuple[list[Path], list[int], list[str]]:
+def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
+                 process_file: Callable[[Path], None] | None = None
+                 ) -> tuple[list[Path], list[int], list[str]]:
     if model_key == "cmc_gdps":
         product_path = "model_gdps/15km"
     else:
@@ -288,17 +301,22 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
                 continue
             lead_dir = raw_dir / f"f{lead:03d}"
             lead_dir.mkdir(parents=True, exist_ok=True)
+            lead_downloaded = False
             for index, url in enumerate(links):
                 name = url.rsplit("/", 1)[-1]
                 target = lead_dir / name
                 try:
                     if ensure_request(url, target, timeout=(20, 240)):
-                        downloaded.append(target)
+                        lead_downloaded = True
+                        if process_file:
+                            process_file(target)
+                        else:
+                            downloaded.append(target)
                 except Exception as exc:
                     errors.append(f"F{lead:03d} {name}: {type(exc).__name__}: {exc}")
                 if index % 8 == 7:
                     time.sleep(1)
-            if any(path.parent == lead_dir for path in downloaded):
+            if lead_downloaded:
                 found_hours.add(lead)
         except Exception as exc:
             errors.append(f"F{lead:03d} {type(exc).__name__}: {exc}")
@@ -306,7 +324,9 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
     return sorted(set(downloaded)), sorted(found_hours), errors
 
 
-def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], list[str]]:
+def collect_dwd(model_key: str, raw_dir: Path,
+                process_file: Callable[[Path], None] | None = None
+                ) -> tuple[list[Path], list[int], list[str]]:
     upstream = {
         "icon_dwd": "icon",
         "icon_ai": "aicon",
@@ -316,6 +336,13 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
         raw_dir.mkdir(parents=True, exist_ok=True)
         downloaded: list[Path] = []
         errors: list[str] = []
+        weight_dir = Path(os.environ.get("DWD_WEIGHT_DIR", str(ROOT / "dwd-weights")))
+        target_grid = next(weight_dir.rglob("target_grid_world_0125.txt"), None)
+        weights_file = next(weight_dir.rglob("weights_icogl2world_0125.nc"), None)
+        if target_grid is None or weights_file is None:
+            raise RuntimeError("Pesos oficiais de regrade ICON Global do DWD não encontrados.")
+        regridded_dir = raw_dir / "latlon-0p125"
+        regridded_dir.mkdir(parents=True, exist_ok=True)
         with DWD(max_connections=12, progress=False) as dwd:
             available_models = dwd.nwp.models()
             if upstream not in available_models:
@@ -364,7 +391,24 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
                                 )
                             plan.download(str(target))
                             if target.is_file() and target.stat().st_size > 0:
-                                downloaded.append(target)
+                                destination = regridded_dir / f"{safe_parameter}-{safe_level}.grib2"
+                                command = [
+                                    "cdo", "-s", "-f", "grb2",
+                                    f"remap,{target_grid},{weights_file}",
+                                    str(target), str(destination),
+                                ]
+                                subprocess.run(command, check=True, timeout=900)
+                                if destination.is_file() and destination.stat().st_size > 0:
+                                    if process_file:
+                                        process_file(destination)
+                                        target.unlink(missing_ok=True)
+                                    else:
+                                        downloaded.append(destination)
+                                else:
+                                    errors.append(f"{parameter}/{level_suffix}: CDO não gerou a grade 0.125°.")
+                                    destination.unlink(missing_ok=True)
+                                if process_file:
+                                    target.unlink(missing_ok=True)
                         except Exception as exc:
                             errors.append(
                                 f"{parameter}/{level_suffix}: {type(exc).__name__}: {exc}"
@@ -372,33 +416,11 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
                 except Exception as exc:
                     errors.append(f"{parameter}: {type(exc).__name__}: {exc}")
                 print(f"[{model_key}] parâmetro {parameter}: concluído.")
+        if process_file:
+            return [], [], errors
         if not downloaded:
             raise RuntimeError("DWD não forneceu GRIB2 com os parâmetros/níveis solicitados.")
-
-        # ICON Global/AICON são publicados na grade triangular nativa. O pacote
-        # de pesos oficiais do DWD cria uma grade lon/lat regular para os recortes.
-        weight_dir = Path(os.environ.get("DWD_WEIGHT_DIR", str(ROOT / "dwd-weights")))
-        target_grid = next(weight_dir.rglob("target_grid_world_0125.txt"), None)
-        weights_file = next(weight_dir.rglob("weights_icogl2world_0125.nc"), None)
-        if target_grid is None or weights_file is None:
-            raise RuntimeError("Pesos oficiais de regrade ICON Global do DWD não encontrados.")
-        regridded_dir = raw_dir / "latlon-0p125"
-        regridded_dir.mkdir(parents=True, exist_ok=True)
-        regridded: list[Path] = []
-        for source in downloaded:
-            destination = regridded_dir / source.name
-            if not destination.is_file() or destination.stat().st_size == 0:
-                command = [
-                    "cdo", "-s", "-f", "grb2",
-                    f"remap,{target_grid},{weights_file}",
-                    str(source), str(destination),
-                ]
-                subprocess.run(command, check=True, timeout=900)
-            if destination.is_file() and destination.stat().st_size > 0:
-                regridded.append(destination)
-        if not regridded:
-            raise RuntimeError("CDO não conseguiu regrar os GRIB2 do DWD.")
-        return sorted(regridded), [], errors
+        return sorted(set(downloaded)), [], errors
     except Exception as exc:
         return [], [], [f"DWD {upstream}: {type(exc).__name__}: {exc}"]
 
@@ -664,6 +686,43 @@ def write_model_status(path: Path, model_key: str, status: str, run: datetime,
     }, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def merge_regional_stats(destination: dict, source: dict) -> None:
+    """Merge one GRIB file's regional inventory into a model-wide accumulator."""
+    for region_id, lead_map in source.items():
+        if region_id.startswith("_"):
+            continue
+        region_target = destination.setdefault(region_id, {})
+        for lead, entry in lead_map.items():
+            target = region_target.setdefault(lead, {
+                "valid_time": entry.get("valid_time"),
+                "run_utc": entry.get("run_utc"),
+                "field_count": 0,
+                "source_files": set(),
+            })
+            target["field_count"] += int(entry.get("field_count", 0))
+            target["valid_time"] = target.get("valid_time") or entry.get("valid_time")
+            target["run_utc"] = target.get("run_utc") or entry.get("run_utc")
+            target["source_files"].update(entry.get("source_files") or [])
+
+    inventory_keys = destination.setdefault("_inventory_keys", {})
+    inventory = destination.setdefault("_inventory", {})
+    for region_id, item in source.get("_inventory", {}).items():
+        seen = inventory_keys.setdefault(region_id, set())
+        rows = inventory.setdefault(region_id, {"variables": []})["variables"]
+        for row in item.get("variables", []):
+            key = (
+                row.get("short_name"), row.get("name"), row.get("units"),
+                row.get("level_type"), str(row.get("level")),
+            )
+            if key not in seen:
+                seen.add(key)
+                rows.append(row)
+
+    destination.setdefault("_errors", {"items": []})["items"].extend(
+        source.get("_errors", {}).get("items", [])
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True, choices=sorted(CATALOG_BY_KEY))
@@ -695,29 +754,55 @@ def main() -> int:
         return 1
 
     errors: list[str] = []
-    raw_files: list[Path] = []
-    discovered_hours: list[int] = []
+    processed_files: list[str] = []
+    stats: dict = {
+        "_inventory": {},
+        "_inventory_keys": {},
+        "_errors": {"items": []},
+    }
+    max_hour = int(spec["max_forecast_hour"])
+
+    def process_file(path: Path) -> None:
+        path = Path(path)
+        try:
+            if not path.is_file() or path.stat().st_size == 0:
+                raise RuntimeError(f"Arquivo GRIB vazio/inexistente: {path.name}")
+            piece = regionalize([path], spool_root, model_key, requested, max_hour)
+            merge_regional_stats(stats, piece)
+            processed_files.append(path.name)
+        finally:
+            path.unlink(missing_ok=True)
+
     try:
         if spec["adapter"] == "ecmwf-opendata":
-            raw_files, discovered_hours, errors = collect_ecmwf(model_key, run, raw_dir, requested)
+            _, discovered_hours, errors = collect_ecmwf(
+                model_key, run, raw_dir, requested, process_file
+            )
         elif spec["adapter"] == "herbie":
-            raw_files, discovered_hours, errors = collect_herbie(model_key, run, raw_dir, requested)
+            _, discovered_hours, errors = collect_herbie(
+                model_key, run, raw_dir, requested, process_file
+            )
         elif spec["adapter"] == "dwdopen":
-            raw_files, discovered_hours, errors = collect_dwd(model_key, raw_dir)
+            _, discovered_hours, errors = collect_dwd(
+                model_key, raw_dir, process_file
+            )
         elif spec["adapter"] == "datamart":
             if model_key not in {"cmc_gdps", "cmc_geps"}:
                 raise RuntimeError("Adaptador Datamart desconhecido.")
-            raw_files, discovered_hours, errors = collect_eccc(model_key, run, raw_dir, requested)
+            _, discovered_hours, errors = collect_eccc(
+                model_key, run, raw_dir, requested, process_file
+            )
         else:
             raise RuntimeError(f"Adaptador desconhecido: {spec['adapter']}")
 
-        if not raw_files:
-            raise RuntimeError("A fonte não forneceu arquivos GRIB2 para esta rodada.")
-        if spec["adapter"] in {"dwdopen"}:
-            max_hour = int(spec["max_forecast_hour"])
-        else:
-            max_hour = int(spec["max_forecast_hour"])
-        stats = regionalize(raw_files, spool_root, model_key, requested, max_hour)
+        available_hours = sorted({
+            int(lead)
+            for region_id, lead_map in stats.items()
+            if not region_id.startswith("_")
+            for lead in lead_map
+        })
+        if not available_hours:
+            raise RuntimeError("A fonte não forneceu campos GRIB convertíveis para esta rodada.")
         written = finalize_spool(spool_root, output_root, model_key, run, spec, stats)
         if not written:
             raise RuntimeError("Nenhum campo GRIB2 foi convertido para as regiões configuradas.")
@@ -733,9 +818,10 @@ def main() -> int:
             )
         summary = {
             "run_utc": run.isoformat(),
-            "raw_files": len(raw_files),
+            "processed_grib_files": len(processed_files),
+            "processed_file_examples": processed_files[:30],
             "regions": written,
-            "source_hours": discovered_hours,
+            "source_hours": available_hours or discovered_hours,
             "regionalizer_errors": stats.get("_errors", {}).get("items", []),
             "download_errors": errors[:250],
         }
