@@ -74,25 +74,77 @@ def main() -> int:
             json_frames = sorted((region_dir / "forecast").glob("f*.json.gz"))
             if not json_frames:
                 continue
-            asset_name = f"{slug(model_key)}--{slug(region_id)}.zip"
-            asset_path = output_root / asset_name
-            with zipfile.ZipFile(asset_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=3) as archive:
-                archive.write(manifest_path, "manifest.json")
-                for frame in json_frames:
-                    archive.write(frame, f"forecast/{frame.name}")
-            validities = manifest.get("validities", [])
+            validities_by_name = {
+                Path(item.get("file", "")).name: item
+                for item in manifest.get("validities", [])
+            }
+
+            # GitHub Release assets have a 2 GiB per-file ceiling. Create adaptive
+            # ZIP shards at <=1.5 GB instead of one unbounded region archive.
+            max_asset_bytes = 1_500_000_000
+            frame_groups: list[list[Path]] = []
+            current_group: list[Path] = []
+            current_size = 0
+            for frame in json_frames:
+                frame_size = frame.stat().st_size
+                if frame_size > max_asset_bytes:
+                    raise SystemExit(
+                        f"{model_key}/{region_id}/{frame.name} excede 1.5 GB sozinho; "
+                        "é necessário dividir o frame por variável/nível."
+                    )
+                if current_group and current_size + frame_size > max_asset_bytes:
+                    frame_groups.append(current_group)
+                    current_group = []
+                    current_size = 0
+                current_group.append(frame)
+                current_size += frame_size
+            if current_group:
+                frame_groups.append(current_group)
+
+            parts = []
+            for part_number, group in enumerate(frame_groups, start=1):
+                asset_name = (
+                    f"{slug(model_key)}--{slug(region_id)}"
+                    f"--part{part_number:03d}.zip"
+                )
+                asset_path = output_root / asset_name
+                with zipfile.ZipFile(
+                    asset_path, "w", compression=zipfile.ZIP_STORED
+                ) as archive:
+                    archive.write(manifest_path, "manifest.json")
+                    for frame in group:
+                        archive.write(frame, f"forecast/{frame.name}")
+                part_validities = [
+                    validities_by_name.get(frame.name, {
+                        "forecast_hour": int(frame.stem[1:4]),
+                        "file": f"forecast/{frame.name}",
+                    })
+                    for frame in group
+                ]
+                parts.append({
+                    "asset": asset_name,
+                    "forecast_hours": [
+                        item.get("forecast_hour") for item in part_validities
+                    ],
+                    "frame_count": len(group),
+                    "uncompressed_bytes": sum(frame.stat().st_size for frame in group),
+                    "validities": part_validities,
+                })
+
             region_entry = {
                 "region_id": region_id,
                 "label": manifest.get("region", {}).get("label", region_id),
-                "asset": asset_name,
+                "assets": [part["asset"] for part in parts],
+                "asset_parts": parts,
                 "forecast_hours": manifest.get("forecast_hours", []),
                 "frame_count": len(json_frames),
                 "field_count": manifest.get("field_count", 0),
                 "variable_level_count": manifest.get("variable_level_count", 0),
                 "variables": manifest.get("variables", []),
-                "validities": validities,
+                "validities": manifest.get("validities", []),
                 "run_utc": manifest.get("run_utc"),
                 "resolution": manifest.get("resolution"),
+                "collection_status": manifest.get("collection_status", "unknown"),
             }
             model_entry["regions"].append(region_entry)
             catalog["regional_assets"].append({
