@@ -45,7 +45,7 @@ def main() -> int:
             {"provider": "ECMWF", "license": "CC-BY-4.0", "text": "Contains ECMWF data. © ECMWF."},
             {"provider": "DWD", "text": "Source: Deutscher Wetterdienst Open Data."},
             {"provider": "NOAA", "text": "Source: NOAA/NCEP operational model data."},
-            {"provider": "ECCC", "text": "Source: Environment and Climate Change Canada Open Data."},
+            {"provider": "ECCC", "license": "MSC Open Data / Datamart End-use Licence", "text": "Source: Environment and Climate Change Canada (ECCC) — https://dd.weather.gc.ca/; use subject to the MSC Open Data licence."},
             {"provider": "UK Met Office", "text": "UKMET is only published when a valid Weather DataHub subscription and API configuration are supplied."}
         ]
     }
@@ -153,6 +153,28 @@ def main() -> int:
                 **region_entry,
             })
         catalog["models"].append(model_entry)
+
+    # Keep the full configured model inventory visible even when a matrix job
+    # was cancelled before it could upload its artifact.
+    present_models = {item["model_key"] for item in catalog["models"]}
+    for definition in source_catalog.get("models", []):
+        model_key = definition.get("key")
+        if model_key and model_key not in present_models:
+            catalog["models"].append({
+                "model_key": model_key,
+                "status": "missing-artifact",
+                "message": "Nenhum artefato do job deste modelo foi recebido nesta execução.",
+                "run_utc": None,
+                "errors": ["O job pode ter sido cancelado ou atingido o timeout antes do upload."],
+                "regions": [],
+            })
+    catalog["models"].sort(
+        key=lambda item: next(
+            (i for i, spec in enumerate(source_catalog.get("models", []))
+             if spec.get("key") == item.get("model_key")),
+            10_000,
+        )
+    )
 
     if not catalog["regional_assets"]:
         raise SystemExit(
