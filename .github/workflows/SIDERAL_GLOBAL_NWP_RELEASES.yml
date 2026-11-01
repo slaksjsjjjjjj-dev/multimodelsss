@@ -1,0 +1,195 @@
+name: SIDERAL — Global NWP JSON Releases
+
+on:
+  schedule:
+    - cron: "20 1,7,13,19 * * *"
+  workflow_dispatch:
+    inputs:
+      run_date:
+        description: "Data UTC YYYYMMDD; vazio usa a data UTC atual"
+        required: false
+        type: string
+      run_cycle:
+        description: "Ciclo UTC"
+        required: false
+        type: choice
+        options: ["auto", "00", "06", "12", "18"]
+        default: "auto"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: sideral-global-nwp-\${{ github.workflow }}-\${{ inputs.run_date || 'scheduled' }}-\${{ inputs.run_cycle || 'auto' }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: "Coletar \${{ matrix.model }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        model:
+          - ecmwf_ifs
+          - ecmwf_eps
+          - ecmwf_aifs
+          - ecmwf_aifs_ens
+          - icon_dwd
+          - icon_eps
+          - icon_ai
+          - gfs
+          - gfs_ai
+          - gefs_ai
+          - hgefs
+          - cmc_gdps
+          - cmc_geps
+          - ukmet
+    steps:
+      - name: Checkout multimodelsss
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Instalar bibliotecas GRIB e Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y libeccodes0 libeccodes-dev
+          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install \
+            "herbie-data>=2026.10.0" \
+            "dwdopen>=1.0.0" \
+            "eccodes>=2.42.0" \
+            "numpy>=1.26,<3" \
+            "requests>=2.31"
+
+      - name: Coletar todas as variáveis/níveis e validades publicadas
+        id: collect
+        continue-on-error: true
+        env:
+          MODEL_KEY: \${{ matrix.model }}
+          RUN_DATE: \${{ inputs.run_date }}
+          RUN_CYCLE: \${{ inputs.run_cycle }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_ARG=()
+          CYCLE_ARG=()
+          if [[ -n "\${RUN_DATE:-}" ]]; then DATE_ARG=(--date "$RUN_DATE"); fi
+          if [[ -n "\${RUN_CYCLE:-}" && "$RUN_CYCLE" != "auto" ]]; then CYCLE_ARG=(--cycle "$RUN_CYCLE"); fi
+          python global-nwp/collect.py \
+            --model "$MODEL_KEY" \
+            "\${DATE_ARG[@]}" \
+            "\${CYCLE_ARG[@]}" \
+            --output-dir global-nwp-output
+
+      - name: Registrar resultado do modelo no resumo do job
+        if: always()
+        shell: bash
+        env:
+          MODEL_KEY: \${{ matrix.model }}
+        run: |
+          mkdir -p global-nwp-output/"$MODEL_KEY"
+          STATUS=global-nwp-output/"$MODEL_KEY"/model_status.json
+          if [[ -f "$STATUS" ]]; then
+            python - "$STATUS" >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json, sys
+          p=json.load(open(sys.argv[1], encoding="utf-8"))
+          print(f"### {p.get('model_key')} — {p.get('status')}")
+          print(p.get("message", ""))
+          if p.get("errors"):
+              print("\n**Ocorrências**")
+              for item in p["errors"][:20]:
+                  print(f"- {item}")
+          PY
+          else
+            printf '{"model_key":"%s","status":"failed","message":"Coletor não gerou status.json; verifique instalação e logs."}\n' "$MODEL_KEY" > "$STATUS"
+            echo "### $MODEL_KEY — failed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enviar dados regionais para o agregador
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-nwp-\${{ matrix.model }}
+          path: global-nwp-output/\${{ matrix.model }}/
+          if-no-files-found: warn
+          retention-days: 2
+          compression-level: 1
+
+  publish:
+    name: Publicar Releases regionais
+    if: always()
+    needs: [collect]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout multimodelsss
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Baixar resultados de todos os modelos
+        uses: actions/download-artifact@v4
+        with:
+          pattern: global-nwp-*
+          path: release-input
+          merge-multiple: false
+
+      - name: Preparar ZIPs regionais e catálogo da Release
+        shell: bash
+        env:
+          RUN_DATE: \${{ inputs.run_date }}
+          RUN_CYCLE: \${{ inputs.run_cycle }}
+        run: |
+          set -euo pipefail
+          DATE_ARG=()
+          CYCLE_ARG=()
+          if [[ -n "\${RUN_DATE:-}" ]]; then DATE_ARG=(--date "$RUN_DATE"); fi
+          if [[ -n "\${RUN_CYCLE:-}" && "$RUN_CYCLE" != "auto" ]]; then CYCLE_ARG=(--cycle "$RUN_CYCLE"); fi
+          python global-nwp/publish_release.py \
+            --input release-input \
+            --output release-assets \
+            "\${DATE_ARG[@]}" \
+            "\${CYCLE_ARG[@]}"
+
+      - name: Publicar GitHub Release com JSONs regionais
+        shell: bash
+        env:
+          GH_TOKEN: \${{ github.token }}
+          GH_REPO: \${{ github.repository }}
+          RUN_DATE: \${{ inputs.run_date }}
+          RUN_CYCLE: \${{ inputs.run_cycle }}
+        run: |
+          set -euo pipefail
+          DATE_STAMP="\${RUN_DATE:-$(date -u +%Y%m%d)}"
+          CYCLE_STAMP="\${RUN_CYCLE:-auto}"
+          TAG="sideral-global-nwp-\${DATE_STAMP}-\${CYCLE_STAMP}-\${GITHUB_RUN_ID}"
+          cat > /tmp/release-notes.md <<EOF
+          Publicação Sideral de modelos globais e variantes de IA.
+
+          Os ZIPs regionais contêm manifest.json e os JSONs de cada validade
+          compactados individualmente como .json.gz. O catalog.json informa
+          modelos, regiões, variáveis, níveis, quantidade de campos e validades
+          realmente publicadas nesta execução. Modelos bloqueados ou com falha
+          ficam identificados no catálogo; não são apresentados como dados válidos.
+
+          Execução: \${GITHUB_SERVER_URL}/\${GH_REPO}/actions/runs/\${GITHUB_RUN_ID}
+          EOF
+          gh release create "$TAG" release-assets/* \
+            --repo "$GH_REPO" \
+            --title "Sideral Global NWP — \${DATE_STAMP} \${CYCLE_STAMP}Z" \
+            --notes-file /tmp/release-notes.md \
+            --latest=false
+
+          echo "Release: https://github.com/\${GH_REPO}/releases/tag/\${TAG}" >> "$GITHUB_STEP_SUMMARY"
