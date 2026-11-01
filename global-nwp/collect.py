@@ -613,6 +613,14 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                         "name": str(readable_name_value),
                         "units": str(message_value(gid, "units", "")),
                         "parameter_id": message_value(gid, "paramId"),
+                        "grid_type": str(message_value(gid, "gridType", "unknown")),
+                        "grid_ni": message_value(gid, "Ni"),
+                        "grid_nj": message_value(gid, "Nj"),
+                        "grid_points": message_value(gid, "numberOfDataPoints"),
+                        "i_scans_negatively": message_value(gid, "iScansNegatively"),
+                        "j_scans_positively": message_value(gid, "jScansPositively"),
+                        "j_points_consecutive": message_value(gid, "jPointsAreConsecutive"),
+                        "alternative_row_scanning": message_value(gid, "alternativeRowScanning"),
                         "level_type": str(message_value(gid, "typeOfLevel", "")),
                         "level": message_value(gid, "level"),
                         "step_type": str(message_value(gid, "stepType", "")),
@@ -640,13 +648,26 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                         grids_dir.mkdir(parents=True, exist_ok=True)
                         selected_lats = np.round(lats[indices], 4)
                         selected_lons = np.round(lons[indices], 4)
+                        grid_signature = {
+                            "grid_type": meta["grid_type"],
+                            "grid_ni": meta["grid_ni"],
+                            "grid_nj": meta["grid_nj"],
+                            "grid_points": meta["grid_points"],
+                            "i_scans_negatively": meta["i_scans_negatively"],
+                            "j_scans_positively": meta["j_scans_positively"],
+                            "j_points_consecutive": meta["j_points_consecutive"],
+                            "alternative_row_scanning": meta["alternative_row_scanning"],
+                        }
                         signature = hashlib.sha1(
-                            selected_lats.tobytes() + selected_lons.tobytes()
+                            selected_lats.tobytes()
+                            + selected_lons.tobytes()
+                            + json.dumps(grid_signature, sort_keys=True).encode("utf-8")
                         ).hexdigest()[:16]
                         grid_path = grids_dir / f"{signature}.json"
                         if not grid_path.exists():
                             grid_path.write_text(
                                 safe_json_line({
+                                    **grid_signature,
                                     "latitudes": selected_lats.tolist(),
                                     "longitudes": selected_lons.tolist(),
                                 }),
@@ -675,7 +696,7 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                         entry["source_files"].add(source.name)
                         field_inventory[region_id].add((
                             meta["short_name"], meta["name"], meta["units"],
-                            meta["level_type"], str(meta["level"]),
+                            meta["level_type"], str(meta["level"]), meta["grid_type"],
                         ))
                 except Exception as exc:
                     errors.append(f"{source.name}: {type(exc).__name__}: {exc}")
@@ -689,7 +710,7 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
         region_id: {
             "variables": [
                 {"short_name": row[0], "name": row[1], "units": row[2],
-                 "level_type": row[3], "level": row[4]}
+                 "level_type": row[3], "level": row[4], "grid_type": row[5]}
                 for row in sorted(rows)
             ]
         }
@@ -856,6 +877,7 @@ def merge_regional_stats(destination: dict, source: dict) -> None:
             key = (
                 row.get("short_name"), row.get("name"), row.get("units"),
                 row.get("level_type"), str(row.get("level")),
+                row.get("grid_type"),
             )
             if key not in seen:
                 seen.add(key)
