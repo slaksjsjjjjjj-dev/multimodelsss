@@ -169,7 +169,7 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     for lead in requested:
         lead_downloaded = False
         for product_type, cadence in products:
-            if cadence == "12h" and lead % 12 != 0:
+            if cadence == "12h" and (lead % 12 != 0 or run.hour not in (0, 12)):
                 continue
             target = raw_dir / f"f{lead:03d}" / f"{product_type}.grib2"
             try:
@@ -294,7 +294,7 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
     else:
         product_path = "ensemble/geps/grib2/raw"
     # GDPS/GEPS são publicados em 00Z e 12Z. Para agendamentos 06Z/18Z,
-    # usar o ciclo de 12 horas imediatamente anterior, sem inventar uma rodada.
+    # usar o ciclo de 12 horas imediatamente anterior.
     source_run = run.replace(hour=0 if run.hour < 12 else 12)
     date_text = source_run.strftime("%Y%m%d")
     cycle = f"{source_run.hour:02d}"
@@ -302,7 +302,10 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
     found_hours: set[int] = set()
     errors: list[str] = []
     for lead in requested:
-        base = f"https://dd.weather.gc.ca/{date_text}/WXO-DD/{product_path}/{cycle}/{lead:03d}/"
+        if model_key == "cmc_gdps":
+            base = f"https://dd.weather.gc.ca/today/{product_path}/{cycle}/{lead:03d}/"
+        else:
+            base = f"https://dd.weather.gc.ca/{date_text}/WXO-DD/{product_path}/{cycle}/{lead:03d}/"
         try:
             links = list_grib_links(base)
             if not links:
