@@ -259,6 +259,11 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
             parameters = model.parameters()
             if not parameters:
                 raise RuntimeError(f"DWD não informou parâmetros para {upstream}.")
+            available_runs = model.runs()
+            if not available_runs:
+                raise RuntimeError(f"DWD não publicou uma rodada para {upstream}.")
+            source_run = available_runs[-1]
+            print(f"[{model_key}] rodada DWD fixada: {source_run}")
             for parameter in parameters:
                 try:
                     info = model.parameter(parameter)
@@ -281,7 +286,7 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
                             # de arquivos. Resolver cada coordenada vertical
                             # separadamente evita escolhas ambíguas e inclui todos
                             # os membros e passos disponíveis.
-                            plan = query.resolve(require="partial")
+                            plan = query.resolve(run=source_run, require="partial")
                             if not plan.assets:
                                 errors.append(f"{parameter}/{level_suffix}: nenhum asset disponível.")
                                 continue
@@ -309,7 +314,7 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
         weights_file = next(weight_dir.rglob("weights_icogl2world_0125.nc"), None)
         if target_grid is None or weights_file is None:
             raise RuntimeError("Pesos oficiais de regrade ICON Global do DWD não encontrados.")
-        regridded_dir = raw_dir / "latlon-0p25"
+        regridded_dir = raw_dir / "latlon-0p125"
         regridded_dir.mkdir(parents=True, exist_ok=True)
         regridded: list[Path] = []
         for source in downloaded:
