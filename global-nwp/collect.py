@@ -324,6 +324,10 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
                 )
                 if found:
                     lead_downloaded = True
+                else:
+                    errors.append(
+                        f"F{lead:03d} {source_model}/{product}: arquivo ausente na fonte."
+                    )
                 if process_file:
                     for path in found:
                         process_file(path)
