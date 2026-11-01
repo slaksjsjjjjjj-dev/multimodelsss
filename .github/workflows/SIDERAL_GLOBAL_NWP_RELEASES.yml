@@ -77,11 +77,11 @@ jobs:
           sudo apt-get install -y cdo
           mkdir -p global-nwp/dwd-weights
           curl --fail --location --retry 5 --retry-all-errors --max-time 600 \
-            https://opendata.dwd.de/weather/lib/cdo/ICON_GLOBAL2WORLD_025_EASY.tar.bz2 \
+            https://opendata.dwd.de/weather/lib/cdo/ICON_GLOBAL2WORLD_0125_EASY.tar.bz2 \
             --output /tmp/icon-global-weights.tar.bz2
           tar -xjf /tmp/icon-global-weights.tar.bz2 -C global-nwp/dwd-weights
-          test -n "$(find global-nwp/dwd-weights -name target_grid_world_025.txt -print -quit)"
-          test -n "$(find global-nwp/dwd-weights -name weights_icogl2world_025.nc -print -quit)"
+          test -n "$(find global-nwp/dwd-weights -name target_grid_world_0125.txt -print -quit)"
+          test -n "$(find global-nwp/dwd-weights -name weights_icogl2world_0125.nc -print -quit)"
 
       - name: Coletar todas as variáveis/níveis e validades publicadas
         id: collect
