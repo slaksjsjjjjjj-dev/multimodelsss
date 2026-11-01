@@ -7,7 +7,6 @@ import json
 import os
 import re
 import shutil
-import subprocess
 import sys
 import time
 from collections import defaultdict
@@ -435,6 +434,12 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
 def collect_dwd(model_key: str, raw_dir: Path,
                 process_file: Callable[[Path], None] | None = None
                 ) -> tuple[list[Path], list[int], list[str]]:
+    """Collect every DWD field on its native ICON mesh.
+
+    ecCodes exposes a latitude/longitude coordinate for every unstructured
+    ICON point, so the regionalizer can clip the native mesh directly. No
+    CDO remapping or interpolation is required for the regional JSON archive.
+    """
     upstream = {
         "icon_dwd": "icon",
         "icon_ai": "aicon",
@@ -444,13 +449,6 @@ def collect_dwd(model_key: str, raw_dir: Path,
         raw_dir.mkdir(parents=True, exist_ok=True)
         downloaded: list[Path] = []
         errors: list[str] = []
-        weight_dir = Path(os.environ.get("DWD_WEIGHT_DIR", str(ROOT / "dwd-weights")))
-        target_grid = next(weight_dir.rglob("target_grid_world_0125.txt"), None)
-        weights_file = next(weight_dir.rglob("weights_icogl2world_0125.nc"), None)
-        if target_grid is None or weights_file is None:
-            raise RuntimeError("Pesos oficiais de regrade ICON Global do DWD não encontrados.")
-        regridded_dir = raw_dir / "latlon-0p125"
-        regridded_dir.mkdir(parents=True, exist_ok=True)
         with DWD(max_connections=12, progress=False) as dwd:
             available_models = dwd.nwp.models()
             if upstream not in available_models:
@@ -467,6 +465,7 @@ def collect_dwd(model_key: str, raw_dir: Path,
                 raise RuntimeError(f"DWD não publicou uma rodada para {upstream}.")
             source_run = available_runs[-1]
             print(f"[{model_key}] rodada DWD fixada: {source_run}")
+
             for parameter in parameters:
                 try:
                     info = model.parameter(parameter)
@@ -474,63 +473,63 @@ def collect_dwd(model_key: str, raw_dir: Path,
                     for level_type in level_types:
                         level_suffix = (
                             "single" if level_type is None
-                            else str(getattr(level_type, "alias", None) or getattr(level_type, "code", level_type))
+                            else str(
+                                getattr(level_type, "alias", None)
+                                or getattr(level_type, "code", level_type)
+                            )
                         )
                         safe_parameter = re.sub(r"[^A-Za-z0-9_.-]+", "-", parameter)
                         safe_level = re.sub(r"[^A-Za-z0-9_.-]+", "-", level_suffix)
-                        target = raw_dir / safe_parameter / safe_level / f"{safe_parameter}-{safe_level}-all-members-all-steps.grib2"
+                        target = (
+                            raw_dir / safe_parameter / safe_level
+                            / f"{safe_parameter}-{safe_level}-all-members-all-steps.grib2"
+                        )
                         try:
                             options = {"parameters": parameter, "steps": "all"}
                             if level_type is not None:
                                 options["level_type"] = level_type
                                 options["levels"] = "all"
                             query = model.select(**options)
-                            # DWD separa parâmetros, níveis e membros na árvore
-                            # de arquivos. Resolver cada coordenada vertical
-                            # separadamente evita escolhas ambíguas e inclui todos
-                            # os membros e passos disponíveis.
                             plan = query.resolve(run=source_run, require="partial")
                             if not plan.assets:
-                                errors.append(f"{parameter}/{level_suffix}: nenhum asset disponível.")
+                                errors.append(
+                                    f"{parameter}/{level_suffix}: nenhum asset disponível."
+                                )
                                 continue
                             if getattr(plan, "missing", None):
                                 errors.append(
-                                    f"{parameter}/{level_suffix}: {len(plan.missing)} combinações de nível/membro/validade ausentes no run."
+                                    f"{parameter}/{level_suffix}: "
+                                    f"{len(plan.missing)} combinações de nível/membro/validade ausentes."
                                 )
                             plan.download(str(target))
                             if target.is_file() and target.stat().st_size > 0:
-                                destination = regridded_dir / f"{safe_parameter}-{safe_level}.grib2"
-                                command = [
-                                    "cdo", "-s", "-f", "grb2",
-                                    f"remap,{target_grid},{weights_file}",
-                                    str(target), str(destination),
-                                ]
-                                subprocess.run(command, check=True, timeout=900)
-                                if destination.is_file() and destination.stat().st_size > 0:
-                                    if process_file:
-                                        process_file(destination)
-                                        target.unlink(missing_ok=True)
-                                    else:
-                                        downloaded.append(destination)
-                                else:
-                                    errors.append(f"{parameter}/{level_suffix}: CDO não gerou a grade 0.125°.")
-                                    destination.unlink(missing_ok=True)
                                 if process_file:
-                                    target.unlink(missing_ok=True)
+                                    process_file(target)
+                                else:
+                                    downloaded.append(target)
+                            else:
+                                errors.append(
+                                    f"{parameter}/{level_suffix}: download não gerou GRIB2."
+                                )
                         except Exception as exc:
                             errors.append(
                                 f"{parameter}/{level_suffix}: {type(exc).__name__}: {exc}"
                             )
+                        finally:
+                            if process_file:
+                                target.unlink(missing_ok=True)
                 except Exception as exc:
                     errors.append(f"{parameter}: {type(exc).__name__}: {exc}")
                 print(f"[{model_key}] parâmetro {parameter}: concluído.")
+
         if process_file:
             return [], [], errors
         if not downloaded:
-            raise RuntimeError("DWD não forneceu GRIB2 com os parâmetros/níveis solicitados.")
+            raise RuntimeError("DWD não forneceu GRIB2 para as variáveis/níveis solicitados.")
         return sorted(set(downloaded)), [], errors
     except Exception as exc:
         return [], [], [f"DWD {upstream}: {type(exc).__name__}: {exc}"]
+
 
 def message_value(gid, key: str, default=None):
     from eccodes import codes_get
@@ -602,9 +601,16 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                     if lats.size == 0 or lats.size != lons.size or lats.size != vals.size:
                         continue
                     lons = ((lons + 180.0) % 360.0) - 180.0
+                    source_key = source.stem.split("-", 1)[0]
+                    short_name_value = message_value(gid, "shortName", "")
+                    readable_name_value = message_value(gid, "name", "")
+                    if not short_name_value or str(short_name_value).lower() == "unknown":
+                        short_name_value = source_key
+                    if not readable_name_value or str(readable_name_value).lower() == "unknown":
+                        readable_name_value = source_key
                     meta = {
-                        "short_name": str(message_value(gid, "shortName", "unknown")),
-                        "name": str(message_value(gid, "name", "")),
+                        "short_name": str(short_name_value),
+                        "name": str(readable_name_value),
                         "units": str(message_value(gid, "units", "")),
                         "parameter_id": message_value(gid, "paramId"),
                         "level_type": str(message_value(gid, "typeOfLevel", "")),
