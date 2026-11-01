@@ -63,11 +63,12 @@
       "family": "icon",
       "adapter": "dwdopen",
       "upstream_model": "icon",
-      "resolution": "native global grid",
+      "resolution": "0.125° (regional output regridded from native ICON grid)",
       "max_forecast_hour": 180,
       "ensemble": false,
       "status": "configured",
-      "source": "https://opendata.dwd.de/weather/nwp/"
+      "source": "https://opendata.dwd.de/weather/nwp/",
+      "native_grid": "DWD native unstructured ICON global grid"
     },
     {
       "key": "icon_ai",
@@ -76,11 +77,12 @@
       "family": "aicon",
       "adapter": "dwdopen",
       "upstream_model": "aicon",
-      "resolution": "native global grid",
+      "resolution": "0.125° (regional output regridded from native ICON grid)",
       "max_forecast_hour": 180,
       "ensemble": false,
       "status": "configured",
-      "source": "https://opendata.dwd.de/weather/nwp/"
+      "source": "https://opendata.dwd.de/weather/nwp/",
+      "native_grid": "DWD native unstructured ICON global grid"
     },
     {
       "key": "gfs",
