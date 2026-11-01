@@ -53,7 +53,7 @@ Todas as regiões são WGS84 e definidas em `regions.json` (limites oeste/sul/le
 2. Baixe `catalog.json` para saber quais modelos, regiões, variáveis, F e pacotes existem naquela rodada.
 3. Baixe os ZIPs indicados em `regional_assets[].asset_parts[].asset`.
 4. Leia o `manifest.json` e descompacte os frames `forecast/fNNN-partNNN.json.gz`.
-5. Use `metadata.forecast_hour`, `valid_time`, `fields[].short_name`, `fields[].level` e `grids[fields[].grid_id]` para combinar os valores com suas coordenadas.
+5. Use `metadata.forecast_hour`, `valid_time`, `fields[].short_name`, `fields[].level`, `fields[].grid_type` e `grids[fields[].grid_id]` para combinar valores com coordenadas e geometria da grade (`Ni`, `Nj`, tipo de malha e modo de varredura quando disponíveis).
 
 ## Status, disponibilidade e volume
 
