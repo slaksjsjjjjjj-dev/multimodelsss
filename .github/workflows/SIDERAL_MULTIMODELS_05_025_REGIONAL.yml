@@ -728,7 +728,7 @@ jobs:
           from pathlib import Path
 
           output = Path("output")
-          release = Path("../../release-assets")
+          release = Path("../release-assets")
           release.mkdir(parents=True, exist_ok=True)
           manifests = sorted(output.rglob("manifest.json"))
           if not manifests:
