@@ -86,7 +86,7 @@
     },
     {
       "key": "gfs",
-      "label": "GFS / deterministic",
+      "label": "GFS / GEV3",
       "provider": "NOAA",
       "family": "gfs",
       "adapter": "herbie",
@@ -155,10 +155,12 @@
       "family": "geps",
       "adapter": "datamart",
       "resolution": "0.5°",
-      "max_forecast_hour": 384,
+      "max_forecast_hour": 936,
       "ensemble": true,
       "status": "configured",
-      "source": "https://dd.weather.gc.ca/"
+      "source": "https://dd.weather.gc.ca/",
+      "product": "GEPS raw — todos os campos e membros do ensemble",
+      "notes": "F000–F192 em 3 h; F198–F384 em 6 h; em ciclos 00Z de segunda e quinta, extensão F390–F936 em 6 h."
     },
     {
       "key": "ukmet",
@@ -177,6 +179,7 @@
     "O catálogo registra a configuração da coleta, não garante que todas as horas estejam publicadas em todo ciclo.",
     "O coletor registra as variáveis, níveis, membros e horas efetivamente encontrados nos GRIB2.",
     "GEFS-AI e HGEFS são publicados inicialmente com média e dispersão quando estes produtos agregados estão disponíveis; os membros individuais não são implicitamente prometidos.",
-    "UKMET depende de assinatura/produto Global Atmospheric no Met Office Weather DataHub e chave de API fornecida pelo proprietário do repositório."
+    "UKMET depende de assinatura/produto Global Atmospheric no Met Office Weather DataHub e chave de API fornecida pelo proprietário do repositório.",
+    "CMC GEPS é coletado do Datamart raw para incluir os arquivos de todos os membros; nas rodadas 00Z de segunda/quinta podem existir validades estendidas até F936."
   ]
 }
