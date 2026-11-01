@@ -42,11 +42,14 @@ def utc_run(date_text: str | None, cycle_text: str | None) -> datetime:
 
 
 def leads_for(model_key: str, run: datetime) -> list[int]:
-    if model_key in {"ecmwf_ifs", "ecmwf_eps"}:
-        leads = list(range(0, 145, 3))
+    if model_key == "ecmwf_ifs":
         if run.hour in (0, 12):
-            leads.extend(range(150, 361, 6))
-        return leads
+            return list(range(0, 145, 3)) + list(range(150, 241, 6))
+        return list(range(0, 91, 3))
+    if model_key == "ecmwf_eps":
+        if run.hour in (0, 12):
+            return list(range(0, 145, 3)) + list(range(150, 361, 6))
+        return list(range(0, 145, 3))
     if model_key in {"ecmwf_aifs", "ecmwf_aifs_ens"}:
         return list(range(0, 361, 6))
     if model_key == "gfs":
@@ -198,8 +201,11 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
         product_path = "model_gdps/15km"
     else:
         product_path = "ensemble/geps/grib2/products"
-    date_text = run.strftime("%Y%m%d")
-    cycle = f"{run.hour:02d}"
+    # GDPS/GEPS são publicados em 00Z e 12Z. Para agendamentos 06Z/18Z,
+    # usar o ciclo de 12 horas imediatamente anterior, sem inventar uma rodada.
+    source_run = run.replace(hour=0 if run.hour < 12 else 12)
+    date_text = source_run.strftime("%Y%m%d")
+    cycle = f"{source_run.hour:02d}"
     downloaded: list[Path] = []
     found_hours: set[int] = set()
     errors: list[str] = []
