@@ -237,37 +237,42 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     for stream, product_type, steps, task_label in _ecmwf_tasks(model_key, run):
         if not steps:
             continue
-        step_is_bundle = len(steps) > 1
-        step_label = (
-            f"{steps[0]}-to-{steps[-1]}-bundle"
-            if step_is_bundle else str(steps[0])
-        )
-        safe_label = re.sub(r"[^A-Za-z0-9_.-]+", "-", task_label)
-        target = raw_dir / safe_label / f"{stream}-{product_type}-{step_label}.grib2"
-        try:
-            target.parent.mkdir(parents=True, exist_ok=True)
-            if not target.is_file() or target.stat().st_size == 0:
-                client.retrieve(
-                    date=run_date,
-                    time=run.hour,
-                    stream=stream,
-                    type=product_type,
-                    step=steps,
-                    target=str(target),
-                )
-            if not target.is_file() or target.stat().st_size == 0:
-                raise RuntimeError("ECMWF API did not create a non-empty GRIB2 file.")
-            if process_file:
-                process_file(target)
-            else:
-                downloaded.append(target)
-            found_hours.update(_ecmwf_step_end(step) for step in steps)
-        except Exception as exc:
-            errors.append(
-                f"{stream}/{product_type}/{task_label}: {type(exc).__name__}: {exc}"
+        # Full forecast files can be very large; process one forecast lead at a
+        # time. EP probability files are much smaller, so keep their step bundles
+        # together to reduce request count.
+        step_groups = [steps] if "probabilities" in task_label else [[step] for step in steps]
+        for step_group in step_groups:
+            step_label = (
+                f"{step_group[0]}-to-{step_group[-1]}-bundle"
+                if len(step_group) > 1 else str(step_group[0])
             )
-            target.unlink(missing_ok=True)
-        time.sleep(0.2)
+            safe_label = re.sub(r"[^A-Za-z0-9_.-]+", "-", task_label)
+            target = raw_dir / safe_label / f"{stream}-{product_type}-{step_label}.grib2"
+            try:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                if not target.is_file() or target.stat().st_size == 0:
+                    client.retrieve(
+                        date=run_date,
+                        time=run.hour,
+                        stream=stream,
+                        type=product_type,
+                        step=step_group if len(step_group) > 1 else step_group[0],
+                        target=str(target),
+                    )
+                if not target.is_file() or target.stat().st_size == 0:
+                    raise RuntimeError("ECMWF API did not create a non-empty GRIB2 file.")
+                if process_file:
+                    process_file(target)
+                else:
+                    downloaded.append(target)
+                found_hours.update(_ecmwf_step_end(step) for step in step_group)
+            except Exception as exc:
+                errors.append(
+                    f"{stream}/{product_type}/{task_label}/{step_label}: "
+                    f"{type(exc).__name__}: {exc}"
+                )
+                target.unlink(missing_ok=True)
+            time.sleep(0.15)
 
     return sorted(set(downloaded)), sorted(found_hours), errors
 
@@ -600,6 +605,12 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                         "step_type": str(message_value(gid, "stepType", "")),
                         "step_range": str(message_value(gid, "stepRange", "")),
                         "member": message_value(gid, "number", message_value(gid, "perturbationNumber")),
+                        "ensemble_forecast_type": message_value(gid, "typeOfEnsembleForecast"),
+                        "statistical_process": message_value(gid, "typeOfStatisticalProcessing"),
+                        "percentile": message_value(gid, "percentileValue"),
+                        "probability": message_value(gid, "probability"),
+                        "lower_limit": message_value(gid, "lowerLimit"),
+                        "upper_limit": message_value(gid, "upperLimit"),
                         "valid_time": valid_utc,
                     }
                     for region in REGIONS:
