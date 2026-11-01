@@ -128,12 +128,75 @@ def download_herbie_file(model: str, product: str, run: datetime, lead: int,
     return sorted(set(files))
 
 
+def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
+                   requested: list[int]) -> tuple[list[Path], list[int], list[str]]:
+    """Retrieve every available ECMWF parameter/level for each native step.
+
+    EPS and AIFS-ENS publish ensemble summary products (mean, spread and
+    probabilities) here; perturbation members are not duplicated into every
+    regional JSON. The catalogue documents that aggregation choice explicitly.
+    """
+    from ecmwf.opendata import Client
+
+    if model_key == "ecmwf_ifs":
+        upstream_model, stream, product_types = "ifs", "oper", ("fc",)
+    elif model_key == "ecmwf_eps":
+        upstream_model, stream, product_types = "ifs", "enfo", ("em", "es", "ep")
+    elif model_key == "ecmwf_aifs":
+        upstream_model, stream, product_types = "aifs-single", "oper", ("fc",)
+    elif model_key == "ecmwf_aifs_ens":
+        upstream_model, stream, product_types = "aifs-ens", "enfo", ("em", "es", "ep")
+    else:
+        raise ValueError(f"Modelo ECMWF desconhecido: {model_key}")
+
+    client = Client(
+        source="ecmwf",
+        model=upstream_model,
+        resol="0p25",
+        infer_stream_keyword=False,
+    )
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    downloaded: list[Path] = []
+    found_hours: set[int] = set()
+    errors: list[str] = []
+    run_date = run.strftime("%Y%m%d")
+    for lead in requested:
+        lead_downloaded = False
+        for product_type in product_types:
+            target = raw_dir / f"f{lead:03d}" / f"{product_type}.grib2"
+            try:
+                if not target.is_file() or target.stat().st_size == 0:
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    client.retrieve(
+                        date=run_date,
+                        time=run.hour,
+                        stream=stream,
+                        type=product_type,
+                        step=lead,
+                        target=str(target),
+                    )
+                if target.is_file() and target.stat().st_size > 0:
+                    downloaded.append(target)
+                    lead_downloaded = True
+                else:
+                    errors.append(
+                        f"F{lead:03d}/{product_type}: a API ECMWF não criou arquivo."
+                    )
+            except Exception as exc:
+                errors.append(
+                    f"F{lead:03d}/{product_type}: {type(exc).__name__}: {exc}"
+                )
+                target.unlink(missing_ok=True)
+            time.sleep(0.15)
+        if lead_downloaded:
+            found_hours.add(lead)
+        else:
+            errors.append(f"F{lead:03d}: nenhum produto ECMWF disponível.")
+    return sorted(set(downloaded)), sorted(found_hours), errors
+
+
 def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list[int]) -> tuple[list[Path], list[int], list[str]]:
     spec = {
-        "ecmwf_ifs": [("ifs", "oper", {})],
-        "ecmwf_eps": [("ifs", "enfo", {})],
-        "ecmwf_aifs": [("aifs", "oper", {})],
-        "ecmwf_aifs_ens": [("aifs", "enfo", {})],
         "gfs": [("gfs", "pgrb2.0p25", {}), ("gfs", "pgrb2b.0p25", {})],
         "gfs_ai": [("aigfs", "sfc", {}), ("aigfs", "pres", {})],
         "gefs_ai": [
@@ -635,7 +698,9 @@ def main() -> int:
     raw_files: list[Path] = []
     discovered_hours: list[int] = []
     try:
-        if spec["adapter"] == "herbie":
+        if spec["adapter"] == "ecmwf-opendata":
+            raw_files, discovered_hours, errors = collect_ecmwf(model_key, run, raw_dir, requested)
+        elif spec["adapter"] == "herbie":
             raw_files, discovered_hours, errors = collect_herbie(model_key, run, raw_dir, requested)
         elif spec["adapter"] == "dwdopen":
             raw_files, discovered_hours, errors = collect_dwd(model_key, raw_dir)
