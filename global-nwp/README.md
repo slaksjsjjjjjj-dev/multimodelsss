@@ -44,7 +44,7 @@ A coleta usa os passos nativos disponíveis em cada produto. Não fabrica F hor�
 
 As regiões são definidas em \`regions.json\` (WGS84; limites west/south/east/north):
 
-- América do Sul e Pacífico Sul.
+- América do Sul e Pacífico Sul: região central/leste, Pacífico Sul Ocidental e Pacífico Sul Central.
 - Brasil: Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
 - Argentina: NOA, NEA, Cuyo, Pampa e Patagônia.
 
