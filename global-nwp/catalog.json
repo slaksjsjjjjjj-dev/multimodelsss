@@ -11,10 +11,11 @@
       "adapter": "herbie",
       "product": "oper",
       "resolution": "0.25°",
-      "max_forecast_hour": 360,
+      "max_forecast_hour": 240,
       "ensemble": false,
       "status": "configured",
-      "source": "https://www.ecmwf.int/en/forecasts/datasets/open-data"
+      "source": "https://www.ecmwf.int/en/forecasts/datasets/open-data",
+      "notes": "IFS deterministic HRES Open Data: F000–F144 every 3 h and F150–F240 every 6 h on 00/12 cycles; 06/18 cycles publish through F090."
     },
     {
       "key": "ecmwf_eps",
