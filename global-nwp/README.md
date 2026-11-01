@@ -1,65 +1,64 @@
-# SIDERAL Global NWP — coleta e Releases regionais
+# SIDERAL — Global NWP JSON Releases
 
-Este pacote pertence ao repositório \`slaksjsjjjjjj-dev/multimodelsss\`.
+Repositório: `slaksjsjjjjjj-dev/multimodelsss`.
 
-## O que é publicado
+## Agendamento e publicação
 
-O workflow \`.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml\` agenda duas coletas por dia, após a publicação dos ciclos globais 00Z e 12Z (execuções às 09Z e 21Z) e também pode ser iniciado manualmente. Cada execução cria uma GitHub Release com:
+O workflow `.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml` executa duas coletas por dia, às 09Z e 21Z. Cada execução seleciona a rodada global de pelo menos nove horas antes (00Z ou 12Z), dando tempo para os provedores terminarem de publicar os arquivos. Também existe execução manual em **Actions → SIDERAL — Global NWP JSON Releases → Run workflow**.
 
-- \`catalog.json\`: definições dos modelos, regiões, status, variáveis, níveis, validades e nomes dos ZIPs.
-- \`run-report.json\`: resumo dos modelos, regiões, frames e campos que de fato foram publicados.
-- \`<model_key>--<region_id>.zip\`: pacote de uma região para um modelo; contém \`manifest.json\` e os arquivos \`forecast/fNNN.json.gz\`.
+Cada execução cria um GitHub Release com:
 
-Cada \`fNNN.json.gz\`, quando descompactado, é um JSON UTF-8 com metadados, grades/coordenas e todos os campos GRIB2 que foram extraídos para aquela região/validade. O inventário registra nome curto, nome legível, unidade, parâmetro GRIB, tipo de nível, nível vertical, membro, tipo/intervalo de passo e tempo válido.
+- `catalog.json`: modelos, regiões, status, inventário das variáveis/níveis e relação de arquivos.
+- `run-report.json`: resumo de modelos, regiões, frames e campos efetivamente gerados.
+- ZIPs por modelo/região, divididos em partes de até 1,5 GB. Cada ZIP contém `manifest.json` e arquivos `forecast/fNNN-partNNN.json.gz`.
 
-Um horário pode ter vários arquivos `partNNN` quando o modelo publica muitas variáveis, níveis ou membros. O manifesto liga cada parte ao F correspondente. A coleta usa os passos nativos disponíveis em cada produto. Não fabrica F horários que o provedor não publicou; por exemplo, um produto de 3 em 3 horas não ganha F001/F002 artificiais. O manifesto lista exatamente os F disponíveis. Ausências de arquivos, variáveis ou níveis são registradas como \`partial\` ou \`failed\`.
+Cada frame `.json.gz`, depois de descompactado, é um JSON com `metadata`, `grids` e `fields`. Cada campo mantém o nome curto e descritivo, unidade, `paramId`, tipo e valor do nível vertical, passo/intervalo, membro do ensemble quando publicado e coordenadas dos pontos. A lista de variáveis e as validades é descoberta nos GRIBs de cada rodada; não existe uma lista fixa que invente dados ausentes.
+
+Os frames são particionados por validade e, quando o volume é grande, em partes numeradas. O `manifest.json` liga todas as partes ao respectivo F e informa as validades reais que a fonte entregou.
 
 ## Modelos configurados
 
-| ID | Produto | Fonte/coletor | Alcance de catálogo |
-|---|---|---|---:|
-| \`ecmwf_ifs\` | ECMWF / IFS (oper) | ECMWF Open Data via Herbie | F240; ciclos 06/18 terminam antes |
-| \`ecmwf_eps\` | ECMWF / EPS (enfo) | ECMWF Open Data via Herbie | F360 em 00/12; F144 em 06/18 |
-| \`ecmwf_aifs\` | ECMWF / AIFS | ECMWF Open Data via Herbie | F360 |
-| \`ecmwf_aifs_ens\` | ECMWF / AIFS-ENS | ECMWF Open Data via Herbie | F360 |
-| \`icon_dwd\` | ICON / DWD | Catálogo DWD + malha triangular nativa | F180; pontos regionais na malha triangular nativa (~13 km) |
-| \`icon_ai\` | ICON / AI (AICON) | Catálogo DWD + malha triangular nativa | F180; saída regional em 0.125° |
-| \`gfs\` | GFS / GEV3 (campos primários e secundários) | NOAA/NOMADS via Herbie | F384 |
-| \`gfs_ai\` | GFS / AI (AIGFS) | NOAA/NOMADS via Herbie | F384 |
-| \`gefs_ai\` | GEFS / AI (AIGEFS) | NOAA/NOMADS via Herbie; média e dispersão | F384 |
-| \`hgefs\` | HGEFS | NOAA/NOMADS via Herbie; média e dispersão | F240 |
-| \`cmc_gdps\` | CMC / GDPS | ECCC Datamart | F240; usa ciclos 00/12 |
-| \`cmc_geps\` | CMC / GEPS | ECCC Datamart | F384 (conforme disponibilidade do diretório) |
-| \`ukmet\` | UKMET | Met Office Weather DataHub | Bloqueado até configurar assinatura e credenciais |
+| ID | Produto | Fonte | Resolução / horizonte catalogado |
+|---|---|---|---|
+| `ecmwf_ifs` | IFS HRES — atmosfera (`oper/fc`) e ondas (`wave/fc`) | ECMWF Open Data | 0,25°; atmosfera até F240, ondas até F360 em 00/12Z |
+| `ecmwf_eps` | IFS ENS — PF (membros), EM/ES (média/dispersão), EP (probabilidades), incluindo produtos de ondas | ECMWF Open Data | 0,25°; até F360 em 00/12Z |
+| `ecmwf_aifs` | AIFS Single — atmosfera e ondas | ECMWF Open Data | 0,25°; até F360 |
+| `ecmwf_aifs_ens` | AIFS-ENS — CF/PF/EM/ES/EP e produtos de ondas | ECMWF Open Data | 0,25°; até F360 |
+| `icon_dwd` | ICON global determinístico | DWD Open Data | Malha triangular nativa (~13 km); até F180 |
+| `icon_ai` | AICON global | DWD Open Data | Malha triangular nativa (~13 km); até F180 |
+| `gfs` | GFS / GEV3 — produtos `pgrb2.0p25` e `pgrb2b.0p25` | NOAA / NOMADS via Herbie | 0,25°; até F384 |
+| `gfs_ai` | AIGFS — `sfc` e `pres` | NOAA / NOMADS via Herbie | 0,25°; até F384 |
+| `gefs_ai` | AIGEFS — média e dispersão (`avg`/`spr`) de `sfc` e `pres` | NOAA / NOMADS via Herbie | 0,25°; até F384 |
+| `hgefs` | HGEFS — média e dispersão (`avg`/`spr`) de `sfc` e `pres` | NOAA / NOMADS via Herbie | 0,25°; até F240 |
+| `cmc_gdps` | GDPS determinístico — GRIB2 | ECCC Datamart | 0,15°; até F240 |
+| `cmc_geps` | GEPS raw (membros individuais) e products (probabilidades/estatísticas) | ECCC Datamart | 0,5°; F384, com extensão F936 em 00Z de segunda/quinta |
+| `ukmet` | UKMET Global | Met Office Weather DataHub | Bloqueado até configurar assinatura e credenciais |
 
-**Observações importantes**
+**Limites conhecidos dos produtos ensemble:** AIGEFS e HGEFS estão configurados para os campos agregados média/dispersão, não para arquivar cada membro individual. EPS e AIFS-ENS coletam os tipos de produto definidos no catálogo; os membros PF são mantidos quando a fonte os publica nesses arquivos. UKMET permanece `blocked` até existir uma assinatura Global Atmospheric e uma credencial do Weather DataHub no ambiente seguro do repositório.
 
-- O ECMWF IFS determinístico (stream \`oper\`) não publica o mesmo horizonte do EPS. No Open Data, HRES/IFS chega a F240 em 00/12 e F090 em 06/18; o EPS é que chega a F360 nos ciclos 00/12. A interface não deve mostrar validades que não apareçam no manifesto.
-- O DWD publica ICON/AICON na grade nativa não estruturada. O workflow baixa os pesos oficiais DWD \`ICON_GLOBAL2WORLD_0125_EASY\` e regrida a saída regional para grade regular de 0.125° antes do recorte.
-- EPS publica todos os campos dos produtos CF/EM/ES/EP e os produtos de ondas disponíveis. AIFS-ENS publica CF, PF (todos os membros quando o provedor entrega o conjunto no arquivo) e EP; não limitamos o `number` do PF.
-- AIGEFS e HGEFS são coletados inicialmente como produtos agregados de média e dispersão; isso não equivale a arquivar cada membro individual.
-- CMC/GEPS usa o diretório `raw`, não `products`, para capturar todos os campos e membros individuais do ensemble. O ECCC oferece F000–F384 e extensão até F936 em ciclos 00Z de segunda/quinta.
-- UKMET requer assinatura Global Atmospheric e credencial de API do Weather DataHub. A entrada está no catálogo, mas cada execução a marca \`blocked\`; não é anunciada como dado operacional. Consulte a documentação oficial: https://datahub.metoffice.gov.uk/.
-- GDPS/GEPS são publicados em 00Z/12Z. GDPS é consultado em `/today/model_gdps/15km/{HH}/{hhh}/`; GEPS usa `/today/ensemble/geps/grib2/{raw,products}/{HH}/{hhh}/`. Quando a execução geral roda às 06Z/18Z, o coletor usa o ciclo 00Z/12Z imediatamente anterior.
+O coletor ECMWF não fixa `param` ou `levelist`: pede os campos que o produto disponibiliza. Para GFS/AI-GFS, Herbie seleciona os produtos integrais de superfície e pressão. O CMC GEPS usa as árvores `raw` e `products` para manter os membros e os produtos estatísticos.
 
-## Regiões
+## Regiões publicadas
 
-As regiões são definidas em \`regions.json\` (WGS84; limites west/south/east/north):
+Todas as regiões são WGS84 e definidas em `regions.json` (limites oeste/sul/leste/norte):
 
-- América do Sul e Pacífico Sul: região central/leste, Pacífico Sul Ocidental e Pacífico Sul Central.
-- Brasil: Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
-- Argentina: NOA, NEA, Cuyo, Pampa e Patagônia.
+- América do Sul.
+- Pacífico Sul — faixa principal, Ocidental e Central.
+- Brasil — Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
+- Argentina — NOA, NEA, Cuyo, Pampa e Patagônia.
 
-## Como acessar a Release
+## Como consumir
 
-1. Abra o separador **Actions** do repositório e selecione **SIDERAL — Global NWP JSON Releases**.
-2. Acompanhe o job **Publicar Releases regionais**.
-3. Quando o job terminar, abra **Releases** e localize \`sideral-global-nwp-<data>-<ciclo>-<run_id>\`.
-4. Baixe \`catalog.json\` para descobrir quais ZIPs existem e quais F estão disponíveis para cada modelo/região.
-5. Dentro do ZIP, leia \`manifest.json\` e descompacte os frames \`forecast/fNNN.json.gz\`.
+1. Abra **Releases** no repositório.
+2. Baixe `catalog.json` para saber quais modelos, regiões, variáveis, F e pacotes existem naquela rodada.
+3. Baixe os ZIPs indicados em `regional_assets[].asset_parts[].asset`.
+4. Leia o `manifest.json` e descompacte os frames `forecast/fNNN-partNNN.json.gz`.
+5. Use `metadata.forecast_hour`, `valid_time`, `fields[].short_name`, `fields[].level` e `grids[fields[].grid_id]` para combinar os valores com suas coordenadas.
 
-## Configuração e limites
+## Status, disponibilidade e volume
 
-Não há chaves de API embutidas no código. UKMET exige uma assinatura e credenciais próprias; não é habilitado automaticamente. Os provedores podem atrasar uma rodada, retirar dados antigos ou não oferecer todos os parâmetros em todos os níveis/passos. O manifesto de cada Release é a fonte de verdade para a disponibilidade concreta.
+Um modelo pode terminar com status `published-ready`, `partial`, `failed` ou `blocked`. O manifesto é a fonte de verdade para os campos e horários realmente obtidos; uma validade não disponível no provedor não é fabricada. A Release é criada somente quando ao menos um pacote regional JSON foi gerado.
 
-O primeiro disparo real deve ser acompanhado em **Actions**. A criação dos arquivos e a publicação do workflow no repositório não substituem o teste de uma execução completa contra as fontes externas.
+A coleta de todos os campos globais é volumosa, especialmente para ensembles. Os arquivos são processados um de cada vez e removidos após a conversão para limitar o espaço temporário. O job tem paralelismo limitado e cada modelo tem status próprio para que falhas de um provedor não sejam confundidas com dados publicados.
+
+**Importante:** a validação estática do workflow não substitui a validação operacional de cada provedor. As primeiras execuções reais revelaram falhas de horário do ECMWF, incompatibilidade de timezone do Herbie e limitações do regridding CDO no ICON; as correções estão no código atual, mas precisam ser confirmadas em uma nova rodada completa antes de considerar todos os modelos operacionais.
