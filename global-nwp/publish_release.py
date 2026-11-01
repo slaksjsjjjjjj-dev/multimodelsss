@@ -4,7 +4,7 @@ import argparse
 import json
 import re
 import zipfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 PREFIX = "global-nwp-"
@@ -26,9 +26,9 @@ def main() -> int:
     source_root = Path(args.input)
     output_root = Path(args.output)
     output_root.mkdir(parents=True, exist_ok=True)
-    now = datetime.now(timezone.utc)
-    date_stamp = args.date or now.strftime("%Y%m%d")
-    cycle_stamp = args.cycle or f"{(now.hour // 6) * 6:02d}"
+    reference = datetime.now(timezone.utc) - timedelta(hours=9)
+    date_stamp = args.date or reference.strftime("%Y%m%d")
+    cycle_stamp = args.cycle or f"{(reference.hour // 6) * 6:02d}"
     source_catalog = json.loads((Path(__file__).resolve().parent / "catalog.json").read_text(encoding="utf-8"))
     region_catalog = json.loads((Path(__file__).resolve().parent / "regions.json").read_text(encoding="utf-8"))
     catalog = {
