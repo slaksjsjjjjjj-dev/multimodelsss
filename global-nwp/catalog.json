@@ -65,12 +65,13 @@
       "family": "icon",
       "adapter": "dwdopen",
       "upstream_model": "icon",
-      "resolution": "0.125° (regional output regridded from native ICON grid)",
+      "resolution": "Malha triangular nativa ICON (grade global não estruturada)",
       "max_forecast_hour": 180,
       "ensemble": false,
       "status": "configured",
       "source": "https://opendata.dwd.de/weather/nwp/",
-      "native_grid": "DWD native unstructured ICON global grid"
+      "native_grid": "ICON icosahedral triangular mesh",
+      "notes": "Publicado no grid nativo triangular; o arquivador recorta pontos por latitude/longitude GRIB sem interpolação/regrade."
     },
     {
       "key": "icon_ai",
@@ -79,12 +80,13 @@
       "family": "aicon",
       "adapter": "dwdopen",
       "upstream_model": "aicon",
-      "resolution": "0.125° (regional output regridded from native ICON grid)",
+      "resolution": "Malha triangular nativa ICON (grade global não estruturada)",
       "max_forecast_hour": 180,
       "ensemble": false,
       "status": "configured",
       "source": "https://opendata.dwd.de/weather/nwp/",
-      "native_grid": "DWD native unstructured ICON global grid"
+      "native_grid": "ICON icosahedral triangular mesh",
+      "notes": "Publicado no grid nativo triangular; o arquivador recorta pontos por latitude/longitude GRIB sem interpolação/regrade."
     },
     {
       "key": "gfs",
@@ -186,6 +188,7 @@
     "CMC GEPS é coletado do Datamart raw para incluir os arquivos de todos os membros; nas rodadas 00Z de segunda/quinta podem existir validades estendidas até F936.",
     "ECMWF EPS: publica CF, EM, ES e EP; EP somente nos ciclos 00/12 e steps disponíveis a cada 12 h. AIFS-ENS: publica PF (todos os membros, sem filtrar number), CF e EP (00/12).",
     "IFS atmospheric and wave products use different maximum forecast hours; the region manifests store only leads that have fields.",
-    "CMC GEPS releases both raw all-member GRIB fields and processed probabilistic/statistical products from the official /today Datamart tree."
+    "CMC GEPS releases both raw all-member GRIB fields and processed probabilistic/statistical products from the official /today Datamart tree.",
+    "DWD ICON/AICON é preservado em sua grade triangular nativa; os JSONs regionais contêm as coordenadas lat/lon dos pontos da malha dentro de cada recorte."
   ]
 }
