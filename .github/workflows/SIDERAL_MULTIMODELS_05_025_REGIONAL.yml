@@ -32,13 +32,13 @@ on:
       forecast_hours:
         description: "Leads nativos separados por vírgula; os PNG/JSON são exportados a cada hora"
         required: false
-        default: "0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,126,132,138,144,150,156,162,168"
+        default: "0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,126,132,138,144,150,156,162,168,174,180,186,192,198,204,210,216,222,228,234,240,246,252,258,264,270,276,282,288,294,300,306,312,318,324,330,336,342,348,354,360,366,372,378,384"
         type: string
   schedule:
-    - cron: "15 1,13 * * *"
+    - cron: "15 1,7,13,19 * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: sideral-multimodels-05
@@ -711,5 +711,112 @@ jobs:
           path: sideral-multimodels-05/output/
           if-no-files-found: error
           retention-days: 14
+
+      - name: Preparar JSONs regionais para Release
+        if: ${{ success() }}
+        working-directory: sideral-multimodels-05
+        shell: bash
+        env:
+          RUN_DATE: ${{ inputs.run_date }}
+          RUN_CYCLE: ${{ inputs.run_cycle }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          import zipfile
+          from pathlib import Path
+
+          output = Path("output")
+          release = Path("../../release-assets")
+          release.mkdir(parents=True, exist_ok=True)
+          manifests = sorted(output.rglob("manifest.json"))
+          if not manifests:
+              raise SystemExit("Nenhum manifest.json regional encontrado para publicar.")
+
+          catalog = {
+              "schema": "sideral-global-nwp-release-v1",
+              "repository": "slaksjsjjjjjj-dev/multimodelsss",
+              "run_date": __import__("os").environ.get("RUN_DATE") or None,
+              "run_cycle_utc": __import__("os").environ.get("RUN_CYCLE") or None,
+              "coverage": ["South America", "Brazil", "Argentina"],
+              "format": "ZIP contendo manifest.json e todos os JSONs de forecast disponíveis",
+              "assets": [],
+              "regions": [],
+              "models": [],
+          }
+
+          def slug(value):
+              value = re.sub(r"[^a-zA-Z0-9._-]+", "-", str(value or "").strip())
+              return value.strip("-_.").lower() or "regional"
+
+          for manifest_path in manifests:
+              run_dir = manifest_path.parent
+              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+              relative = run_dir.relative_to(output)
+              region_key = slug("-".join(relative.parts))
+              json_files = sorted((run_dir / "forecast").glob("*.json"))
+              if not json_files:
+                  raise SystemExit(f"Sem JSONs forecast em {run_dir}")
+              asset_name = f"region-{region_key}.zip"
+              archive_path = release / asset_name
+              with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
+                  archive.write(manifest_path, "manifest.json")
+                  for frame in json_files:
+                      archive.write(frame, f"forecast/{frame.name}")
+              entry = {
+                  "region_id": region_key,
+                  "source_directory": relative.as_posix(),
+                  "asset": asset_name,
+                  "forecast_json_count": len(json_files),
+                  "forecast_hours": manifest.get("productForecastHours") or manifest.get("forecastHours") or [],
+                  "manifest": manifest,
+              }
+              catalog["assets"].append(entry)
+              catalog["regions"].append(region_key)
+              for key in ("models", "modelNames", "model_names", "model"):
+                  value = manifest.get(key)
+                  if isinstance(value, list):
+                      catalog["models"].extend(str(x) for x in value)
+                  elif value:
+                      catalog["models"].append(str(value))
+
+          catalog["regions"] = sorted(set(catalog["regions"]))
+          catalog["models"] = sorted(set(catalog["models"]))
+          (release / "catalog.json").write_text(
+              json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8"
+          )
+          print(f"Preparados {len(catalog['assets'])} pacotes regionais com {sum(x['forecast_json_count'] for x in catalog['assets'])} JSONs.")
+          PY
+
+      - name: Publicar JSONs regionais como GitHub Release
+        if: ${{ success() }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_DATE: ${{ inputs.run_date }}
+          RUN_CYCLE: ${{ inputs.run_cycle }}
+        run: |
+          set -euo pipefail
+          DATE_STAMP="${RUN_DATE:-$(date -u +%Y%m%d)}"
+          CYCLE_STAMP="${RUN_CYCLE:-auto}"
+          TAG="sideral-global-nwp-${DATE_STAMP}-${CYCLE_STAMP}-${GITHUB_RUN_ID}"
+          cat > /tmp/release-notes.md <<EOF
+          Publicação automática de previsões globais regionais do Sideral.
+
+          Inclui os JSONs de todas as regiões geradas nesta execução, os manifests,
+          as validades publicadas e o catálogo de assets. A disponibilidade de
+          cada variável/validade segue os dados efetivamente retornados pelos
+          provedores e registrados nos manifests.
+
+          Workflow run: ${GITHUB_SERVER_URL}/${GH_REPO}/actions/runs/${GITHUB_RUN_ID}
+          EOF
+          gh release create "$TAG" release-assets/*.zip release-assets/catalog.json \
+            --repo "$GH_REPO" \
+            --title "Sideral Global NWP — ${DATE_STAMP} ${CYCLE_STAMP}Z" \
+            --notes-file /tmp/release-notes.md \
+            --latest=false
+          echo "Release publicada: https://github.com/${GH_REPO}/releases/tag/${TAG}"
 
 # Runtime payload SHA-256: 2d5ea518785c0ece820f6feb4a9e9bba559051cfa759bda77ae4f3cca0d091c4
