@@ -97,6 +97,7 @@ jobs:
           python -m pip install --upgrade pip wheel setuptools
           python -m pip install \
             "herbie-data>=2026.10.0" \
+            "ecmwf-opendata>=0.3.0" \
             "dwdopen>=1.0.0" \
             "eccodes>=2.42.0" \
             "numpy>=1.26,<3" \
