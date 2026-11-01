@@ -4,7 +4,7 @@ Este pacote pertence ao repositório \`slaksjsjjjjjj-dev/multimodelsss\`.
 
 ## O que é publicado
 
-O workflow \`.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml\` agenda quatro tentativas por dia UTC (00Z, 06Z, 12Z e 18Z aproximados) e também pode ser iniciado manualmente. Cada execução cria uma GitHub Release com:
+O workflow \`.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml\` agenda duas coletas por dia, após a publicação dos ciclos globais 00Z e 12Z (execuções às 09Z e 21Z) e também pode ser iniciado manualmente. Cada execução cria uma GitHub Release com:
 
 - \`catalog.json\`: definições dos modelos, regiões, status, variáveis, níveis, validades e nomes dos ZIPs.
 - \`run-report.json\`: resumo dos modelos, regiões, frames e campos que de fato foram publicados.
