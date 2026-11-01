@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import gzip
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
 import json
 import os
@@ -401,22 +402,38 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
                     continue
                 lead_dir = raw_dir / product_path.rsplit("/", 1)[-1] / f"f{lead:03d}"
                 lead_dir.mkdir(parents=True, exist_ok=True)
-                for index, url in enumerate(links):
+
+                def download_one(url: str) -> Path | None:
                     name = url.rsplit("/", 1)[-1]
                     target = lead_dir / name
-                    try:
-                        if ensure_request(url, target, timeout=(20, 240)):
+                    if ensure_request(url, target, timeout=(20, 240)):
+                        return target
+                    return None
+
+                # Download each forecast lead concurrently to avoid crawling
+                # thousands of Datamart files serially. Decoding and writes to
+                # the regional spool remain serial to keep the JSON intact.
+                with ThreadPoolExecutor(max_workers=8) as executor:
+                    futures = {
+                        executor.submit(download_one, url): url for url in links
+                    }
+                    for future in as_completed(futures):
+                        url = futures[future]
+                        name = url.rsplit("/", 1)[-1]
+                        try:
+                            target = future.result()
+                            if target is None:
+                                continue
                             lead_downloaded = True
                             if process_file:
                                 process_file(target)
                             else:
                                 downloaded.append(target)
-                    except Exception as exc:
-                        errors.append(
-                            f"{product_path}/F{lead:03d} {name}: {type(exc).__name__}: {exc}"
-                        )
-                    if index % 8 == 7:
-                        time.sleep(1)
+                        except Exception as exc:
+                            errors.append(
+                                f"{product_path}/F{lead:03d} {name}: "
+                                f"{type(exc).__name__}: {exc}"
+                            )
             except Exception as exc:
                 errors.append(
                     f"{product_path}/F{lead:03d}: {type(exc).__name__}: {exc}"
@@ -425,7 +442,7 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
             found_hours.add(lead)
         else:
             errors.append(f"F{lead:03d}: nenhum produto ECCC disponível.")
-        time.sleep(0.2)
+        time.sleep(0.05)
 
     return sorted(set(downloaded)), sorted(found_hours), errors
 
