@@ -36,6 +36,7 @@ A coleta usa os passos nativos disponíveis em cada produto. Não fabrica F hor�
 
 - O ECMWF IFS determinístico (stream \`oper\`) não publica o mesmo horizonte do EPS. No Open Data, HRES/IFS chega a F240 em 00/12 e F090 em 06/18; o EPS é que chega a F360 nos ciclos 00/12. A interface não deve mostrar validades que não apareçam no manifesto.
 - O DWD publica ICON/AICON na grade nativa não estruturada. O workflow baixa os pesos oficiais DWD \`ICON_GLOBAL2WORLD_0125_EASY\` e regrida a saída regional para grade regular de 0.125° antes do recorte.
+- EPS e AIFS-ENS são publicados com EM/ES/EP (média, dispersão e probabilidades) para todos os parâmetros/níveis disponíveis; os membros perturbados PF individuais não são duplicados no catálogo regional.
 - AIGEFS e HGEFS são coletados inicialmente como produtos agregados de média e dispersão; isso não equivale a arquivar cada membro individual.
 - CMC/GEPS usa o diretório `raw`, não `products`, para capturar os campos e membros individuais do ensemble. O ECCC oferece extensão até F936 em ciclos 00Z de segunda/quinta.
 - UKMET requer assinatura Global Atmospheric e credencial de API do Weather DataHub. A entrada está no catálogo, mas cada execução a marca \`blocked\`; não é anunciada como dado operacional. Consulte a documentação oficial: https://datahub.metoffice.gov.uk/.
