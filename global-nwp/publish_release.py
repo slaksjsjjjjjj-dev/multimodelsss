@@ -53,6 +53,7 @@ def main() -> int:
     if not expected_dirs:
         raise SystemExit(f"Nenhum artefato {PREFIX}* foi baixado.")
 
+
     for model_dir in expected_dirs:
         model_key = model_dir.name[len(PREFIX):]
         status_path = model_dir / "model_status.json"
@@ -153,6 +154,11 @@ def main() -> int:
             })
         catalog["models"].append(model_entry)
 
+    if not catalog["regional_assets"]:
+        raise SystemExit(
+            "Nenhum JSON regional foi gerado; não será criada uma GitHub Release vazia."
+        )
+
     (output_root / "catalog.json").write_text(
         json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8"
     )
@@ -163,7 +169,10 @@ def main() -> int:
         "model_count": len(catalog["models"]),
         "models_with_regional_data": sum(1 for item in catalog["models"] if item["regions"]),
         "blocked_models": [item["model_key"] for item in catalog["models"] if item["status"] == "blocked"],
-        "failed_models": [item["model_key"] for item in catalog["models"] if item["status"] == "failed"],
+        "failed_models": [
+            item["model_key"] for item in catalog["models"]
+            if item["status"] not in {"published-ready", "partial", "blocked"}
+        ],
         "partial_models": [item["model_key"] for item in catalog["models"] if item["status"] == "partial"],
         "regional_assets": len(catalog["regional_assets"]),
         "total_frames": sum(item["frame_count"] for item in catalog["regional_assets"]),
