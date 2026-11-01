@@ -12,7 +12,7 @@ O workflow \`.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml\` agenda quatro t
 
 Cada \`fNNN.json.gz\`, quando descompactado, é um JSON UTF-8 com metadados, grades/coordenas e todos os campos GRIB2 que foram extraídos para aquela região/validade. O inventário registra nome curto, nome legível, unidade, parâmetro GRIB, tipo de nível, nível vertical, membro, tipo/intervalo de passo e tempo válido.
 
-A coleta usa os passos nativos disponíveis em cada produto. Não fabrica F horários que o provedor não publicou; por exemplo, um produto de 3 em 3 horas não ganha F001/F002 artificiais. O manifesto lista exatamente os F disponíveis. Ausências de arquivos, variáveis ou níveis são registradas como \`partial\` ou \`failed\`.
+Um horário pode ter vários arquivos `partNNN` quando o modelo publica muitas variáveis, níveis ou membros. O manifesto liga cada parte ao F correspondente. A coleta usa os passos nativos disponíveis em cada produto. Não fabrica F horários que o provedor não publicou; por exemplo, um produto de 3 em 3 horas não ganha F001/F002 artificiais. O manifesto lista exatamente os F disponíveis. Ausências de arquivos, variáveis ou níveis são registradas como \`partial\` ou \`failed\`.
 
 ## Modelos configurados
 
@@ -40,7 +40,7 @@ A coleta usa os passos nativos disponíveis em cada produto. Não fabrica F hor�
 - AIGEFS e HGEFS são coletados inicialmente como produtos agregados de média e dispersão; isso não equivale a arquivar cada membro individual.
 - CMC/GEPS usa o diretório `raw`, não `products`, para capturar todos os campos e membros individuais do ensemble. O ECCC oferece F000–F384 e extensão até F936 em ciclos 00Z de segunda/quinta.
 - UKMET requer assinatura Global Atmospheric e credencial de API do Weather DataHub. A entrada está no catálogo, mas cada execução a marca \`blocked\`; não é anunciada como dado operacional. Consulte a documentação oficial: https://datahub.metoffice.gov.uk/.
-- GDPS/GEPS são publicados em 00Z/12Z. GDPS é consultado no caminho oficial `/today/model_gdps/15km/{HH}/{hhh}/`; GEPS utiliza o arquivo datado `/YYYYMMDD/WXO-DD/ensemble/geps/grib2/raw/{HH}/{hhh}/`. Quando a execução geral roda às 06Z/18Z, o coletor usa o ciclo 00Z/12Z imediatamente anterior.
+- GDPS/GEPS são publicados em 00Z/12Z. GDPS é consultado em `/today/model_gdps/15km/{HH}/{hhh}/`; GEPS usa `/today/ensemble/geps/grib2/{raw,products}/{HH}/{hhh}/`. Quando a execução geral roda às 06Z/18Z, o coletor usa o ciclo 00Z/12Z imediatamente anterior.
 
 ## Regiões
 
