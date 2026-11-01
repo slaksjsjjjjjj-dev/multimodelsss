@@ -141,13 +141,17 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     from ecmwf.opendata import Client
 
     if model_key == "ecmwf_ifs":
-        upstream_model, stream, product_types = "ifs", "oper", ("fc",)
+        upstream_model, stream, products = "ifs", "oper", (("fc", "all"),)
     elif model_key == "ecmwf_eps":
-        upstream_model, stream, product_types = "ifs", "enfo", ("em", "es", "ep")
+        upstream_model, stream, products = "ifs", "enfo", (
+            ("cf", "all"), ("em", "all"), ("es", "all"), ("ep", "12h")
+        )
     elif model_key == "ecmwf_aifs":
-        upstream_model, stream, product_types = "aifs-single", "oper", ("fc",)
+        upstream_model, stream, products = "aifs-single", "oper", (("fc", "all"),)
     elif model_key == "ecmwf_aifs_ens":
-        upstream_model, stream, product_types = "aifs-ens", "enfo", ("em", "es", "ep")
+        upstream_model, stream, products = "aifs-ens", "enfo", (
+            ("cf", "all"), ("pf", "all"), ("ep", "12h")
+        )
     else:
         raise ValueError(f"Modelo ECMWF desconhecido: {model_key}")
 
@@ -164,7 +168,9 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     run_date = run.strftime("%Y%m%d")
     for lead in requested:
         lead_downloaded = False
-        for product_type in product_types:
+        for product_type, cadence in products:
+            if cadence == "12h" and lead % 12 != 0:
+                continue
             target = raw_dir / f"f{lead:03d}" / f"{product_type}.grib2"
             try:
                 if not target.is_file() or target.stat().st_size == 0:
@@ -225,6 +231,7 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
     errors: list[str] = []
     for lead in requested:
         lead_files: list[Path] = []
+        lead_downloaded = False
         for source_model, product, kwargs in products:
             try:
                 options = dict(kwargs)
@@ -236,6 +243,8 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
                 found = download_herbie_file(
                     source_model, product, run, lead, dest, **options
                 )
+                if found:
+                    lead_downloaded = True
                 if process_file:
                     for path in found:
                         process_file(path)
@@ -244,7 +253,7 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
             except Exception as exc:
                 errors.append(f"F{lead:03d} {source_model}/{product}: {type(exc).__name__}: {exc}")
             time.sleep(0.25)
-        if lead_files:
+        if lead_downloaded or lead_files:
             found_hours.add(lead)
             downloaded.extend(lead_files)
         else:
