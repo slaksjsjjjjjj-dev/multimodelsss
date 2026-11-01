@@ -15,6 +15,7 @@ from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin
+from typing import Callable
 
 import numpy as np
 import requests
@@ -128,41 +129,99 @@ def download_herbie_file(model: str, product: str, run: datetime, lead: int,
     return sorted(set(files))
 
 
+def _ecmwf_step_end(step: int | str) -> int:
+    if isinstance(step, int):
+        return step
+    if "-" in str(step):
+        return int(str(step).split("-", 1)[1])
+    return int(step)
+
+
+def _ecmwf_range_steps(start: int, stop: int, increment: int) -> list[int]:
+    return list(range(start, stop + 1, increment))
+
+
+def _ecmwf_tasks(model_key: str, run: datetime) -> list[tuple[str, str, list[int | str], str]]:
+    """Return the documented stream/type/step combinations for this cycle."""
+    hres_00_12 = (
+        _ecmwf_range_steps(0, 144, 3)
+        + _ecmwf_range_steps(150, 240, 6)
+    )
+    hres_06_18 = _ecmwf_range_steps(0, 90, 3)
+    ens_00_12 = (
+        _ecmwf_range_steps(0, 144, 3)
+        + _ecmwf_range_steps(150, 360, 6)
+    )
+    ens_06_18 = _ecmwf_range_steps(0, 144, 3)
+    aifs_steps = _ecmwf_range_steps(0, 360, 6)
+    ep_instant = _ecmwf_range_steps(12, 360, 12)
+    ep_daily = [f"{12 * i}-{12 * i + 24}" for i in range(29)]
+    ep_averaged = ["120-168", "168-240", "120-240"]
+
+    if model_key == "ecmwf_ifs":
+        # Cycle 50r1 onward: 06/18 use oper/wave too; scda/scwv are retired.
+        return [
+            ("oper", "fc", hres_00_12 if run.hour in (0, 12) else hres_06_18, "atmosphere"),
+            ("wave", "fc", ens_00_12 if run.hour in (0, 12) else _ecmwf_range_steps(0, 144, 3), "wave"),
+        ]
+
+    if model_key == "ecmwf_eps":
+        ensemble_steps = ens_00_12 if run.hour in (0, 12) else ens_06_18
+        tasks = [
+            ("enfo", "pf", ensemble_steps, "atmosphere-members"),
+            ("waef", "pf", ensemble_steps, "wave-members"),
+        ]
+        if run.hour in (0, 12):
+            tasks.extend([
+                ("enfo", "em", ens_00_12, "atmosphere-mean"),
+                ("enfo", "es", ens_00_12, "atmosphere-spread"),
+                ("enfo", "ep", ep_instant, "atmosphere-probabilities-instant"),
+                ("enfo", "ep", ep_daily, "atmosphere-probabilities-daily"),
+                ("waef", "ep", ep_instant, "wave-probabilities-instant"),
+            ])
+        return tasks
+
+    if model_key == "ecmwf_aifs":
+        return [
+            ("oper", "fc", aifs_steps, "atmosphere"),
+            ("wave", "fc", aifs_steps, "wave"),
+        ]
+
+    if model_key == "ecmwf_aifs_ens":
+        return [
+            ("enfo", "cf", aifs_steps, "atmosphere-control"),
+            ("enfo", "pf", aifs_steps, "atmosphere-members"),
+            ("enfo", "em", aifs_steps, "atmosphere-mean"),
+            ("enfo", "es", aifs_steps, "atmosphere-spread"),
+            ("waef", "cf", aifs_steps, "wave-control"),
+            ("waef", "pf", aifs_steps, "wave-members"),
+            ("enfo", "ep", ep_instant, "atmosphere-probabilities-instant"),
+            ("enfo", "ep", ep_daily, "atmosphere-probabilities-daily"),
+            ("enfo", "ep", ep_averaged, "atmosphere-probabilities-averaged"),
+            ("waef", "ep", ep_instant, "wave-probabilities-instant"),
+            ("waef", "ep", ep_averaged, "wave-probabilities-averaged"),
+        ]
+
+    raise ValueError(f"Modelo ECMWF desconhecido: {model_key}")
+
+
 def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
                    requested: list[int],
                    process_file: Callable[[Path], None] | None = None
                    ) -> tuple[list[Path], list[int], list[str]]:
-    """Retrieve every available ECMWF parameter/level for each native step.
+    """Download every available field in each documented ECMWF product stream.
 
-    EPS and AIFS-ENS publish ensemble summary products (mean, spread and
-    probabilities) here; perturbation members are not duplicated into every
-    regional JSON. The catalogue documents that aggregation choice explicitly.
+    The requests do not specify param/levelist/number, so every published
+    parameter, level and (for PF products) ensemble member is returned.
     """
     from ecmwf.opendata import Client
 
-    if model_key == "ecmwf_ifs":
-        upstream_model = "ifs"
-        products = (("oper", "fc", "all"), ("wave", "fc", "all"))
-    elif model_key == "ecmwf_eps":
-        upstream_model = "ifs"
-        products = (
-            ("enfo", "cf", "all"), ("enfo", "em", "all"),
-            ("enfo", "es", "all"), ("enfo", "ep", "12h"),
-            ("waef", "cf", "all"), ("waef", "pf", "all"),
-            ("waef", "ep", "12h"),
-        )
-    elif model_key == "ecmwf_aifs":
-        upstream_model = "aifs-single"
-        products = (("oper", "fc", "all"),)
-    elif model_key == "ecmwf_aifs_ens":
-        upstream_model = "aifs-ens"
-        products = (
-            ("enfo", "cf", "all"), ("enfo", "pf", "all"),
-            ("enfo", "ep", "12h"),
-        )
-    else:
-        raise ValueError(f"Modelo ECMWF desconhecido: {model_key}")
-
+    upstream_model = {
+        "ecmwf_ifs": "ifs",
+        "ecmwf_eps": "ifs",
+        "ecmwf_aifs": "aifs-single",
+        "ecmwf_aifs_ens": "aifs-ens",
+    }[model_key]
     client = Client(
         source="ecmwf",
         model=upstream_model,
@@ -174,44 +233,44 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     found_hours: set[int] = set()
     errors: list[str] = []
     run_date = run.strftime("%Y%m%d")
-    for lead in requested:
-        lead_downloaded = False
-        for stream, product_type, cadence in products:
-            if cadence == "12h" and (lead % 12 != 0 or run.hour not in (0, 12)):
-                continue
-            target = raw_dir / f"f{lead:03d}" / f"{stream}-{product_type}.grib2"
-            try:
-                if not target.is_file() or target.stat().st_size == 0:
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    client.retrieve(
-                        date=run_date,
-                        time=run.hour,
-                        stream=stream,
-                        type=product_type,
-                        step=lead,
-                        target=str(target),
-                    )
-                if target.is_file() and target.stat().st_size > 0:
-                    if process_file:
-                        process_file(target)
-                    else:
-                        downloaded.append(target)
-                    lead_downloaded = True
-                else:
-                    errors.append(
-                        f"F{lead:03d}/{product_type}: a API ECMWF não criou arquivo."
-                    )
-            except Exception as exc:
-                errors.append(
-                    f"F{lead:03d}/{product_type}: {type(exc).__name__}: {exc}"
+
+    for stream, product_type, steps, task_label in _ecmwf_tasks(model_key, run):
+        if not steps:
+            continue
+        step_is_bundle = len(steps) > 1
+        step_label = (
+            f"{steps[0]}-to-{steps[-1]}-bundle"
+            if step_is_bundle else str(steps[0])
+        )
+        safe_label = re.sub(r"[^A-Za-z0-9_.-]+", "-", task_label)
+        target = raw_dir / safe_label / f"{stream}-{product_type}-{step_label}.grib2"
+        try:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if not target.is_file() or target.stat().st_size == 0:
+                client.retrieve(
+                    date=run_date,
+                    time=run.hour,
+                    stream=stream,
+                    type=product_type,
+                    step=steps,
+                    target=str(target),
                 )
-                target.unlink(missing_ok=True)
-            time.sleep(0.15)
-        if lead_downloaded:
-            found_hours.add(lead)
-        else:
-            errors.append(f"F{lead:03d}: nenhum produto ECMWF disponível.")
+            if not target.is_file() or target.stat().st_size == 0:
+                raise RuntimeError("ECMWF API did not create a non-empty GRIB2 file.")
+            if process_file:
+                process_file(target)
+            else:
+                downloaded.append(target)
+            found_hours.update(_ecmwf_step_end(step) for step in steps)
+        except Exception as exc:
+            errors.append(
+                f"{stream}/{product_type}/{task_label}: {type(exc).__name__}: {exc}"
+            )
+            target.unlink(missing_ok=True)
+        time.sleep(0.2)
+
     return sorted(set(downloaded)), sorted(found_hours), errors
+
 
 
 def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
@@ -297,51 +356,68 @@ def list_grib_links(url: str) -> list[str]:
 def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
                  process_file: Callable[[Path], None] | None = None
                  ) -> tuple[list[Path], list[int], list[str]]:
-    if model_key == "cmc_gdps":
-        product_path = "model_gdps/15km"
-    else:
-        product_path = "ensemble/geps/grib2/raw"
-    # GDPS/GEPS são publicados em 00Z e 12Z. Para agendamentos 06Z/18Z,
-    # usar o ciclo de 12 horas imediatamente anterior.
+    # GDPS and GEPS both publish on the current Datamart /today tree.
+    # Both issue runs at 00Z/12Z; 06Z/18Z consumers use the latest prior run.
     source_run = run.replace(hour=0 if run.hour < 12 else 12)
-    date_text = source_run.strftime("%Y%m%d")
     cycle = f"{source_run.hour:02d}"
+    if model_key == "cmc_gdps":
+        product_types = ("model_gdps/15km",)
+    elif model_key == "cmc_geps":
+        # raw = every member; products = ensemble probabilities/statistics.
+        product_types = (
+            "ensemble/geps/grib2/raw",
+            "ensemble/geps/grib2/products",
+        )
+    else:
+        raise ValueError(f"Modelo ECCC desconhecido: {model_key}")
+
     downloaded: list[Path] = []
     found_hours: set[int] = set()
     errors: list[str] = []
     for lead in requested:
-        if model_key == "cmc_gdps":
-            base = f"https://dd.weather.gc.ca/today/{product_path}/{cycle}/{lead:03d}/"
+        lead_downloaded = False
+        for product_path in product_types:
+            base = (
+                f"https://dd.weather.gc.ca/today/{product_path}/"
+                f"{cycle}/{lead:03d}/"
+            )
+            try:
+                links = list_grib_links(base)
+                if not links:
+                    errors.append(
+                        f"{product_path}/F{lead:03d}: nenhum GRIB2 publicado neste ciclo."
+                    )
+                    continue
+                lead_dir = raw_dir / product_path.rsplit("/", 1)[-1] / f"f{lead:03d}"
+                lead_dir.mkdir(parents=True, exist_ok=True)
+                for index, url in enumerate(links):
+                    name = url.rsplit("/", 1)[-1]
+                    target = lead_dir / name
+                    try:
+                        if ensure_request(url, target, timeout=(20, 240)):
+                            lead_downloaded = True
+                            if process_file:
+                                process_file(target)
+                            else:
+                                downloaded.append(target)
+                    except Exception as exc:
+                        errors.append(
+                            f"{product_path}/F{lead:03d} {name}: {type(exc).__name__}: {exc}"
+                        )
+                    if index % 8 == 7:
+                        time.sleep(1)
+            except Exception as exc:
+                errors.append(
+                    f"{product_path}/F{lead:03d}: {type(exc).__name__}: {exc}"
+                )
+        if lead_downloaded:
+            found_hours.add(lead)
         else:
-            base = f"https://dd.weather.gc.ca/{date_text}/WXO-DD/{product_path}/{cycle}/{lead:03d}/"
-        try:
-            links = list_grib_links(base)
-            if not links:
-                errors.append(f"F{lead:03d}: nenhum GRIB2 publicado no Datamart para este ciclo.")
-                continue
-            lead_dir = raw_dir / f"f{lead:03d}"
-            lead_dir.mkdir(parents=True, exist_ok=True)
-            lead_downloaded = False
-            for index, url in enumerate(links):
-                name = url.rsplit("/", 1)[-1]
-                target = lead_dir / name
-                try:
-                    if ensure_request(url, target, timeout=(20, 240)):
-                        lead_downloaded = True
-                        if process_file:
-                            process_file(target)
-                        else:
-                            downloaded.append(target)
-                except Exception as exc:
-                    errors.append(f"F{lead:03d} {name}: {type(exc).__name__}: {exc}")
-                if index % 8 == 7:
-                    time.sleep(1)
-            if lead_downloaded:
-                found_hours.add(lead)
-        except Exception as exc:
-            errors.append(f"F{lead:03d} {type(exc).__name__}: {exc}")
-        time.sleep(0.25)
+            errors.append(f"F{lead:03d}: nenhum produto ECCC disponível.")
+        time.sleep(0.2)
+
     return sorted(set(downloaded)), sorted(found_hours), errors
+
 
 
 def collect_dwd(model_key: str, raw_dir: Path,
