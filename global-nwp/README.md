@@ -22,8 +22,8 @@ Um horário pode ter vários arquivos `partNNN` quando o modelo publica muitas v
 | \`ecmwf_eps\` | ECMWF / EPS (enfo) | ECMWF Open Data via Herbie | F360 em 00/12; F144 em 06/18 |
 | \`ecmwf_aifs\` | ECMWF / AIFS | ECMWF Open Data via Herbie | F360 |
 | \`ecmwf_aifs_ens\` | ECMWF / AIFS-ENS | ECMWF Open Data via Herbie | F360 |
-| \`icon_dwd\` | ICON / DWD | Catálogo DWD + DWD CDO weights | F180; saída regional em 0.125° |
-| \`icon_ai\` | ICON / AI (AICON) | Catálogo DWD + DWD CDO weights | F180; saída regional em 0.125° |
+| \`icon_dwd\` | ICON / DWD | Catálogo DWD + malha triangular nativa | F180; pontos regionais na malha triangular nativa (~13 km) |
+| \`icon_ai\` | ICON / AI (AICON) | Catálogo DWD + malha triangular nativa | F180; saída regional em 0.125° |
 | \`gfs\` | GFS / GEV3 (campos primários e secundários) | NOAA/NOMADS via Herbie | F384 |
 | \`gfs_ai\` | GFS / AI (AIGFS) | NOAA/NOMADS via Herbie | F384 |
 | \`gefs_ai\` | GEFS / AI (AIGEFS) | NOAA/NOMADS via Herbie; média e dispersão | F384 |
