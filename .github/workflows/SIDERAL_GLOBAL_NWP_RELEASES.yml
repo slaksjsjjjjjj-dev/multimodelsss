@@ -39,7 +39,6 @@ jobs:
           - ecmwf_aifs
           - ecmwf_aifs_ens
           - icon_dwd
-          - icon_eps
           - icon_ai
           - gfs
           - gfs_ai
