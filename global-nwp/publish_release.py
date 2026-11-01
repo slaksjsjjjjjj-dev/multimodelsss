@@ -28,8 +28,12 @@ def main() -> int:
     output_root.mkdir(parents=True, exist_ok=True)
     date_stamp = args.date or datetime.now(timezone.utc).strftime("%Y%m%d")
     cycle_stamp = args.cycle or "auto"
+    source_catalog = json.loads((Path(__file__).resolve().parent / "catalog.json").read_text(encoding="utf-8"))
+    region_catalog = json.loads((Path(__file__).resolve().parent / "regions.json").read_text(encoding="utf-8"))
     catalog = {
         "schema": "sideral-global-nwp-release-v1",
+        "model_definitions": source_catalog.get("models", []),
+        "region_definitions": region_catalog.get("regions", []),
         "run_date": date_stamp,
         "cycle_utc": cycle_stamp,
         "coverage": ["south_america", "south_pacific", "brazil_*", "argentina_*"],
@@ -107,6 +111,7 @@ def main() -> int:
         "models_with_regional_data": sum(1 for item in catalog["models"] if item["regions"]),
         "blocked_models": [item["model_key"] for item in catalog["models"] if item["status"] == "blocked"],
         "failed_models": [item["model_key"] for item in catalog["models"] if item["status"] == "failed"],
+        "partial_models": [item["model_key"] for item in catalog["models"] if item["status"] == "partial"],
         "regional_assets": len(catalog["regional_assets"]),
         "total_frames": sum(item["frame_count"] for item in catalog["regional_assets"]),
         "total_fields": sum(item["field_count"] for item in catalog["regional_assets"]),
