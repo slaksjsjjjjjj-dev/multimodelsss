@@ -69,7 +69,7 @@
       "max_forecast_hour": 180,
       "ensemble": false,
       "status": "configured",
-      "source": "https://opendata.dwd.de/weather/nwp/",
+      "source": "https://opendata.dwd.de/weather/nwp/v1/m/",
       "native_grid": "ICON icosahedral triangular mesh",
       "notes": "Publicado no grid nativo triangular; o arquivador recorta pontos por latitude/longitude GRIB sem interpolação/regrade."
     },
@@ -84,7 +84,7 @@
       "max_forecast_hour": 180,
       "ensemble": false,
       "status": "configured",
-      "source": "https://opendata.dwd.de/weather/nwp/",
+      "source": "https://opendata.dwd.de/weather/nwp/v1/m/",
       "native_grid": "ICON icosahedral triangular mesh",
       "notes": "Publicado no grid nativo triangular; o arquivador recorta pontos por latitude/longitude GRIB sem interpolação/regrade."
     },
