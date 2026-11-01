@@ -44,7 +44,7 @@ def utc_run(date_text: str | None, cycle_text: str | None) -> datetime:
 def leads_for(model_key: str, run: datetime) -> list[int]:
     if model_key == "ecmwf_ifs":
         if run.hour in (0, 12):
-            return list(range(0, 145, 3)) + list(range(150, 241, 6))
+            return list(range(0, 145, 3)) + list(range(150, 361, 6))
         return list(range(0, 91, 3))
     if model_key == "ecmwf_eps":
         if run.hour in (0, 12):
