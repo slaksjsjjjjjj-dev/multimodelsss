@@ -275,12 +275,15 @@ jobs:
           RUN_CYCLE: ${{ inputs.run_cycle }}
         run: |
           set -euo pipefail
-          DATE_STAMP="${RUN_DATE:-$(date -u +%Y%m%d)}"
+          if [[ -n "${RUN_DATE:-}" ]]; then
+            DATE_STAMP="$RUN_DATE"
+          else
+            DATE_STAMP="$(python -c 'from datetime import datetime, timezone, timedelta; print((datetime.now(timezone.utc)-timedelta(hours=9)).strftime("%Y%m%d"))')"
+          fi
           if [[ -n "${RUN_CYCLE:-}" && "${RUN_CYCLE:-}" != "auto" ]]; then
             CYCLE_STAMP="$RUN_CYCLE"
           else
-            HOUR="$(date -u +%H)"
-            CYCLE_STAMP="$(printf '%02d' "$((10#$HOUR / 6 * 6))")"
+            CYCLE_STAMP="$(python -c 'from datetime import datetime, timezone, timedelta; d=datetime.now(timezone.utc)-timedelta(hours=9); print(f"{(d.hour//6)*6:02d}")')"
           fi
           TAG="sideral-global-nwp-${DATE_STAMP}-${CYCLE_STAMP}-${GITHUB_RUN_ID}"
           cat > /tmp/release-notes.md <<EOF
