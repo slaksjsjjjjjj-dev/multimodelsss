@@ -7,7 +7,7 @@ on:
       - "global-nwp/**"
       - ".github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml"
   schedule:
-    - cron: "15 3,9,15,21 * * *"
+    - cron: "20 9,21 * * *"
   workflow_dispatch:
     inputs:
       run_date:
