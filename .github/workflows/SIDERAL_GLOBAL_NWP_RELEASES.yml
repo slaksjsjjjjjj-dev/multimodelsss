@@ -59,7 +59,14 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y libeccodes0 libeccodes-dev
+          sudo apt-get install -y libeccodes0 libeccodes-dev cdo
+          mkdir -p global-nwp/dwd-weights
+          curl --fail --location --retry 5 --retry-all-errors --max-time 600 \
+            https://opendata.dwd.de/weather/lib/cdo/ICON_GLOBAL2WORLD_025_EASY.tar.bz2 \
+            --output /tmp/icon-global-weights.tar.bz2
+          tar -xjf /tmp/icon-global-weights.tar.bz2 -C global-nwp/dwd-weights
+          test -n "$(find global-nwp/dwd-weights -name target_grid_world_025.txt -print -quit)"
+          test -n "$(find global-nwp/dwd-weights -name weights_icogl2world_025.nc -print -quit)"
           python -m pip install --upgrade pip wheel setuptools
           python -m pip install \
             "herbie-data>=2026.10.0" \
