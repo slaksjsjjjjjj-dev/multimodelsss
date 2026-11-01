@@ -169,7 +169,9 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
             found_hours.add(lead)
             downloaded.extend(lead_files)
         else:
-            print(f"[{model_key}] F{lead:03d}: fonte ainda não publicou/arquivo indisponível.")
+            message = f"F{lead:03d}: nenhuma das fontes/product streams devolveu arquivo."
+            print(f"[{model_key}] {message}")
+            errors.append(message)
     return sorted(set(downloaded)), sorted(found_hours), errors
 
 
@@ -214,6 +216,7 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
         try:
             links = list_grib_links(base)
             if not links:
+                errors.append(f"F{lead:03d}: nenhum GRIB2 publicado no Datamart para este ciclo.")
                 continue
             lead_dir = raw_dir / f"f{lead:03d}"
             lead_dir.mkdir(parents=True, exist_ok=True)
@@ -280,7 +283,12 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
                             # os membros e passos disponíveis.
                             plan = query.resolve(require="partial")
                             if not plan.assets:
+                                errors.append(f"{parameter}/{level_suffix}: nenhum asset disponível.")
                                 continue
+                            if getattr(plan, "missing", None):
+                                errors.append(
+                                    f"{parameter}/{level_suffix}: {len(plan.missing)} combinações de nível/membro/validade ausentes no run."
+                                )
                             plan.download(str(target))
                             if target.is_file() and target.stat().st_size > 0:
                                 downloaded.append(target)
@@ -609,7 +617,7 @@ def main() -> int:
         return 0
 
     requested = [int(x) for x in args.hours.split(",") if x.strip()] if args.hours else leads_for(model_key, run)
-    if not requested and model_key not in {"icon_dwd", "icon_eps", "icon_ai"}:
+    if not requested and model_key not in {"icon_dwd", "icon_ai"}:
         write_model_status(model_output / "model_status.json", model_key, "failed", run, "Nenhuma validade configurada.")
         return 1
 
@@ -638,6 +646,16 @@ def main() -> int:
         written = finalize_spool(spool_root, output_root, model_key, run, spec, stats)
         if not written:
             raise RuntimeError("Nenhum campo GRIB2 foi convertido para as regiões configuradas.")
+        regional_errors = stats.get("_errors", {}).get("items", [])
+        all_errors = errors + regional_errors
+        for item in written:
+            manifest_path = output_root / model_key / item["region"] / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["collection_status"] = "complete" if not all_errors else "partial"
+            manifest["collection_errors_count"] = len(all_errors)
+            manifest_path.write_text(
+                json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
         summary = {
             "run_utc": run.isoformat(),
             "raw_files": len(raw_files),
@@ -650,10 +668,12 @@ def main() -> int:
             json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         total_fields = sum(item["field_count"] for item in written)
+        final_status = "published-ready" if not all_errors else "partial"
         write_model_status(
-            model_output / "model_status.json", model_key, "published-ready", run,
-            f"{len(written)} regiões preparadas; {total_fields} campos GRIB convertidos para JSON.",
-            errors + stats.get("_errors", {}).get("items", [])
+            model_output / "model_status.json", model_key, final_status, run,
+            f"{len(written)} regiões preparadas; {total_fields} campos GRIB convertidos para JSON; "
+            f"{len(all_errors)} ocorrências de coleta/regrade registradas.",
+            all_errors
         )
         return 0
     except Exception as exc:
