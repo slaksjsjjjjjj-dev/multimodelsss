@@ -45,7 +45,7 @@ def leads_for(model_key: str, run: datetime) -> list[int]:
     if model_key == "ecmwf_ifs":
         if run.hour in (0, 12):
             return list(range(0, 145, 3)) + list(range(150, 361, 6))
-        return list(range(0, 91, 3))
+        return list(range(0, 145, 3))
     if model_key == "ecmwf_eps":
         if run.hour in (0, 12):
             return list(range(0, 145, 3)) + list(range(150, 361, 6))
@@ -141,16 +141,24 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     from ecmwf.opendata import Client
 
     if model_key == "ecmwf_ifs":
-        upstream_model, stream, products = "ifs", "oper", (("fc", "all"),)
+        upstream_model = "ifs"
+        products = (("oper", "fc", "all"), ("wave", "fc", "all"))
     elif model_key == "ecmwf_eps":
-        upstream_model, stream, products = "ifs", "enfo", (
-            ("cf", "all"), ("em", "all"), ("es", "all"), ("ep", "12h")
+        upstream_model = "ifs"
+        products = (
+            ("enfo", "cf", "all"), ("enfo", "em", "all"),
+            ("enfo", "es", "all"), ("enfo", "ep", "12h"),
+            ("waef", "cf", "all"), ("waef", "pf", "all"),
+            ("waef", "ep", "12h"),
         )
     elif model_key == "ecmwf_aifs":
-        upstream_model, stream, products = "aifs-single", "oper", (("fc", "all"),)
+        upstream_model = "aifs-single"
+        products = (("oper", "fc", "all"),)
     elif model_key == "ecmwf_aifs_ens":
-        upstream_model, stream, products = "aifs-ens", "enfo", (
-            ("cf", "all"), ("pf", "all"), ("ep", "12h")
+        upstream_model = "aifs-ens"
+        products = (
+            ("enfo", "cf", "all"), ("enfo", "pf", "all"),
+            ("enfo", "ep", "12h"),
         )
     else:
         raise ValueError(f"Modelo ECMWF desconhecido: {model_key}")
@@ -168,10 +176,10 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     run_date = run.strftime("%Y%m%d")
     for lead in requested:
         lead_downloaded = False
-        for product_type, cadence in products:
+        for stream, product_type, cadence in products:
             if cadence == "12h" and (lead % 12 != 0 or run.hour not in (0, 12)):
                 continue
-            target = raw_dir / f"f{lead:03d}" / f"{product_type}.grib2"
+            target = raw_dir / f"f{lead:03d}" / f"{stream}-{product_type}.grib2"
             try:
                 if not target.is_file() or target.stat().st_size == 0:
                     target.parent.mkdir(parents=True, exist_ok=True)
