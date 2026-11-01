@@ -25,10 +25,6 @@ permissions:
   contents: write
   actions: read
 
-concurrency:
-  group: sideral-global-nwp-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
-
 jobs:
   validate:
     if: ${{ github.event_name == 'push' }}
@@ -80,6 +76,9 @@ jobs:
   collect:
     if: ${{ github.event_name != 'push' }}
     name: "Coletar ${{ matrix.model }}"
+    concurrency:
+      group: sideral-global-nwp-collect-${{ github.ref }}-${{ matrix.model }}
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     timeout-minutes: 350
     strategy:
