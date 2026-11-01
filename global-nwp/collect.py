@@ -231,7 +231,6 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
 def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], list[str]]:
     upstream = {
         "icon_dwd": "icon",
-        "icon_eps": "icon-eps",
         "icon_ai": "aicon",
     }[model_key]
     try:
