@@ -9,13 +9,13 @@
       "provider": "ECMWF",
       "family": "ifs",
       "adapter": "ecmwf-opendata",
-      "product": "IFS oper/fc (atmosfera) + wave/fc (ondas), todos os parâmetros e níveis",
+      "product": "IFS oper/fc (atmosfera) + wave/fc (ondas); todos os parâmetros e níveis disponíveis",
       "resolution": "0.25°",
       "max_forecast_hour": 360,
       "ensemble": false,
       "status": "configured",
       "source": "https://www.ecmwf.int/en/forecasts/datasets/open-data",
-      "notes": "00/12: F000–144 de 3h e F150–360 de 6h; 06/18: F000–144 de 3h. Inclui os streams atmosférico oper e oceânico wave."
+      "notes": "Atmosfera: F000–144 de 3h e F150–240 de 6h em 00/12; F000–090 de 3h em 06/18. Ondas: F000–144 de 3h e F150–360 de 6h em 00/12; F000–144 de 3h em 06/18. Desde IFS Cycle 50r1 os streams 06/18 são oper/wave (scda/scwv descontinuados)."
     },
     {
       "key": "ecmwf_eps",
@@ -23,13 +23,13 @@
       "provider": "ECMWF",
       "family": "ifs",
       "adapter": "ecmwf-opendata",
-      "product": "EPS enfo CF/EM/ES/EP + waef (ondas) nos produtos disponíveis",
+      "product": "IFS ENS: enfoque/pf, em, es, ep; waef/pf e waef/ep para ondas; todos parâmetros e membros disponíveis",
       "resolution": "0.25°",
       "max_forecast_hour": 360,
       "ensemble": true,
       "status": "configured",
       "source": "https://www.ecmwf.int/en/forecasts/datasets/open-data",
-      "notes": "Todos os parâmetros/níveis entregues nos produtos de controle, média, dispersão e probabilidades; inclui os produtos de ondas disponíveis. Produtos EP são consultados nos ciclos 00/12 e steps próprios."
+      "notes": "PF captura todos os membros; EM/ES e EP são coletados nos produtos/horários publicados. EP está disponível nos ciclos 00/12; os arquivos são recolhidos por validade."
     },
     {
       "key": "ecmwf_aifs",
@@ -37,7 +37,7 @@
       "provider": "ECMWF",
       "family": "aifs",
       "adapter": "ecmwf-opendata",
-      "product": "AIFS Single — todos os parâmetros e níveis disponíveis",
+      "product": "AIFS Single: oper/fc (atmosfera) + wave/fc (ondas); todos parâmetros e níveis",
       "resolution": "0.25°",
       "max_forecast_hour": 360,
       "ensemble": false,
@@ -50,13 +50,13 @@
       "provider": "ECMWF",
       "family": "aifs",
       "adapter": "ecmwf-opendata",
-      "product": "AIFS-ENS — membros perturbados PF, controle CF e probabilidades EP",
+      "product": "AIFS-ENS: enfo/cf,pf,em,es,ep; waef/cf,pf,ep; todos parâmetros e membros",
       "resolution": "0.25°",
       "max_forecast_hour": 360,
       "ensemble": true,
       "status": "configured",
       "source": "https://www.ecmwf.int/en/forecasts/datasets/aifs-machine-learning-data",
-      "notes": "AIFS-ENS recolhe CF, PF (sem filtrar número de membro, para incluir todos os membros publicados) e EP nos ciclos 00/12. Todos os parâmetros e níveis destes produtos são preservados."
+      "notes": "Todos os membros PF; controle CF; média/dispersão EM/ES; probabilidades instantâneas, diárias e agregadas nos intervalos publicados."
     },
     {
       "key": "icon_dwd",
@@ -162,8 +162,8 @@
       "ensemble": true,
       "status": "configured",
       "source": "https://dd.weather.gc.ca/",
-      "product": "GEPS raw — todos os campos e membros do ensemble",
-      "notes": "F000–F192 em 3 h; F198–F384 em 6 h; em ciclos 00Z de segunda e quinta, extensão F390–F936 em 6 h."
+      "product": "GEPS raw (todos os membros) + products (probabilidades, percentis, média, mediana e desvio)",
+      "notes": "Ciclos 00/12; F000–384; segunda e quinta em 00Z até F936. Recolhe os diretórios raw e products da árvore /today."
     },
     {
       "key": "ukmet",
@@ -185,6 +185,7 @@
     "UKMET depende de assinatura/produto Global Atmospheric no Met Office Weather DataHub e chave de API fornecida pelo proprietário do repositório.",
     "CMC GEPS é coletado do Datamart raw para incluir os arquivos de todos os membros; nas rodadas 00Z de segunda/quinta podem existir validades estendidas até F936.",
     "ECMWF EPS: publica CF, EM, ES e EP; EP somente nos ciclos 00/12 e steps disponíveis a cada 12 h. AIFS-ENS: publica PF (todos os membros, sem filtrar number), CF e EP (00/12).",
-    "ECMWF IFS 0.25 inclui streams oper/fc (atmosfera) e wave/fc (ondas); EPS inclui enfo CF/EM/ES/EP e waef (ondas) quando disponíveis. O AIFS-ENS coleta CF, PF sem filtro de membro e EP nos ciclos 00/12."
+    "IFS atmospheric and wave products use different maximum forecast hours; the region manifests store only leads that have fields.",
+    "CMC GEPS releases both raw all-member GRIB fields and processed probabilistic/statistical products from the official /today Datamart tree."
   ]
 }
