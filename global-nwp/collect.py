@@ -63,7 +63,12 @@ def leads_for(model_key: str, run: datetime) -> list[int]:
     if model_key == "cmc_gdps":
         return list(range(0, 85)) + list(range(87, 241, 3))
     if model_key == "cmc_geps":
-        return list(range(0, 385, 3))
+        # GEPS raw: 000–192 h em passos de 3 h; 198–384 h em passos de 6 h.
+        # Em 00Z de segunda/quinta, o produto estendido avança até F936.
+        leads = list(range(0, 193, 3)) + list(range(198, 385, 6))
+        if run.hour == 0 and run.weekday() in (0, 3):
+            leads.extend(range(390, 937, 6))
+        return leads
     if model_key == "ukmet":
         return list(range(0, 169, 3))
     return []
@@ -202,7 +207,7 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
     if model_key == "cmc_gdps":
         product_path = "model_gdps/15km"
     else:
-        product_path = "ensemble/geps/grib2/products"
+        product_path = "ensemble/geps/grib2/raw"
     # GDPS/GEPS são publicados em 00Z e 12Z. Para agendamentos 06Z/18Z,
     # usar o ciclo de 12 horas imediatamente anterior, sem inventar uma rodada.
     source_run = run.replace(hour=0 if run.hour < 12 else 12)
