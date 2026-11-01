@@ -222,7 +222,12 @@ jobs:
         run: |
           set -euo pipefail
           DATE_STAMP="${RUN_DATE:-$(date -u +%Y%m%d)}"
-          CYCLE_STAMP="${RUN_CYCLE:-auto}"
+          if [[ -n "${RUN_CYCLE:-}" && "${RUN_CYCLE:-}" != "auto" ]]; then
+            CYCLE_STAMP="$RUN_CYCLE"
+          else
+            HOUR="$(date -u +%H)"
+            CYCLE_STAMP="$(printf '%02d' "$((10#$HOUR / 6 * 6))")"
+          fi
           TAG="sideral-global-nwp-${DATE_STAMP}-${CYCLE_STAMP}-${GITHUB_RUN_ID}"
           cat > /tmp/release-notes.md <<EOF
           Publicação Sideral de modelos globais e variantes de IA.
