@@ -297,8 +297,8 @@ def collect_dwd(model_key: str, raw_dir: Path) -> tuple[list[Path], list[int], l
         # ICON Global/AICON são publicados na grade triangular nativa. O pacote
         # de pesos oficiais do DWD cria uma grade lon/lat regular para os recortes.
         weight_dir = Path(os.environ.get("DWD_WEIGHT_DIR", str(ROOT / "dwd-weights")))
-        target_grid = next(weight_dir.rglob("target_grid_world_025.txt"), None)
-        weights_file = next(weight_dir.rglob("weights_icogl2world_025.nc"), None)
+        target_grid = next(weight_dir.rglob("target_grid_world_0125.txt"), None)
+        weights_file = next(weight_dir.rglob("weights_icogl2world_0125.nc"), None)
         if target_grid is None or weights_file is None:
             raise RuntimeError("Pesos oficiais de regrade ICON Global do DWD não encontrados.")
         regridded_dir = raw_dir / "latlon-0p25"
@@ -383,7 +383,7 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                     lead, run_utc, valid_utc = lead_from_message(gid)
                     if lead is None or lead < 0 or lead > max_hour:
                         continue
-                    if requested and lead not in requested and model_key not in {"icon_dwd", "icon_eps", "icon_ai"}:
+                    if requested and lead not in requested and model_key not in {"icon_dwd", "icon_ai"}:
                         continue
                     lats = np.asarray(codes_get_array(gid, "latitudes"), dtype=np.float64)
                     lons = np.asarray(codes_get_array(gid, "longitudes"), dtype=np.float64)
