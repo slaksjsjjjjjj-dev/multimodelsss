@@ -156,21 +156,6 @@ jobs:
             "numpy>=1.26,<3" \
             "requests>=2.31"
 
-      - name: Preparar CDO e pesos oficiais da grade ICON Global
-        if: ${{ matrix.model == 'icon_dwd' || matrix.model == 'icon_ai' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y cdo
-          mkdir -p global-nwp/dwd-weights
-          curl --fail --location --retry 5 --retry-all-errors --max-time 600 \
-            https://opendata.dwd.de/weather/lib/cdo/ICON_GLOBAL2WORLD_0125_EASY.tar.bz2 \
-            --output /tmp/icon-global-weights.tar.bz2
-          tar -xjf /tmp/icon-global-weights.tar.bz2 -C global-nwp/dwd-weights
-          test -n "$(find global-nwp/dwd-weights -name target_grid_world_0125.txt -print -quit)"
-          test -n "$(find global-nwp/dwd-weights -name weights_icogl2world_0125.nc -print -quit)"
-
       - name: Coletar todas as variáveis/níveis e validades publicadas
         id: collect
         continue-on-error: true
@@ -178,7 +163,6 @@ jobs:
           MODEL_KEY: ${{ matrix.model }}
           RUN_DATE: ${{ inputs.run_date }}
           RUN_CYCLE: ${{ inputs.run_cycle }}
-          DWD_WEIGHT_DIR: global-nwp/dwd-weights
         shell: bash
         run: |
           set -euo pipefail
