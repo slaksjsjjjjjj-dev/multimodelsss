@@ -26,8 +26,9 @@ def main() -> int:
     source_root = Path(args.input)
     output_root = Path(args.output)
     output_root.mkdir(parents=True, exist_ok=True)
-    date_stamp = args.date or datetime.now(timezone.utc).strftime("%Y%m%d")
-    cycle_stamp = args.cycle or "auto"
+    now = datetime.now(timezone.utc)
+    date_stamp = args.date or now.strftime("%Y%m%d")
+    cycle_stamp = args.cycle or f"{(now.hour // 6) * 6:02d}"
     source_catalog = json.loads((Path(__file__).resolve().parent / "catalog.json").read_text(encoding="utf-8"))
     region_catalog = json.loads((Path(__file__).resolve().parent / "regions.json").read_text(encoding="utf-8"))
     catalog = {
