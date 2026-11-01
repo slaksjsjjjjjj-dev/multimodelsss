@@ -708,44 +708,61 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
             fields_path = field_dir / "fields.ndjson"
             if not fields_path.is_file() or fields_path.stat().st_size == 0:
                 continue
-            out_path = forecast_dir / f"f{lead:03d}.json.gz"
-            header = {
-                "schema": "sideral-global-nwp-field-frame-v1",
-                "model_key": model_key,
-                "model": catalog_spec["label"],
-                "provider": catalog_spec["provider"],
-                "resolution": catalog_spec.get("resolution"),
-                "run_utc": entry.get("run_utc") or run.isoformat(),
-                "forecast_hour": lead,
-                "valid_time": entry.get("valid_time"),
-                "region": region_id,
-                "coordinate_system": "WGS84",
-                "field_count": entry["field_count"],
-            }
-            with gzip.open(out_path, "wt", encoding="utf-8", compresslevel=6) as compressed:
-                compressed.write("{")
-                compressed.write('"metadata":')
-                compressed.write(json.dumps(header, ensure_ascii=False, separators=(",", ":")))
-                compressed.write(',"grids":')
-                compressed.write(json.dumps(grids, ensure_ascii=False, separators=(",", ":")))
-                compressed.write(',"fields":[')
-                first = True
-                with fields_path.open("r", encoding="utf-8") as source:
-                    for line in source:
-                        line = line.strip()
+
+            # Keep each JSON frame small enough to be consumed and attached as
+            # a GitHub Release asset. Large ensemble leads are split by fields.
+            max_fields_per_part = 100
+            with fields_path.open("r", encoding="utf-8") as source:
+                total_fields = sum(1 for line in source if line.strip())
+            part_count = (total_fields + max_fields_per_part - 1) // max_fields_per_part
+
+            with fields_path.open("r", encoding="utf-8") as source:
+                for part_number in range(1, part_count + 1):
+                    part_lines = []
+                    while len(part_lines) < max_fields_per_part:
+                        line = source.readline()
                         if not line:
-                            continue
-                        if not first:
-                            compressed.write(",")
-                        compressed.write(line)
-                        first = False
-                compressed.write("]}")
-            validity.append({
-                "forecast_hour": lead,
-                "valid_time": entry.get("valid_time"),
-                "file": f"forecast/f{lead:03d}.json.gz",
-                "field_count": entry["field_count"],
-            })
+                            break
+                        line = line.strip()
+                        if line:
+                            part_lines.append(line)
+                    if not part_lines:
+                        break
+
+                    file_name = f"f{lead:03d}-part{part_number:03d}.json.gz"
+                    out_path = forecast_dir / file_name
+                    header = {
+                        "schema": "sideral-global-nwp-field-frame-v1",
+                        "model_key": model_key,
+                        "model": catalog_spec["label"],
+                        "provider": catalog_spec["provider"],
+                        "resolution": catalog_spec.get("resolution"),
+                        "run_utc": entry.get("run_utc") or run.isoformat(),
+                        "forecast_hour": lead,
+                        "valid_time": entry.get("valid_time"),
+                        "region": region_id,
+                        "coordinate_system": "WGS84",
+                        "field_count": len(part_lines),
+                        "part": part_number,
+                        "part_count": part_count,
+                    }
+                    with gzip.open(out_path, "wt", encoding="utf-8", compresslevel=6) as compressed:
+                        compressed.write("{")
+                        compressed.write('"metadata":')
+                        compressed.write(json.dumps(header, ensure_ascii=False, separators=(",", ":")))
+                        compressed.write(',"grids":')
+                        compressed.write(json.dumps(grids, ensure_ascii=False, separators=(",", ":")))
+                        compressed.write(',"fields":[')
+                        compressed.write(",".join(part_lines))
+                        compressed.write("]}")
+                    validity.append({
+                        "forecast_hour": lead,
+                        "valid_time": entry.get("valid_time"),
+                        "file": f"forecast/{file_name}",
+                        "field_count": len(part_lines),
+                        "part": part_number,
+                        "part_count": part_count,
+                    })
         if not validity:
             continue
         manifest = {
@@ -755,10 +772,16 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
             "provider": catalog_spec["provider"],
             "source": catalog_spec.get("source"),
             "resolution": catalog_spec.get("resolution"),
-            "run_utc": run.isoformat(),
-            "cycle_utc": f"{run.hour:02d}",
+            "run_utc": next(
+                (entry.get("run_utc") for entry in leads.values() if entry.get("run_utc")),
+                run.isoformat(),
+            ),
+            "cycle_utc": next(
+                (str(entry.get("run_utc"))[11:13] for entry in leads.values() if entry.get("run_utc")),
+                f"{run.hour:02d}",
+            ),
             "region": region,
-            "forecast_hours": [item["forecast_hour"] for item in validity],
+            "forecast_hours": sorted({item["forecast_hour"] for item in validity}),
             "validities": validity,
             "variables": inventory.get(region_id, {}).get("variables", []),
             "variable_level_count": len(inventory.get(region_id, {}).get("variables", [])),
