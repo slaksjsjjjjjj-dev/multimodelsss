@@ -1,19 +1,152 @@
 {
   "schema": "sideral-global-nwp-regions-v1",
   "coordinate_system": "WGS84",
-  "bounds_order": ["west", "south", "east", "north"],
+  "bounds_order": [
+    "west",
+    "south",
+    "east",
+    "north"
+  ],
   "regions": [
-    {"id":"south_america","label":"América do Sul","bounds":[-85,-60,-30,15]},
-    {"id":"south_pacific","label":"Pacífico Sul","bounds":[-160,-60,-70,15]},
-    {"id":"brazil_north","label":"Brasil — Norte","bounds":[-74,-10,-44,5]},
-    {"id":"brazil_northeast","label":"Brasil — Nordeste","bounds":[-49,-18,-34,2]},
-    {"id":"brazil_center_west","label":"Brasil — Centro-Oeste","bounds":[-62,-25,-45,-7]},
-    {"id":"brazil_southeast","label":"Brasil — Sudeste","bounds":[-54,-26,-39,-14]},
-    {"id":"brazil_south","label":"Brasil — Sul","bounds":[-58,-34,-48,-22]},
-    {"id":"argentina_noa","label":"Argentina — NOA","bounds":[-70,-31,-62,-21]},
-    {"id":"argentina_nea","label":"Argentina — NEA","bounds":[-65,-33,-53,-22]},
-    {"id":"argentina_cuyo","label":"Argentina — Cuyo","bounds":[-70,-38,-64,-29]},
-    {"id":"argentina_pampas","label":"Argentina — Pampa","bounds":[-66,-41,-57,-32]},
-    {"id":"argentina_patagonia","label":"Argentina — Patagônia","bounds":[-74,-55,-63,-39]}
+    {
+      "id": "south_america",
+      "label": "América do Sul",
+      "bounds": [
+        -85,
+        -60,
+        -30,
+        15
+      ]
+    },
+    {
+      "id": "south_pacific",
+      "label": "Pacífico Sul",
+      "bounds": [
+        -160,
+        -60,
+        -70,
+        15
+      ]
+    },
+    {
+      "id": "south_pacific_central",
+      "label": "Pacífico Sul — Central",
+      "bounds": [
+        -180,
+        -60,
+        -160,
+        15
+      ]
+    },
+    {
+      "id": "south_pacific_west",
+      "label": "Pacífico Sul — Ocidental",
+      "bounds": [
+        120,
+        -60,
+        180,
+        15
+      ]
+    },
+    {
+      "id": "brazil_north",
+      "label": "Brasil — Norte",
+      "bounds": [
+        -74,
+        -10,
+        -44,
+        5
+      ]
+    },
+    {
+      "id": "brazil_northeast",
+      "label": "Brasil — Nordeste",
+      "bounds": [
+        -49,
+        -18,
+        -34,
+        2
+      ]
+    },
+    {
+      "id": "brazil_center_west",
+      "label": "Brasil — Centro-Oeste",
+      "bounds": [
+        -62,
+        -25,
+        -45,
+        -7
+      ]
+    },
+    {
+      "id": "brazil_southeast",
+      "label": "Brasil — Sudeste",
+      "bounds": [
+        -54,
+        -26,
+        -39,
+        -14
+      ]
+    },
+    {
+      "id": "brazil_south",
+      "label": "Brasil — Sul",
+      "bounds": [
+        -58,
+        -34,
+        -48,
+        -22
+      ]
+    },
+    {
+      "id": "argentina_noa",
+      "label": "Argentina — NOA",
+      "bounds": [
+        -70,
+        -31,
+        -62,
+        -21
+      ]
+    },
+    {
+      "id": "argentina_nea",
+      "label": "Argentina — NEA",
+      "bounds": [
+        -65,
+        -33,
+        -53,
+        -22
+      ]
+    },
+    {
+      "id": "argentina_cuyo",
+      "label": "Argentina — Cuyo",
+      "bounds": [
+        -70,
+        -38,
+        -64,
+        -29
+      ]
+    },
+    {
+      "id": "argentina_pampas",
+      "label": "Argentina — Pampa",
+      "bounds": [
+        -66,
+        -41,
+        -57,
+        -32
+      ]
+    },
+    {
+      "id": "argentina_patagonia",
+      "label": "Argentina — Patagônia",
+      "bounds": [
+        -74,
+        -55,
+        -63,
+        -39
+      ]
+    }
   ]
 }
