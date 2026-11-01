@@ -1,0 +1,27 @@
+{
+  "schema": "sideral-global-nwp-catalog-v1",
+  "area_of_interest": "South America and South Pacific",
+  "output": "regional JSON compressed as .json.gz, grouped by forecast lead and published in GitHub Releases",
+  "models": [
+    {"key":"ecmwf_ifs","label":"ECMWF / IFS","provider":"ECMWF","family":"ifs","adapter":"herbie","product":"oper","resolution":"0.25°","max_forecast_hour":360,"ensemble":false,"status":"configured","source":"https://www.ecmwf.int/en/forecasts/datasets/open-data"},
+    {"key":"ecmwf_eps","label":"ECMWF / EPS","provider":"ECMWF","family":"ifs","adapter":"herbie","product":"enfo","resolution":"0.25°","max_forecast_hour":360,"ensemble":true,"status":"configured","source":"https://www.ecmwf.int/en/forecasts/datasets/open-data"},
+    {"key":"ecmwf_aifs","label":"ECMWF / AIFS","provider":"ECMWF","family":"aifs","adapter":"herbie","product":"oper","resolution":"0.25°","max_forecast_hour":360,"ensemble":false,"status":"configured","source":"https://www.ecmwf.int/en/forecasts/datasets/aifs-machine-learning-data"},
+    {"key":"ecmwf_aifs_ens","label":"ECMWF / AIFS-ENS","provider":"ECMWF","family":"aifs","adapter":"herbie","product":"enfo","resolution":"0.25°","max_forecast_hour":360,"ensemble":true,"status":"configured","source":"https://www.ecmwf.int/en/forecasts/datasets/aifs-machine-learning-data"},
+    {"key":"icon_dwd","label":"ICON / DWD","provider":"DWD","family":"icon","adapter":"dwdopen","upstream_model":"icon","resolution":"native global grid","max_forecast_hour":180,"ensemble":false,"status":"configured","source":"https://opendata.dwd.de/weather/nwp/"},
+    {"key":"icon_eps","label":"ICON / EPS","provider":"DWD","family":"icon-eps","adapter":"dwdopen","upstream_model":"icon-eps","resolution":"native global grid","max_forecast_hour":180,"ensemble":true,"status":"configured","source":"https://opendata.dwd.de/weather/nwp/"},
+    {"key":"icon_ai","label":"ICON / AI (AICON)","provider":"DWD","family":"aicon","adapter":"dwdopen","upstream_model":"aicon","resolution":"native global grid","max_forecast_hour":180,"ensemble":false,"status":"configured","source":"https://opendata.dwd.de/weather/nwp/"},
+    {"key":"gfs","label":"GFS / deterministic","provider":"NOAA","family":"gfs","adapter":"herbie","product":"pgrb2.0p25 + pgrb2b.0p25","resolution":"0.25°","max_forecast_hour":384,"ensemble":false,"status":"configured","source":"https://nomads.ncep.noaa.gov/"},
+    {"key":"gfs_ai","label":"GFS / AI (AIGFS)","provider":"NOAA","family":"aigfs","adapter":"herbie","product":"sfc + pres","resolution":"0.25°","max_forecast_hour":384,"ensemble":false,"status":"configured","source":"https://nomads.ncep.noaa.gov/"},
+    {"key":"gefs_ai","label":"GEFS / AI (AIGEFS)","provider":"NOAA","family":"aigefs","adapter":"herbie","product":"sfc + pres; ensemble mean and spread","resolution":"0.25°","max_forecast_hour":384,"ensemble":true,"status":"configured","source":"https://nomads.ncep.noaa.gov/"},
+    {"key":"hgefs","label":"HGEFS","provider":"NOAA","family":"hgefs","adapter":"herbie","product":"sfc + pres; ensemble mean and spread","resolution":"0.25°","max_forecast_hour":240,"ensemble":true,"status":"configured","source":"https://nomads.ncep.noaa.gov/"},
+    {"key":"cmc_gdps","label":"CMC / GDPS","provider":"ECCC","family":"gdps","adapter":"datamart","resolution":"0.15°","max_forecast_hour":240,"ensemble":false,"status":"configured","source":"https://dd.weather.gc.ca/"},
+    {"key":"cmc_geps","label":"CMC / GEPS","provider":"ECCC","family":"geps","adapter":"datamart","resolution":"0.5°","max_forecast_hour":384,"ensemble":true,"status":"configured","source":"https://dd.weather.gc.ca/"},
+    {"key":"ukmet","label":"UKMET","provider":"UK Met Office","family":"ukmet","adapter":"weather-datahub","resolution":"0.10°","max_forecast_hour":168,"ensemble":false,"status":"requires_credentials","source":"https://datahub.metoffice.gov.uk/"}
+  ],
+  "notes": [
+    "O catálogo registra a configuração da coleta, não garante que todas as horas estejam publicadas em todo ciclo.",
+    "O coletor registra as variáveis, níveis, membros e horas efetivamente encontrados nos GRIB2.",
+    "GEFS-AI e HGEFS são publicados inicialmente com média e dispersão quando estes produtos agregados estão disponíveis; os membros individuais não são implicitamente prometidos.",
+    "UKMET depende de assinatura/produto Global Atmospheric no Met Office Weather DataHub e chave de API fornecida pelo proprietário do repositório."
+  ]
+}
