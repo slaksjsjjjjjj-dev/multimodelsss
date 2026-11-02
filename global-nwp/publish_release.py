@@ -49,10 +49,9 @@ def main() -> int:
             {"provider": "UK Met Office", "text": "UKMET is only published when a valid Weather DataHub subscription and API configuration are supplied."}
         ]
     }
+    # Missing artifacts are still represented in the diagnostic catalog below.
+    # This keeps a failed/cancelled matrix run observable instead of losing its report.
     expected_dirs = sorted(path for path in source_root.glob(PREFIX + "*") if path.is_dir())
-    if not expected_dirs:
-        raise SystemExit(f"Nenhum artefato {PREFIX}* foi baixado.")
-
 
     for model_dir in expected_dirs:
         model_key = model_dir.name[len(PREFIX):]
@@ -176,11 +175,9 @@ def main() -> int:
         )
     )
 
-    if not catalog["regional_assets"]:
-        raise SystemExit(
-            "Nenhum JSON regional foi gerado; não será criada uma GitHub Release vazia."
-        )
-
+    # Always publish the diagnostic catalog and run report. If no provider
+    # delivered usable regional data, the release contains these two JSON files
+    # only and clearly reports the missing/failed models.
     (output_root / "catalog.json").write_text(
         json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8"
     )
@@ -197,6 +194,11 @@ def main() -> int:
         ],
         "partial_models": [item["model_key"] for item in catalog["models"] if item["status"] == "partial"],
         "regional_assets": len(catalog["regional_assets"]),
+        "models_without_regional_data": [
+            item["model_key"] for item in catalog["models"] if not item["regions"]
+        ],
+        "has_regional_data": bool(catalog["regional_assets"]),
+        "run_status": "published-with-data" if catalog["regional_assets"] else "diagnostic-only",
         "total_frames": sum(item["frame_count"] for item in catalog["regional_assets"]),
         "total_fields": sum(item["field_count"] for item in catalog["regional_assets"]),
     }
