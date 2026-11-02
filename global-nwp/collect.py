@@ -329,7 +329,8 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
 
 
 def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
-                   process_file: Callable[[Path], None] | None = None
+                   process_file: Callable[[Path], None] | None = None,
+                   checkpoint: Callable[[int], None] | None = None
                    ) -> tuple[list[Path], list[int], list[str]]:
     """Collect NOAA models with bounded parallel downloads and durable progress."""
     spec = {
@@ -443,6 +444,16 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
                             )
                     else:
                         downloaded.append(grib_path)
+                # Persist the complete F-hour immediately. If the runner is
+                # later cancelled, already completed JSON files remain uploadable.
+                if checkpoint:
+                    try:
+                        checkpoint(lead)
+                    except Exception as exc:
+                        errors.append(
+                            f"F{lead:03d}: checkpoint JSON falhou: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
             else:
                 missing_hours.add(lead)
 
@@ -865,7 +876,8 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
 
 
 def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
-                   run: datetime, catalog_spec: dict, stats: dict) -> list[dict]:
+                   run: datetime, catalog_spec: dict, stats: dict,
+                   only_leads: set[int] | None = None) -> list[dict]:
     """Write one individually compressed JSON file for each available F-hour."""
     written: list[dict] = []
     inventory = stats.get("_inventory", {})
@@ -874,9 +886,15 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
     for region in REGIONS:
         region_id = region["id"]
         leads = stats.get(region_id, {})
+        if only_leads is not None:
+            leads = {
+                int(lead): entry for lead, entry in leads.items()
+                if int(lead) in only_leads
+            }
         region_root = output_root / model_key / region_id
         forecast_dir = region_root / "forecast"
         forecast_dir.mkdir(parents=True, exist_ok=True)
+        manifest_path = region_root / "manifest.json"
         validity: list[dict] = []
 
         for lead in sorted(leads):
@@ -950,11 +968,43 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
                 "field_count": total_fields,
             })
 
+        previous_manifest = {}
+        if only_leads is not None and manifest_path.is_file():
+            previous_manifest = json.loads(
+                manifest_path.read_text(encoding="utf-8")
+            )
+            validity_by_hour = {
+                int(item["forecast_hour"]): item
+                for item in previous_manifest.get("validities", [])
+            }
+            validity_by_hour.update({
+                int(item["forecast_hour"]): item for item in validity
+            })
+            validity = [
+                validity_by_hour[lead] for lead in sorted(validity_by_hour)
+            ]
+
         if not validity:
             continue
 
         actual_hours = sorted({item["forecast_hour"] for item in validity})
         missing_hours = sorted(set(requested_hours) - set(actual_hours))
+        current_variables = inventory.get(region_id, {}).get("variables", [])
+        if previous_manifest:
+            variable_map = {
+                (
+                    row.get("short_name"), row.get("name"), row.get("units"),
+                    row.get("level_type"), str(row.get("level")), row.get("grid_type"),
+                ): row
+                for row in previous_manifest.get("variables", [])
+            }
+            for row in current_variables:
+                variable_map[(
+                    row.get("short_name"), row.get("name"), row.get("units"),
+                    row.get("level_type"), str(row.get("level")), row.get("grid_type"),
+                )] = row
+            current_variables = list(variable_map.values())
+
         manifest = {
             "schema": "sideral-global-nwp-region-manifest-v1",
             "model_key": model_key,
@@ -983,17 +1033,16 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
             "forecast_hours": actual_hours,
             "missing_forecast_hours": missing_hours,
             "validities": validity,
-            "variables": inventory.get(region_id, {}).get("variables", []),
-            "variable_level_count": len(
-                inventory.get(region_id, {}).get("variables", [])
-            ),
+            "variables": current_variables,
+            "variable_level_count": len(current_variables),
             "field_count": sum(item["field_count"] for item in validity),
             "data_format": "um JSON por validade, compactado individualmente em gzip (.json.gz); não é ZIP",
+            "collection_status": "in-progress" if only_leads is not None else "finalizing",
             "attribution": {
                 "ECMWF": "Contains ECMWF data. © ECMWF. Licensed under CC-BY-4.0 where applicable."
             } if catalog_spec["provider"] == "ECMWF" else None,
         }
-        (region_root / "manifest.json").write_text(
+        manifest_path.write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         written.append({
@@ -1108,6 +1157,12 @@ def main() -> int:
         finally:
             path.unlink(missing_ok=True)
 
+    def checkpoint_lead(lead: int) -> None:
+        finalize_spool(
+            spool_root, output_root, model_key, run, spec, stats,
+            only_leads={lead},
+        )
+
     try:
         if spec["adapter"] == "ecmwf-opendata":
             _, discovered_hours, errors = collect_ecmwf(
@@ -1115,7 +1170,7 @@ def main() -> int:
             )
         elif spec["adapter"] == "herbie":
             _, discovered_hours, errors = collect_herbie(
-                model_key, run, raw_dir, requested, process_file
+                model_key, run, raw_dir, requested, process_file, checkpoint_lead
             )
         elif spec["adapter"] == "dwdopen":
             _, discovered_hours, errors = collect_dwd(
