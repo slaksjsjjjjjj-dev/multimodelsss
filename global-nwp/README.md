@@ -1,47 +1,94 @@
 # SIDERAL — Global NWP JSON Releases
 
-Repositório: `slaksjsjjjjjj-dev/multimodelsss`.
+Repositório: \`slaksjsjjjjjj-dev/multimodelsss\`.
 
-## Agendamento e publicação
+## Publicação
 
-O workflow `.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml` executa duas coletas por dia, às 09Z e 21Z. Cada execução seleciona a rodada global de pelo menos nove horas antes (00Z ou 12Z), dando tempo para os provedores terminarem de publicar os arquivos. Também existe execução manual em **Actions → SIDERAL — Global NWP JSON Releases → Run workflow**. Um `push` na branch `main` executa a validação estática; ele não inicia uma coleta meteorológica automaticamente.
+O workflow \`.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml\` executa duas coletas por dia, às 09Z e 21Z. Cada execução seleciona a rodada de pelo menos nove horas antes (normalmente 00Z ou 12Z). Também existe execução manual em **Actions → SIDERAL — Global NWP JSON Releases → Run workflow**.
 
-Cada execução cria um GitHub Release com:
+Os dados meteorológicos **não são empacotados em ZIP**. Cada execução publica uma árvore na branch \`nwp-data\`:
 
-- `catalog.json`: modelos, regiões, status, inventário das variáveis/níveis e relação de arquivos.
-- `run-report.json`: resumo de modelos, regiões, frames e campos efetivamente gerados, incluindo modelos sem dados regionais.
-- ZIPs por modelo/região, divididos em partes de até 1,5 GB. Cada ZIP contém `manifest.json` e arquivos `forecast/fNNN-partNNN.json.gz`.
+\`\`\`text
+nwp-data/
+├── catalog.json
+├── run-report.json
+└── data/
+    ├── ecmwf_ifs/
+    │   ├── model_status.json
+    │   ├── collection-summary.json
+    │   ├── south_america/
+    │   │   ├── manifest.json
+    │   │   ├── F000.json.gz
+    │   │   ├── F003.json.gz
+    │   │   └── ...
+    │   └── brazil_southeast/
+    │       ├── manifest.json
+    │       ├── F000.json.gz
+    │       └── ...
+    ├── gfs/
+    │   ├── model_status.json
+    │   ├── collection-summary.json
+    │   └── south_america/
+    │       ├── manifest.json
+    │       ├── F000.json.gz
+    │       ├── F001.json.gz
+    │       └── ...
+    └── ...
+\`\`\`
 
-Cada frame `.json.gz`, depois de descompactado, é um JSON com `metadata`, `grids` e `fields`. Cada campo mantém o nome curto e descritivo, unidade, `paramId`, tipo e valor do nível vertical, passo/intervalo, membro do ensemble quando publicado e coordenadas dos pontos. A lista de variáveis e as validades é descoberta nos GRIBs de cada rodada; não existe uma lista fixa que invente dados ausentes.
+Cada \`FNNN.json.gz\` é um documento JSON independente, comprimido individualmente com gzip — não é um arquivo ZIP. Um arquivo contém todos os campos, níveis verticais e membros efetivamente coletados daquele modelo, daquela região e daquela validade. O manifesto fica na mesma pasta e lista os arquivos, variáveis, níveis, horas disponíveis e horas ausentes.
 
-Os frames são particionados por validade e, quando o volume é grande, em partes numeradas. O `manifest.json` liga todas as partes ao respectivo F e informa as validades reais que a fonte entregou.
+A branch \`nwp-data\` é substituída pela publicação mais recente para manter apenas a rodada atual acessível sem acumular todas as rodadas no histórico Git. A GitHub Release correspondente contém \`catalog.json\` e \`run-report.json\`, com link direto para a árvore de dados.
+
+Links:
+- Dados: https://github.com/slaksjsjjjjjj-dev/multimodelsss/tree/nwp-data/data
+- Catálogo: https://github.com/slaksjsjjjjjj-dev/multimodelsss/blob/nwp-data/catalog.json
+- Relatório: https://github.com/slaksjsjjjjjj-dev/multimodelsss/blob/nwp-data/run-report.json
+
+## Cadência das previsões
+
+O coletor grava **todas as validades que a fonte publica para cada modelo**, sem pular uma validade disponível por causa de um empacotamento. Não cria horários artificiais quando o provedor não fornece aquele F.
+
+No GFS 0,25°, a NOAA publica previsões de hora em hora até F120 e, depois, a cada três horas até F384. Portanto, depois de F120, a sequência esperada é F123, F126, F129 etc.; F121 e F122 não são arquivos publicados nesse produto. Essa cadência é da fonte, não uma falha do coletor. Consulte o [inventário oficial de produtos GFS no NOMADS](https://www.nco.ncep.noaa.gov/pmb/products/gfs/nomads/) e a [descrição do conjunto GFS 0,25°](https://developers.google.com/earth-engine/datasets/catalog/NOAA_GFS0P25).
+
+O campo \`requested_forecast_hours\` mostra o calendário esperado pelo coletor. \`forecast_hours\` lista as validades realmente encontradas e convertidas. \`missing_forecast_hours\` identifica as validades esperadas que não chegaram ao JSON regional. A ausência de um horário nunca é preenchida com interpolação ou cópia de outro F.
 
 ## Modelos configurados
 
 | ID | Produto | Fonte | Resolução / horizonte catalogado |
 |---|---|---|---|
-| `ecmwf_ifs` | IFS HRES — atmosfera (`oper/fc`) e ondas (`wave/fc`) | ECMWF Open Data | 0,25°; atmosfera até F240, ondas até F360 em 00/12Z |
-| `ecmwf_eps` | IFS ENS — PF (membros), EM/ES (média/dispersão), EP (probabilidades), incluindo produtos de ondas | ECMWF Open Data | 0,25°; até F360 em 00/12Z |
-| `ecmwf_aifs` | AIFS Single — atmosfera e ondas | ECMWF Open Data | 0,25°; até F360 |
-| `ecmwf_aifs_ens` | AIFS-ENS — CF/PF/EM/ES/EP e produtos de ondas | ECMWF Open Data | 0,25°; até F360 |
-| `icon_dwd` | ICON global determinístico | DWD Open Data | Malha triangular nativa (~13 km); até F180 |
-| `icon_ai` | AICON global | DWD Open Data | Malha triangular nativa (~13 km); até F180 |
-| `gfs` | GFS / GEV3 — produtos `pgrb2.0p25` e `pgrb2b.0p25` | NOAA / NOMADS via Herbie | 0,25°; até F384 |
-| `gfs_ai` | AIGFS — `sfc` e `pres` | NOAA / NOMADS via Herbie | 0,25°; até F384 |
-| `gefs_ai` | AIGEFS — média e dispersão (`avg`/`spr`) de `sfc` e `pres` | NOAA / NOMADS via Herbie | 0,25°; até F384 |
-| `hgefs` | HGEFS — média e dispersão (`avg`/`spr`) de `sfc` e `pres` | NOAA / NOMADS via Herbie | 0,25°; até F240 |
-| `cmc_gdps` | GDPS determinístico — GRIB2 | ECCC Datamart | 0,15°; até F240 |
-| `cmc_geps` | GEPS raw (membros individuais) e products (probabilidades/estatísticas) | ECCC Datamart | 0,5°; F384, com extensão F936 em 00Z de segunda/quinta |
-| `ukmet` | UKMET Global | Met Office Weather DataHub | Bloqueado até configurar assinatura e credenciais |
+| \`ecmwf_ifs\` | IFS HRES — atmosfera e ondas | ECMWF Open Data | 0,25°; até F240 atmosfera e F360 ondas em 00/12Z |
+| \`ecmwf_eps\` | IFS ENS — membros, média, dispersão, probabilidades e ondas | ECMWF Open Data | 0,25°; até F360 em 00/12Z |
+| \`ecmwf_aifs\` | AIFS Single — atmosfera e ondas | ECMWF Open Data | 0,25°; até F360 |
+| \`ecmwf_aifs_ens\` | AIFS-ENS — controle, membros, média, dispersão, probabilidades e ondas | ECMWF Open Data | 0,25°; até F360 |
+| \`icon_dwd\` | ICON global determinístico | DWD Open Data | Malha triangular nativa; até F180 |
+| \`icon_ai\` | AICON global | DWD Open Data | Malha triangular nativa; até F180 |
+| \`gfs\` | GFS / GEV3 — produtos principais e secundários | NOAA / NOMADS via Herbie | 0,25°; até F384 |
+| \`gfs_ai\` | AIGFS — superfície e pressão | NOAA / NOMADS via Herbie | 0,25°; até F384 |
+| \`gefs_ai\` | AIGEFS — média e dispersão de superfície e pressão | NOAA / NOMADS via Herbie | 0,25°; até F384 |
+| \`hgefs\` | HGEFS — média e dispersão de superfície e pressão | NOAA / NOMADS via Herbie | 0,25°; até F240 |
+| \`cmc_gdps\` | GDPS determinístico | ECCC Datamart | 0,15°; até F240 |
+| \`cmc_geps\` | GEPS raw e produtos estatísticos | ECCC Datamart | 0,5°; até F384, com extensão F936 em ciclos específicos |
+| \`ukmet\` | UKMET Global | Met Office Weather DataHub | Bloqueado até configurar assinatura e credenciais |
 
-**Limites conhecidos dos produtos ensemble:** AIGEFS e HGEFS estão configurados para os campos agregados média/dispersão, não para arquivar cada membro individual. EPS e AIFS-ENS coletam os tipos de produto definidos no catálogo; os membros PF são mantidos quando a fonte os publica nesses arquivos. UKMET permanece `blocked` até existir uma assinatura Global Atmospheric e uma credencial do Weather DataHub no ambiente seguro do repositório.
+AIGEFS e HGEFS estão configurados para campos agregados de média/dispersão; não prometem arquivar todos os membros individuais. UKMET permanece bloqueado até existir uma assinatura Global Atmospheric e uma credencial do Weather DataHub.
 
-O coletor ECMWF não fixa `param` ou `levelist`: pede os campos que o produto disponibiliza. Para GFS/AI-GFS, Herbie seleciona os produtos integrais de superfície e pressão. O CMC GEPS usa as árvores `raw` e `products` para manter os membros e os produtos estatísticos.
+## Coleta NOAA / GFS
 
-## Regiões publicadas
+Os downloads via Herbie agora usam erros explícitos em vez do padrão de apenas emitir aviso, tentam novamente falhas transitórias, verificam se o arquivo GRIB foi realmente salvo e executam downloads de até quatro validades em paralelo para GFS. O processamento e gravação dos campos regionais continuam serializados para não corromper os arquivos de saída.
 
-Todas as regiões são WGS84 e definidas em `regions.json` (limites oeste/sul/leste/norte):
+O arquivo \`collection-progress.json\` é atualizado após cada validade concluída e preserva:
+- total de validades solicitadas;
+- validades concluídas;
+- validades com arquivo;
+- validades sem arquivo;
+- horário da última atualização.
 
+O passo de coleta tem limite próprio de 320 minutos, dentro do limite maior do job, reservando tempo para gravar o diagnóstico e enviar artefatos mesmo quando um provedor demora demais.
+
+## Regiões
+
+Todas as regiões são WGS84 e definidas em \`regions.json\` (limites oeste/sul/leste/norte):
 - América do Sul.
 - Pacífico Sul — faixa principal, Ocidental e Central.
 - Brasil — Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
@@ -49,16 +96,13 @@ Todas as regiões são WGS84 e definidas em `regions.json` (limites oeste/sul/le
 
 ## Como consumir
 
-1. Abra **Releases** no repositório.
-2. Baixe `catalog.json` para saber quais modelos, regiões, variáveis, F e pacotes existem naquela rodada.
-3. Baixe os ZIPs indicados em `regional_assets[].asset_parts[].asset`.
-4. Leia o `manifest.json` e descompacte os frames `forecast/fNNN-partNNN.json.gz`.
-5. Use `metadata.forecast_hour`, `valid_time`, `fields[].short_name`, `fields[].level`, `fields[].grid_type` e `grids[fields[].grid_id]` para combinar valores com coordenadas e geometria da grade (`Ni`, `Nj`, tipo de malha e modo de varredura quando disponíveis).
+1. Abra a branch **nwp-data** e navegue até \`data/<modelo>/<regiao>/\`.
+2. Leia o \`manifest.json\` para obter as validades e a lista de arquivos JSON.
+3. Baixe o \`FNNN.json.gz\` desejado e descompacte-o com gzip.
+4. No JSON, use \`metadata.forecast_hour\`, \`metadata.valid_time\`, \`fields[].short_name\`, \`fields[].level\`, \`fields[].grid_type\` e \`grids[fields[].grid_id]\` para interpretar os valores e coordenadas.
 
-## Status, disponibilidade e volume
+## Status e diagnóstico
 
-Um modelo pode terminar com status `published-ready`, `partial`, `failed` ou `blocked`. O manifesto é a fonte de verdade para os campos e horários realmente obtidos; uma validade não disponível no provedor não é fabricada. A Release é criada mesmo quando nenhum pacote regional foi gerado: nesse caso, ela contém apenas `catalog.json` e `run-report.json`, com status `diagnostic-only` e a lista de modelos sem dados.
+Um modelo pode terminar com status \`published-ready\`, \`partial\`, \`failed\` ou \`blocked\`. O catálogo nunca interpreta um modelo apenas configurado como modelo com dados. A disponibilidade operacional precisa ser confirmada pelo \`model_status.json\`, \`collection-summary.json\`, \`collection-progress.json\` e pelos manifestos regionais.
 
-A coleta de todos os campos globais é volumosa, especialmente para ensembles. Os arquivos são processados um de cada vez por coletor e removidos após a conversão para limitar o espaço temporário. A matriz executa até quatro modelos em paralelo; cada modelo tem job, status e artefato próprios. Uma falha de provedor é sinalizada como falha no workflow, mas o artefato de diagnóstico é enviado antes. A etapa de publicação roda mesmo que um ou mais modelos falhem.
-
-**Importante:** a validação estática do workflow não substitui a validação operacional de cada provedor. A validação agora exige exatamente os 13 IDs do catálogo, incluindo `cmc_geps`, e também roda em agendamentos e execuções manuais antes da coleta. A disponibilidade operacional de cada modelo só deve ser confirmada pelo `model_status.json`, pelos manifestos regionais e pelo `run-report.json` de uma execução completa.
+A validação estática exige os 13 IDs de modelo e compara o conjunto com a matriz do workflow. As falhas de provedor são sinalizadas no GitHub Actions, mas os artefatos de diagnóstico são enviados antes de marcar o job como falho. A etapa de publicação roda mesmo se alguns modelos falharem.
