@@ -174,6 +174,7 @@ jobs:
 
       - name: Coletar todas as variáveis/níveis e validades publicadas
         id: collect
+        timeout-minutes: 320
         continue-on-error: true
         env:
           MODEL_KEY: ${{ matrix.model }}
@@ -256,7 +257,7 @@ jobs:
           path: release-input
           merge-multiple: false
 
-      - name: Preparar ZIPs regionais e catálogo da Release
+      - name: Preparar JSONs individuais por modelo e região
         shell: bash
         env:
           RUN_DATE: ${{ inputs.run_date }}
@@ -294,17 +295,46 @@ jobs:
           fi
           TAG="sideral-global-nwp-${DATE_STAMP}-${CYCLE_STAMP}-${GITHUB_RUN_ID}"
           cat > /tmp/release-notes.md <<EOF
+      - name: Publicar JSONs individuais na árvore nwp-data
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          PUBLISH_ROOT="$(mktemp -d)"
+          git -C "$PUBLISH_ROOT" init --initial-branch=nwp-data
+          git -C "$PUBLISH_ROOT" config user.name "github-actions[bot]"
+          git -C "$PUBLISH_ROOT" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          cp -a release-assets/data "$PUBLISH_ROOT/data"
+          cp release-assets/catalog.json "$PUBLISH_ROOT/catalog.json"
+          cp release-assets/run-report.json "$PUBLISH_ROOT/run-report.json"
+          touch "$PUBLISH_ROOT/.nojekyll"
+
+          git -C "$PUBLISH_ROOT" add -A
+          git -C "$PUBLISH_ROOT" commit -m "Publish Sideral JSON data ${GITHUB_RUN_ID}"
+
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -C "$PUBLISH_ROOT" -c http.extraheader="AUTHORIZATION: basic $AUTH_HEADER" \
+            push --force "https://github.com/$GH_REPO.git" HEAD:nwp-data
+
+          echo "JSON directory tree: https://github.com/$GH_REPO/tree/nwp-data/data" >> "$GITHUB_STEP_SUMMARY"
+
           Publicação Sideral de modelos globais e variantes de IA.
 
-          Os ZIPs regionais contêm manifest.json e os JSONs de cada validade
-          compactados individualmente como .json.gz. O catalog.json informa
-          modelos, regiões, variáveis, níveis, quantidade de campos e validades
-          realmente publicadas nesta execução. Modelos bloqueados ou com falha
-          ficam identificados no catálogo; não são apresentados como dados válidos.
+          Os JSONs individuais estão organizados por modelo e região na branch nwp-data:
+          data/<modelo>/<regiao>/F000.json.gz, F001.json.gz, ...
+          Cada F contém todos os campos, níveis e membros coletados para aquela
+          validade e região. Não há ZIP com os dados meteorológicos.
+          Os horários ausentes na origem são informados no manifest.json e no
+          run-report.json; nenhum horário é inventado.
 
+          Dados organizados: https://github.com/${GH_REPO}/tree/nwp-data/data
+          Catálogo: https://github.com/${GH_REPO}/blob/nwp-data/catalog.json
           Execução: ${GITHUB_SERVER_URL}/${GH_REPO}/actions/runs/${GITHUB_RUN_ID}
           EOF
-          gh release create "$TAG" release-assets/* \
+          gh release create "$TAG" release-assets/catalog.json release-assets/run-report.json \
             --repo "$GH_REPO" \
             --title "Sideral Global NWP — ${DATE_STAMP} ${CYCLE_STAMP}Z" \
             --notes-file /tmp/release-notes.md \
