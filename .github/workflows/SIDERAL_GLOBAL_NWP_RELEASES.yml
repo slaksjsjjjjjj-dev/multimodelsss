@@ -92,18 +92,20 @@ jobs:
       max-parallel: 4
       matrix:
         model:
+          # Interleave providers so one slow ECMWF batch cannot occupy the
+          # entire matrix before DWD, NOAA and ECCC get a runner.
           - ecmwf_ifs
-          - ecmwf_eps
-          - ecmwf_aifs
-          - ecmwf_aifs_ens
           - icon_dwd
-          - icon_ai
           - gfs
-          - gfs_ai
-          - gefs_ai
-          - hgefs
           - cmc_gdps
+          - ecmwf_eps
+          - icon_ai
+          - gfs_ai
           - cmc_geps
+          - ecmwf_aifs
+          - gefs_ai
+          - ecmwf_aifs_ens
+          - hgefs
           - ukmet
     steps:
       - name: Checkout multimodelsss
