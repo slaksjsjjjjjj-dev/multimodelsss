@@ -721,7 +721,8 @@ def safe_json_line(value: dict) -> str:
 
 
 def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
-                requested_hours: list[int], max_hour: int) -> dict[str, dict[int, dict]]:
+                requested_hours: list[int], max_hour: int,
+                forecast_hour_override: int | None = None) -> dict[str, dict[int, dict]]:
     from eccodes import (
         codes_grib_new_from_file, codes_get_array, codes_get_values, codes_release
     )
@@ -730,6 +731,14 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
     field_inventory: dict[str, set[tuple]] = defaultdict(set)
     requested = set(requested_hours)
     errors: list[str] = []
+    diagnostics = {
+        "grib_messages_read": 0,
+        "messages_with_forecast_hour": 0,
+        "messages_rejected_by_hour": 0,
+        "messages_without_coordinates": 0,
+        "messages_outside_regions": 0,
+        "messages_written_to_regions": 0,
+    }
 
     for source in raw_files:
         if source.suffix.lower() not in {".grib2", ".grb2", ".grb"}:
@@ -745,15 +754,26 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                 if gid is None:
                     break
                 try:
+                    diagnostics["grib_messages_read"] += 1
                     lead, run_utc, valid_utc = lead_from_message(gid)
+                    # NOAA/Herbie stores the requested F-hour in the path itself.
+                    # Some GRIB products expose non-standard time metadata; the
+                    # downloaded forecast filename is the authoritative lead for
+                    # these files, so do not silently discard every GFS message.
+                    if forecast_hour_override is not None:
+                        lead = forecast_hour_override
                     if lead is None or lead < 0 or lead > max_hour:
+                        diagnostics["messages_rejected_by_hour"] += 1
                         continue
+                    diagnostics["messages_with_forecast_hour"] += 1
                     if requested and lead not in requested and model_key not in {"icon_dwd", "icon_ai"}:
+                        diagnostics["messages_rejected_by_hour"] += 1
                         continue
                     lats = np.asarray(codes_get_array(gid, "latitudes"), dtype=np.float64)
                     lons = np.asarray(codes_get_array(gid, "longitudes"), dtype=np.float64)
                     vals = np.asarray(codes_get_values(gid), dtype=np.float64)
                     if lats.size == 0 or lats.size != lons.size or lats.size != vals.size:
+                        diagnostics["messages_without_coordinates"] += 1
                         continue
                     lons = ((lons + 180.0) % 360.0) - 180.0
                     source_key = source.stem.split("-", 1)[0]
@@ -797,6 +817,7 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                         )
                         if indices.size == 0:
                             continue
+                        diagnostics["messages_written_to_regions"] += 1
                         region_id = region["id"]
                         field_dir = spool_root / region_id / f"f{lead:03d}"
                         grids_dir = field_dir / "grids"
@@ -872,6 +893,10 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
         for region_id, rows in field_inventory.items()
     }
     stats["_errors"] = {"items": errors[:500]}
+    if diagnostics["messages_read"] == 0:
+        # The counter is normalized below; this branch only protects empty files.
+        diagnostics["messages_read"] = diagnostics["grib_messages_read"]
+    stats["_diagnostics"] = diagnostics
     return stats
 
 
@@ -1086,6 +1111,10 @@ def merge_regional_stats(destination: dict, source: dict) -> None:
             target["run_utc"] = target.get("run_utc") or entry.get("run_utc")
             target["source_files"].update(entry.get("source_files") or [])
 
+    diagnostic_totals = destination.setdefault("_diagnostics", {})
+    for key, value in source.get("_diagnostics", {}).items():
+        diagnostic_totals[key] = diagnostic_totals.get(key, 0) + int(value)
+
     inventory_keys = destination.setdefault("_inventory_keys", {})
     inventory = destination.setdefault("_inventory", {})
     for region_id, item in source.get("_inventory", {}).items():
@@ -1151,7 +1180,19 @@ def main() -> int:
         try:
             if not path.is_file() or path.stat().st_size == 0:
                 raise RuntimeError(f"Arquivo GRIB vazio/inexistente: {path.name}")
-            piece = regionalize([path], spool_root, model_key, requested, max_hour)
+            lead_match = next(
+                (
+                    re.fullmatch(r"f(\d{3})", part, flags=re.IGNORECASE)
+                    for part in path.parts
+                    if re.fullmatch(r"f(\d{3})", part, flags=re.IGNORECASE)
+                ),
+                None,
+            )
+            lead_override = int(lead_match.group(1)) if lead_match else None
+            piece = regionalize(
+                [path], spool_root, model_key, requested, max_hour,
+                forecast_hour_override=lead_override,
+            )
             merge_regional_stats(stats, piece)
             processed_files.append(path.name)
         finally:
@@ -1192,7 +1233,13 @@ def main() -> int:
             for lead in lead_map
         })
         if not available_hours:
-            raise RuntimeError("A fonte não forneceu campos GRIB convertíveis para esta rodada.")
+            diagnostic = stats.get("_diagnostics", {})
+            regional_errors = stats.get("_errors", {}).get("items", [])
+            raise RuntimeError(
+                "Nenhum campo foi convertido para as regiões. "
+                f"Diagnóstico GRIB: {json.dumps(diagnostic, ensure_ascii=False)}. "
+                f"Erros de leitura: {regional_errors[:10]}"
+            )
         written = finalize_spool(spool_root, output_root, model_key, run, spec, stats)
         if not written:
             raise RuntimeError("Nenhum campo GRIB2 foi convertido para as regiões configuradas.")
@@ -1214,6 +1261,7 @@ def main() -> int:
             "requested_forecast_hours": requested,
             "source_hours": available_hours or discovered_hours,
             "missing_forecast_hours": sorted(set(requested) - set(available_hours)),
+            "regionalizer_diagnostics": stats.get("_diagnostics", {}),
             "regionalizer_errors": stats.get("_errors", {}).get("items", []),
             "download_errors": errors[:250],
         }
