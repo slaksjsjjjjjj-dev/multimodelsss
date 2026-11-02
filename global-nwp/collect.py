@@ -1232,14 +1232,27 @@ def main() -> int:
         if not available_hours:
             diagnostic = stats.get("_diagnostics", {})
             regional_errors = stats.get("_errors", {}).get("items", [])
-            raise RuntimeError(
-                "Nenhum campo foi convertido para as regiões. "
+            message = (
+                "Coleta encerrada sem campos regionais convertidos. "
                 f"Diagnóstico GRIB: {json.dumps(diagnostic, ensure_ascii=False)}. "
                 f"Erros de leitura: {regional_errors[:10]}"
             )
+            write_model_status(
+                model_output / "model_status.json", model_key, "failed", run,
+                message, errors + regional_errors[:50],
+            )
+            print(f"[{model_key}] {message}", file=sys.stderr, flush=True)
+            return 0
+
         written = finalize_spool(spool_root, output_root, model_key, run, spec, stats)
         if not written:
-            raise RuntimeError("Nenhum campo GRIB2 foi convertido para as regiões configuradas.")
+            message = "Coleta encerrada, mas não foi possível gravar JSONs regionais."
+            write_model_status(
+                model_output / "model_status.json", model_key, "failed", run,
+                message, errors,
+            )
+            print(f"[{model_key}] {message}", file=sys.stderr, flush=True)
+            return 0
         regional_errors = stats.get("_errors", {}).get("items", [])
         all_errors = errors + regional_errors
         for item in written:
