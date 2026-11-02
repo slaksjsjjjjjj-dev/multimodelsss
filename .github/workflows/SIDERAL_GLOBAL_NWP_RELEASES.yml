@@ -69,9 +69,9 @@ jobs:
           }
           assert len(keys) == 13 and set(keys) == required_models, "o catálogo deve conter exatamente os 13 modelos esperados"
           workflow_text = Path(".github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml").read_text(encoding="utf-8")
-          matrix_marker = "      matrix:\\n        model:\\n"
+          matrix_marker = "      matrix:\n        model:\n"
           assert matrix_marker in workflow_text, "matriz de coleta não encontrada"
-          matrix_section = workflow_text.split(matrix_marker, 1)[1].split("\\n    steps:", 1)[0]
+          matrix_section = workflow_text.split(matrix_marker, 1)[1].split("\n    steps:", 1)[0]
           matrix_models = [line.strip()[2:] for line in matrix_section.splitlines() if line.strip().startswith("- ")]
           assert len(matrix_models) == 13 and set(matrix_models) == required_models, "matriz de coleta e catálogo precisam ter os mesmos 13 modelos"
           assert required_regions.issubset(set(ids)), "faltam regiões obrigatórias"
