@@ -57,7 +57,7 @@ Todas as regiões são WGS84 e definidas em `regions.json` (limites oeste/sul/le
 
 ## Status, disponibilidade e volume
 
-Um modelo pode terminar com status `published-ready`, `partial`, `failed` ou `blocked`. O manifesto é a fonte de verdade para os campos e horários realmente obtidos; uma validade não disponível no provedor não é fabricada. A Release é criada somente quando ao menos um pacote regional JSON foi gerado.
+Um modelo pode terminar com status `published-ready`, `partial`, `failed` ou `blocked`. O manifesto é a fonte de verdade para os campos e horários realmente obtidos; uma validade não disponível no provedor não é fabricada. A Release é criada mesmo quando nenhum pacote regional foi gerado: nesse caso, ela contém apenas `catalog.json` e `run-report.json`, com status `diagnostic-only` e a lista de modelos sem dados.
 
 A coleta de todos os campos globais é volumosa, especialmente para ensembles. Os arquivos são processados um de cada vez por coletor e removidos após a conversão para limitar o espaço temporário. A matriz executa até quatro modelos em paralelo; cada modelo tem job, status e artefato próprios. Uma falha de provedor é sinalizada como falha no workflow, mas o artefato de diagnóstico é enviado antes. A etapa de publicação roda mesmo que um ou mais modelos falhem.
 
