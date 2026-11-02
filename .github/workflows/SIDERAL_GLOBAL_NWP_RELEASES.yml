@@ -1,11 +1,6 @@
 name: SIDERAL — Global NWP JSON Releases
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "global-nwp/**"
-      - ".github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml"
   schedule:
     - cron: "20 9,21 * * *"
   workflow_dispatch:
@@ -148,13 +143,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 2
           compression-level: 1
-
-      - name: Sinalizar falha da coleta no resultado do workflow
-        if: ${{ steps.collect.outcome == 'failure' }}
-        shell: bash
-        run: |
-          echo "A coleta de ${{ matrix.model }} falhou; o artefato de diagnóstico já foi enviado." >&2
-          exit 1
 
   publish:
     name: Publicar Releases regionais
