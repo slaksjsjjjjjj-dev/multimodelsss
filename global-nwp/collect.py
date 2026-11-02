@@ -895,9 +895,8 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
 
             # Exactly one JSON document per available forecast hour, containing
             # every field/level/member collected for this model and region.
-            total_fields = sum(
-                1 for line in fields_path.open("r", encoding="utf-8") if line.strip()
-            )
+            with fields_path.open("r", encoding="utf-8") as field_source:
+                total_fields = sum(1 for line in field_source if line.strip())
             if total_fields == 0:
                 continue
 
