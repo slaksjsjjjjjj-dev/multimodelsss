@@ -893,9 +893,6 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
         for region_id, rows in field_inventory.items()
     }
     stats["_errors"] = {"items": errors[:500]}
-    if diagnostics["messages_read"] == 0:
-        # The counter is normalized below; this branch only protects empty files.
-        diagnostics["messages_read"] = diagnostics["grib_messages_read"]
     stats["_diagnostics"] = diagnostics
     return stats
 
