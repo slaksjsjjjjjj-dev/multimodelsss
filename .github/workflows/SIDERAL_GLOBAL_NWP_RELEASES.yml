@@ -324,7 +324,7 @@ jobs:
           Publicação Sideral de modelos globais e variantes de IA.
 
           Os JSONs individuais estão organizados por modelo e região na branch nwp-data:
-          data/<modelo>/<regiao>/F000.json.gz, F001.json.gz, ...
+          data/<modelo>/<regiao>/FNNN.json.gz (um arquivo por validade publicada).
           Cada F contém todos os campos, níveis e membros coletados para aquela
           validade e região. Não há ZIP com os dados meteorológicos.
           Os horários ausentes na origem são informados no manifest.json e no
