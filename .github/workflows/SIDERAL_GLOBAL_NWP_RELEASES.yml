@@ -27,7 +27,6 @@ permissions:
 
 jobs:
   validate:
-    if: ${{ github.event_name == 'push' }}
     name: Validar código e catálogo
     runs-on: ubuntu-24.04
     steps:
@@ -59,7 +58,7 @@ jobs:
           required_models = {
               "ecmwf_ifs", "ecmwf_eps", "ecmwf_aifs", "ecmwf_aifs_ens",
               "icon_dwd", "icon_ai", "gfs", "gfs_ai", "gefs_ai",
-              "hgefs", "cmc_gdps", "ukmet"
+              "hgefs", "cmc_gdps", "cmc_geps", "ukmet"
           }
           required_regions = {
               "south_america", "south_pacific", "south_pacific_west", "south_pacific_central",
@@ -68,13 +67,14 @@ jobs:
               "argentina_noa", "argentina_nea", "argentina_cuyo",
               "argentina_pampas", "argentina_patagonia"
           }
-          assert required_models.issubset(set(keys)), "faltam modelos obrigatórios"
+          assert len(keys) == 13 and set(keys) == required_models, "o catálogo deve conter exatamente os 13 modelos esperados"
           assert required_regions.issubset(set(ids)), "faltam regiões obrigatórias"
           print(f"OK: {len(keys)} modelos e {len(ids)} regiões; sintaxe Python e JSON válidos.")
           PY
 
   collect:
-    if: ${{ github.event_name != 'push' }}
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    needs: [validate]
     name: "Coletar ${{ matrix.model }}"
     concurrency:
       group: sideral-global-nwp-collect-${{ github.ref }}-${{ matrix.model }}
@@ -83,7 +83,7 @@ jobs:
     timeout-minutes: 350
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 4
       matrix:
         model:
           - ecmwf_ifs
@@ -124,9 +124,12 @@ jobs:
           region_ids = [item["id"] for item in regions["regions"]]
           assert len(keys) == len(set(keys)), "model keys duplicados"
           assert len(region_ids) == len(set(region_ids)), "region ids duplicados"
-          assert {"ecmwf_ifs", "ecmwf_eps", "ecmwf_aifs", "ecmwf_aifs_ens",
-                  "icon_dwd", "icon_ai", "gfs", "gfs_ai", "gefs_ai",
-                  "hgefs", "cmc_gdps", "ukmet"}.issubset(set(keys))
+          required_models = {
+              "ecmwf_ifs", "ecmwf_eps", "ecmwf_aifs", "ecmwf_aifs_ens",
+              "icon_dwd", "icon_ai", "gfs", "gfs_ai", "gefs_ai",
+              "hgefs", "cmc_gdps", "cmc_geps", "ukmet"
+          }
+          assert len(keys) == 13 and set(keys) == required_models, "catálogo deve conter exatamente os 13 modelos esperados"
           assert {"south_america", "south_pacific", "south_pacific_west", "south_pacific_central", "brazil_north",
                   "brazil_northeast", "brazil_center_west", "brazil_southeast",
                   "brazil_south", "argentina_noa", "argentina_nea",
@@ -209,10 +212,17 @@ jobs:
           retention-days: 2
           compression-level: 1
 
+      - name: Sinalizar falha da coleta no resultado do workflow
+        if: ${{ steps.collect.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "A coleta de ${{ matrix.model }} falhou; o artefato de diagnóstico já foi enviado." >&2
+          exit 1
+
   publish:
     name: Publicar Releases regionais
-    if: ${{ always() && github.event_name != 'push' }}
-    needs: [collect]
+    if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.validate.result == 'success' }}
+    needs: [validate, collect]
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     permissions:
