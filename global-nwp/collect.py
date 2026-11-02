@@ -507,6 +507,9 @@ def collect_dwd(model_key: str, raw_dir: Path,
                         )
                         try:
                             options = {"parameters": parameter, "steps": "all"}
+                            # ICON/AICON parameters can exist on multiple vertical
+                            # coordinates. Select each coordinate explicitly to avoid
+                            # dwdopen raising AmbiguousSelectionError.
                             if level_type is not None:
                                 options["level_type"] = level_type
                                 options["levels"] = "all"
