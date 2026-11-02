@@ -201,21 +201,34 @@ jobs:
         run: |
           mkdir -p global-nwp-output/"$MODEL_KEY"
           STATUS=global-nwp-output/"$MODEL_KEY"/model_status.json
-          if [[ -f "$STATUS" ]]; then
-            python - "$STATUS" >> "$GITHUB_STEP_SUMMARY" <<'PY'
-          import json, sys
-          p=json.load(open(sys.argv[1], encoding="utf-8"))
-          print(f"### {p.get('model_key')} — {p.get('status')}")
-          print(p.get("message", ""))
-          if p.get("errors"):
-              print("\n**Ocorrências**")
-              for item in p["errors"][:20]:
+          PROGRESS=global-nwp-output/"$MODEL_KEY"/collection-progress.json
+          if [[ ! -f "$STATUS" ]]; then
+            printf '{"model_key":"%s","status":"failed","message":"Coletor interrompido antes de escrever model_status.json; consulte collection-progress.json."}\n' "$MODEL_KEY" > "$STATUS"
+          fi
+          python - "$STATUS" "$PROGRESS" >> "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json, pathlib, sys
+          status=json.load(open(sys.argv[1], encoding="utf-8"))
+          print(f"### {status.get('model_key')} — {status.get('status')}")
+          print(status.get("message", ""))
+          progress_path=pathlib.Path(sys.argv[2])
+          if progress_path.is_file():
+              progress=json.load(progress_path.open(encoding="utf-8"))
+              print(
+                  f"\n**Progresso:** {progress.get('completed_count', 0)}/"
+                  f"{progress.get('requested_forecast_hours', 0)} validades concluídas."
+              )
+              print(f"**Com arquivo:** {len(progress.get('available_forecast_hours', []))}")
+              print(f"**Sem arquivo:** {progress.get('missing_forecast_hours', [])[:40]}")
+              errors=progress.get("errors", [])
+              if errors:
+                  print("\n**Falhas de download/processamento (até 20):**")
+                  for item in errors[:20]:
+                      print(f"- {item}")
+          if status.get("errors"):
+              print("\n**Ocorrências finais:**")
+              for item in status["errors"][:20]:
                   print(f"- {item}")
           PY
-          else
-            printf '{"model_key":"%s","status":"failed","message":"Coletor não gerou status.json; verifique instalação e logs."}\n' "$MODEL_KEY" > "$STATUS"
-            echo "### $MODEL_KEY — failed" >> "$GITHUB_STEP_SUMMARY"
-          fi
 
       - name: Enviar dados regionais para o agregador
         if: always()
