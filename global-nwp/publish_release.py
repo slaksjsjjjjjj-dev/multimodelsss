@@ -214,13 +214,33 @@ def main() -> int:
 
     progress_by_model = {}
     for model in catalog["models"]:
-        progress_file = data_root / model["model_key"] / "collection-summary.json"
-        progress = {}
-        if progress_file.is_file():
-            progress = json.loads(progress_file.read_text(encoding="utf-8"))
+        model_data_dir = data_root / model["model_key"]
+        summary_file = model_data_dir / "collection-summary.json"
+        progress_file = model_data_dir / "collection-progress.json"
+        summary = (
+            json.loads(summary_file.read_text(encoding="utf-8"))
+            if summary_file.is_file() else {}
+        )
+        progress = (
+            json.loads(progress_file.read_text(encoding="utf-8"))
+            if progress_file.is_file() else {}
+        )
+        requested_hours = summary.get("requested_forecast_hours", [])
         progress_by_model[model["model_key"]] = {
-            "requested_forecast_hours": progress.get("requested_forecast_hours", []),
-            "missing_forecast_hours": progress.get("missing_forecast_hours", []),
+            "requested_forecast_hours": requested_hours,
+            "requested_forecast_hour_count": progress.get(
+                "requested_forecast_hours", len(requested_hours)
+            ),
+            "completed_forecast_hours": progress.get(
+                "completed_forecast_hours", summary.get("source_hours", [])
+            ),
+            "available_forecast_hours": progress.get(
+                "available_forecast_hours", summary.get("source_hours", [])
+            ),
+            "missing_forecast_hours": summary.get(
+                "missing_forecast_hours", progress.get("missing_forecast_hours", [])
+            ),
+            "errors": progress.get("errors", summary.get("download_errors", []))[:250],
             "status": model.get("status"),
         }
 
