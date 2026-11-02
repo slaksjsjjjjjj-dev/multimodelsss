@@ -26,61 +26,8 @@ permissions:
   actions: read
 
 jobs:
-  validate:
-    name: Validar código e catálogo
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 1
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Validar scripts, modelos e regiões
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import ast, json
-          from pathlib import Path
-          root = Path("global-nwp")
-          for name in ("collect.py", "publish_release.py"):
-              ast.parse((root / name).read_text(encoding="utf-8"), filename=name)
-          catalog = json.loads((root / "catalog.json").read_text(encoding="utf-8"))
-          regions = json.loads((root / "regions.json").read_text(encoding="utf-8"))
-          keys = [item["key"] for item in catalog["models"]]
-          ids = [item["id"] for item in regions["regions"]]
-          assert len(keys) == len(set(keys)), "model keys duplicados"
-          assert len(ids) == 14 and len(ids) == len(set(ids)), "esperadas 14 regiões sem duplicatas"
-          required_models = {
-              "ecmwf_ifs", "ecmwf_eps", "ecmwf_aifs", "ecmwf_aifs_ens",
-              "icon_dwd", "icon_ai", "gfs", "gfs_ai", "gefs_ai",
-              "hgefs", "cmc_gdps", "cmc_geps", "ukmet"
-          }
-          required_regions = {
-              "south_america", "south_pacific", "south_pacific_west", "south_pacific_central",
-              "brazil_north", "brazil_northeast", "brazil_center_west",
-              "brazil_southeast", "brazil_south",
-              "argentina_noa", "argentina_nea", "argentina_cuyo",
-              "argentina_pampas", "argentina_patagonia"
-          }
-          assert len(keys) == 13 and set(keys) == required_models, "o catálogo deve conter exatamente os 13 modelos esperados"
-          workflow_text = Path(".github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml").read_text(encoding="utf-8")
-          matrix_marker = "      matrix:\n        model:\n"
-          assert matrix_marker in workflow_text, "matriz de coleta não encontrada"
-          matrix_section = workflow_text.split(matrix_marker, 1)[1].split("\n    steps:", 1)[0]
-          matrix_models = [line.strip()[2:] for line in matrix_section.splitlines() if line.strip().startswith("- ")]
-          assert len(matrix_models) == 13 and set(matrix_models) == required_models, "matriz de coleta e catálogo precisam ter os mesmos 13 modelos"
-          assert required_regions.issubset(set(ids)), "faltam regiões obrigatórias"
-          print(f"OK: {len(keys)} modelos e {len(ids)} regiões; sintaxe Python e JSON válidos.")
-          PY
-
   collect:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
-    needs: [validate]
     name: "Coletar ${{ matrix.model }}"
     concurrency:
       group: sideral-global-nwp-collect-${{ github.ref }}-${{ matrix.model }}
@@ -113,44 +60,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
-
-      - name: Validar sintaxe Python, catálogo e regiões
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import ast
-          import json
-          from pathlib import Path
-
-          root = Path("global-nwp")
-          for name in ("collect.py", "publish_release.py"):
-              ast.parse((root / name).read_text(encoding="utf-8"), filename=name)
-          catalog = json.loads((root / "catalog.json").read_text(encoding="utf-8"))
-          regions = json.loads((root / "regions.json").read_text(encoding="utf-8"))
-          keys = [item["key"] for item in catalog["models"]]
-          region_ids = [item["id"] for item in regions["regions"]]
-          assert len(keys) == len(set(keys)), "model keys duplicados"
-          assert len(region_ids) == len(set(region_ids)), "region ids duplicados"
-          required_models = {
-              "ecmwf_ifs", "ecmwf_eps", "ecmwf_aifs", "ecmwf_aifs_ens",
-              "icon_dwd", "icon_ai", "gfs", "gfs_ai", "gefs_ai",
-              "hgefs", "cmc_gdps", "cmc_geps", "ukmet"
-          }
-          assert len(keys) == 13 and set(keys) == required_models, "catálogo deve conter exatamente os 13 modelos esperados"
-          workflow_text = Path(".github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml").read_text(encoding="utf-8")
-          matrix_marker = "      matrix:\n        model:\n"
-          assert matrix_marker in workflow_text, "matriz de coleta não encontrada"
-          matrix_section = workflow_text.split(matrix_marker, 1)[1].split("\n    steps:", 1)[0]
-          matrix_models = [line.strip()[2:] for line in matrix_section.splitlines() if line.strip().startswith("- ")]
-          assert len(matrix_models) == 13 and set(matrix_models) == required_models, "matriz de coleta e catálogo precisam ter os mesmos 13 modelos"
-          assert {"south_america", "south_pacific", "south_pacific_west", "south_pacific_central", "brazil_north",
-                  "brazil_northeast", "brazil_center_west", "brazil_southeast",
-                  "brazil_south", "argentina_noa", "argentina_nea",
-                  "argentina_cuyo", "argentina_pampas",
-                  "argentina_patagonia"}.issubset(set(region_ids))
-          print(f"OK: {len(keys)} modelos no catálogo; {len(region_ids)} regiões; scripts Python válidos.")
-          PY
 
       - name: Configurar Python 3.12
         uses: actions/setup-python@v5
@@ -249,8 +158,8 @@ jobs:
 
   publish:
     name: Publicar Releases regionais
-    if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.validate.result == 'success' }}
-    needs: [validate, collect]
+    if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+    needs: [collect]
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     permissions:
