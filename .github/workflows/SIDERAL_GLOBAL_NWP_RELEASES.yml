@@ -252,7 +252,7 @@ jobs:
     if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.validate.result == 'success' }}
     needs: [validate, collect]
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 180
     permissions:
       contents: write
       actions: read
@@ -294,6 +294,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RUN_DATE: ${{ inputs.run_date }}
           RUN_CYCLE: ${{ inputs.run_cycle }}
+          DATA_PUBLISH_STATUS: ${{ steps.publish_data.outcome }}
         run: |
           set -euo pipefail
           if [[ -n "${RUN_DATE:-}" ]]; then
@@ -309,6 +310,8 @@ jobs:
           TAG="sideral-global-nwp-${DATE_STAMP}-${CYCLE_STAMP}-${GITHUB_RUN_ID}"
           cat > /tmp/release-notes.md <<EOF
       - name: Publicar JSONs individuais na árvore nwp-data
+        id: publish_data
+        continue-on-error: true
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -343,6 +346,7 @@ jobs:
           Os horários ausentes na origem são informados no manifest.json e no
           run-report.json; nenhum horário é inventado.
 
+          Publicação da árvore nwp-data: ${DATA_PUBLISH_STATUS}
           Dados organizados: https://github.com/${GH_REPO}/tree/nwp-data/data
           Catálogo: https://github.com/${GH_REPO}/blob/nwp-data/catalog.json
           Execução: ${GITHUB_SERVER_URL}/${GH_REPO}/actions/runs/${GITHUB_RUN_ID}
