@@ -153,7 +153,7 @@ def main() -> int:
                 continue
 
             forecast_hours = sorted(
-                int(re.match(r"^F(\\d{3})", file_name).group(1))
+                int(re.match(r"^F(\d{3})", file_name).group(1))
                 for file_name in files
             )
             region_entry = {
