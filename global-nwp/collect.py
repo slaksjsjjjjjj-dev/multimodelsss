@@ -371,6 +371,7 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
             "available_forecast_hours": sorted(found_hours),
             "missing_forecast_hours": sorted(missing_hours),
             "completed_count": len(completed_hours),
+            "errors": errors[:250],
             "updated_utc": datetime.now(timezone.utc).isoformat(),
         }
         temp_path = progress_path.with_suffix(".tmp")
