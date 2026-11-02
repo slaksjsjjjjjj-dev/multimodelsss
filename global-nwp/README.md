@@ -4,12 +4,12 @@ Repositório: `slaksjsjjjjjj-dev/multimodelsss`.
 
 ## Agendamento e publicação
 
-O workflow `.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml` executa duas coletas por dia, às 09Z e 21Z. Cada execução seleciona a rodada global de pelo menos nove horas antes (00Z ou 12Z), dando tempo para os provedores terminarem de publicar os arquivos. Também existe execução manual em **Actions → SIDERAL — Global NWP JSON Releases → Run workflow**.
+O workflow `.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml` executa duas coletas por dia, às 09Z e 21Z. Cada execução seleciona a rodada global de pelo menos nove horas antes (00Z ou 12Z), dando tempo para os provedores terminarem de publicar os arquivos. Também existe execução manual em **Actions → SIDERAL — Global NWP JSON Releases → Run workflow**. Um `push` na branch `main` executa a validação estática; ele não inicia uma coleta meteorológica automaticamente.
 
 Cada execução cria um GitHub Release com:
 
 - `catalog.json`: modelos, regiões, status, inventário das variáveis/níveis e relação de arquivos.
-- `run-report.json`: resumo de modelos, regiões, frames e campos efetivamente gerados.
+- `run-report.json`: resumo de modelos, regiões, frames e campos efetivamente gerados, incluindo modelos sem dados regionais.
 - ZIPs por modelo/região, divididos em partes de até 1,5 GB. Cada ZIP contém `manifest.json` e arquivos `forecast/fNNN-partNNN.json.gz`.
 
 Cada frame `.json.gz`, depois de descompactado, é um JSON com `metadata`, `grids` e `fields`. Cada campo mantém o nome curto e descritivo, unidade, `paramId`, tipo e valor do nível vertical, passo/intervalo, membro do ensemble quando publicado e coordenadas dos pontos. A lista de variáveis e as validades é descoberta nos GRIBs de cada rodada; não existe uma lista fixa que invente dados ausentes.
@@ -59,6 +59,6 @@ Todas as regiões são WGS84 e definidas em `regions.json` (limites oeste/sul/le
 
 Um modelo pode terminar com status `published-ready`, `partial`, `failed` ou `blocked`. O manifesto é a fonte de verdade para os campos e horários realmente obtidos; uma validade não disponível no provedor não é fabricada. A Release é criada somente quando ao menos um pacote regional JSON foi gerado.
 
-A coleta de todos os campos globais é volumosa, especialmente para ensembles. Os arquivos são processados um de cada vez e removidos após a conversão para limitar o espaço temporário. O job tem paralelismo limitado e cada modelo tem status próprio para que falhas de um provedor não sejam confundidas com dados publicados.
+A coleta de todos os campos globais é volumosa, especialmente para ensembles. Os arquivos são processados um de cada vez por coletor e removidos após a conversão para limitar o espaço temporário. A matriz executa até quatro modelos em paralelo; cada modelo tem job, status e artefato próprios. Uma falha de provedor é sinalizada como falha no workflow, mas o artefato de diagnóstico é enviado antes. A etapa de publicação roda mesmo que um ou mais modelos falhem.
 
-**Importante:** a validação estática do workflow não substitui a validação operacional de cada provedor. As primeiras execuções reais revelaram falhas de horário do ECMWF, incompatibilidade de timezone do Herbie e limitações do regridding CDO no ICON; as correções estão no código atual, mas precisam ser confirmadas em uma nova rodada completa antes de considerar todos os modelos operacionais.
+**Importante:** a validação estática do workflow não substitui a validação operacional de cada provedor. A validação agora exige exatamente os 13 IDs do catálogo, incluindo `cmc_geps`, e também roda em agendamentos e execuções manuais antes da coleta. A disponibilidade operacional de cada modelo só deve ser confirmada pelo `model_status.json`, pelos manifestos regionais e pelo `run-report.json` de uma execução completa.
