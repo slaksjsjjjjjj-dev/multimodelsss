@@ -118,23 +118,66 @@ def make_herbie(model: str, product: str, run: datetime, lead: int, save_dir: Pa
 
 def download_herbie_file(model: str, product: str, run: datetime, lead: int,
                          raw_dir: Path, **kwargs) -> list[Path]:
-    before = set(raw_dir.rglob("*")) if raw_dir.exists() else set()
-    h = make_herbie(model, product, run, lead, raw_dir, **kwargs)
-    result = h.download()
-    files: list[Path] = []
-    if result:
-        try:
-            path = Path(result)
-            if path.is_file():
-                files.append(path)
-        except (TypeError, OSError):
-            pass
-    if not files:
-        for path in raw_dir.rglob("*"):
-            if path.is_file() and path not in before and path.suffix.lower() in {".grib2", ".grb2", ".grb"}:
-                files.append(path)
-    return sorted(set(files))
+    """Download one Herbie product with explicit errors and transient retries."""
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    delays = (2, 5, 10, 20)
+    last_error: Exception | None = None
 
+    for attempt in range(1, len(delays) + 1):
+        before = set(raw_dir.rglob("*"))
+        try:
+            h = make_herbie(model, product, run, lead, raw_dir, **kwargs)
+            # Herbie defaults to errors="warn", which can make a missing or
+            # failed transfer look like an empty successful result. Raise it.
+            result = h.download(errors="raise", verbose=False)
+            files: list[Path] = []
+
+            if result:
+                try:
+                    candidate = Path(result)
+                    if candidate.is_file() and candidate.stat().st_size > 0:
+                        files.append(candidate)
+                except (TypeError, OSError):
+                    pass
+
+            if not files:
+                after = set(raw_dir.rglob("*"))
+                files = [
+                    candidate for candidate in after - before
+                    if candidate.is_file()
+                    and candidate.suffix.lower() in {".grib2", ".grb2", ".grb"}
+                    and candidate.stat().st_size > 0
+                ]
+
+            files = sorted(set(files))
+            if files:
+                return files
+            raise RuntimeError(
+                f"Herbie terminou sem retornar GRIB2 válido para "
+                f"{model}/{product} F{lead:03d}."
+            )
+        except Exception as exc:
+            last_error = exc
+            message = str(exc).lower()
+            permanent_missing = any(token in message for token in (
+                "404", "not found", "no data found", "no matching file",
+                "does not exist", "not available for this forecast hour",
+            ))
+            if permanent_missing or attempt == len(delays):
+                raise RuntimeError(
+                    f"{model}/{product} F{lead:03d} falhou após {attempt} tentativa(s): "
+                    f"{type(exc).__name__}: {exc}"
+                ) from exc
+            wait = delays[attempt - 1]
+            print(
+                f"[Herbie] {model}/{product} F{lead:03d}: tentativa "
+                f"{attempt}/{len(delays)} falhou ({type(exc).__name__}: {exc}); "
+                f"nova tentativa em {wait}s.",
+                flush=True,
+            )
+            time.sleep(wait)
+
+    raise RuntimeError(f"Download Herbie falhou: {last_error}") from last_error
 
 def _ecmwf_step_end(step: int | str) -> int:
     if isinstance(step, int):
@@ -288,6 +331,7 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
 def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
                    process_file: Callable[[Path], None] | None = None
                    ) -> tuple[list[Path], list[int], list[str]]:
+    """Collect NOAA models with bounded parallel downloads and durable progress."""
     spec = {
         "gfs": [("gfs", "pgrb2.0p25", {}), ("gfs", "pgrb2b.0p25", {})],
         "gfs_ai": [("aigfs", "sfc", {}), ("aigfs", "pres", {})],
@@ -305,46 +349,121 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
         ],
     }
     products = spec[model_key]
+    output_root = raw_dir.parent.parent
+    model_output = output_root / model_key
+    model_output.mkdir(parents=True, exist_ok=True)
+    progress_path = model_output / "collection-progress.json"
+
     downloaded: list[Path] = []
     found_hours: set[int] = set()
+    completed_hours: set[int] = set()
+    missing_hours: set[int] = set()
     errors: list[str] = []
-    for lead in requested:
+
+    def write_progress() -> None:
+        payload = {
+            "schema": "sideral-global-nwp-progress-v1",
+            "model_key": model_key,
+            "run_utc": run.isoformat(),
+            "status": "collecting",
+            "requested_forecast_hours": len(requested),
+            "completed_forecast_hours": sorted(completed_hours),
+            "available_forecast_hours": sorted(found_hours),
+            "missing_forecast_hours": sorted(missing_hours),
+            "completed_count": len(completed_hours),
+            "updated_utc": datetime.now(timezone.utc).isoformat(),
+        }
+        temp_path = progress_path.with_suffix(".tmp")
+        temp_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        temp_path.replace(progress_path)
+
+    def collect_one_lead(lead: int) -> tuple[int, list[Path], list[str]]:
         lead_files: list[Path] = []
-        lead_downloaded = False
+        lead_errors: list[str] = []
         for source_model, product, kwargs in products:
+            options = dict(kwargs)
+            dest = (
+                raw_dir / f"f{lead:03d}" / source_model / product
+                / "_".join(f"{key}-{value}" for key, value in sorted(options.items()))
+            )
             try:
-                options = dict(kwargs)
-                if source_model == "ifs":
-                    options["resolution"] = "0p25"
-                dest = raw_dir / f"f{lead:03d}" / source_model / product / "_".join(
-                    f"{key}-{value}" for key, value in sorted(options.items())
-                )
                 found = download_herbie_file(
                     source_model, product, run, lead, dest, **options
                 )
                 if found:
-                    lead_downloaded = True
-                else:
-                    errors.append(
-                        f"F{lead:03d} {source_model}/{product}: arquivo ausente na fonte."
-                    )
-                if process_file:
-                    for path in found:
-                        process_file(path)
-                else:
                     lead_files.extend(found)
+                else:
+                    lead_errors.append(
+                        f"F{lead:03d} {source_model}/{product}: fonte não retornou arquivo."
+                    )
             except Exception as exc:
-                errors.append(f"F{lead:03d} {source_model}/{product}: {type(exc).__name__}: {exc}")
-            time.sleep(0.25)
-        if lead_downloaded or lead_files:
-            found_hours.add(lead)
-            downloaded.extend(lead_files)
-        else:
-            message = f"F{lead:03d}: nenhuma das fontes/product streams devolveu arquivo."
-            print(f"[{model_key}] {message}")
-            errors.append(message)
-    return sorted(set(downloaded)), sorted(found_hours), errors
+                lead_errors.append(
+                    f"F{lead:03d} {source_model}/{product}: "
+                    f"{type(exc).__name__}: {exc}"
+                )
+        return lead, sorted(set(lead_files)), lead_errors
 
+    write_progress()
+    # Download a few forecast leads concurrently; process GRIB files in the
+    # main thread to avoid concurrent appends to the same regional NDJSON files.
+    # GFS has the longest hourly series, so bounded concurrency is particularly
+    # important there. Each lead/product writes to its own destination folder.
+    max_workers = 4 if model_key == "gfs" else 3
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_lead = {
+            executor.submit(collect_one_lead, lead): lead for lead in requested
+        }
+        for future in as_completed(future_to_lead):
+            lead = future_to_lead[future]
+            try:
+                returned_lead, lead_files, lead_errors = future.result()
+                if returned_lead != lead:
+                    raise RuntimeError("O worker retornou uma validade diferente da solicitada.")
+            except Exception as exc:
+                lead_files = []
+                lead_errors = [
+                    f"F{lead:03d}: erro inesperado no worker: "
+                    f"{type(exc).__name__}: {exc}"
+                ]
+
+            errors.extend(lead_errors)
+            if lead_files:
+                found_hours.add(lead)
+                for grib_path in lead_files:
+                    if process_file:
+                        try:
+                            process_file(grib_path)
+                        except Exception as exc:
+                            errors.append(
+                                f"F{lead:03d} {grib_path.name}: processamento GRIB falhou: "
+                                f"{type(exc).__name__}: {exc}"
+                            )
+                    else:
+                        downloaded.append(grib_path)
+            else:
+                missing_hours.add(lead)
+
+            completed_hours.add(lead)
+            write_progress()
+            print(
+                f"[{model_key}] progresso {len(completed_hours)}/{len(requested)} "
+                f"validade(s); última F{lead:03d}; "
+                f"{len(found_hours)} com arquivo e {len(missing_hours)} sem arquivo.",
+                flush=True,
+            )
+
+    final_progress = json.loads(progress_path.read_text(encoding="utf-8"))
+    final_progress["status"] = "download-finished"
+    final_progress["errors"] = errors[:250]
+    temp_path = progress_path.with_suffix(".tmp")
+    temp_path.write_text(
+        json.dumps(final_progress, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    temp_path.replace(progress_path)
+
+    return sorted(set(downloaded)), sorted(found_hours), errors
 
 class LinkParser(HTMLParser):
     def __init__(self):
@@ -746,8 +865,11 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
 
 def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
                    run: datetime, catalog_spec: dict, stats: dict) -> list[dict]:
+    """Write one individually compressed JSON file for each available F-hour."""
     written: list[dict] = []
     inventory = stats.get("_inventory", {})
+    requested_hours = stats.get("_requested_hours", [])
+
     for region in REGIONS:
         region_id = region["id"]
         leads = stats.get(region_id, {})
@@ -755,74 +877,84 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
         forecast_dir = region_root / "forecast"
         forecast_dir.mkdir(parents=True, exist_ok=True)
         validity: list[dict] = []
+
         for lead in sorted(leads):
             entry = leads[lead]
             field_dir = spool_root / region_id / f"f{lead:03d}"
-            grids = {}
+            grids: dict[str, dict] = {}
             grids_dir = field_dir / "grids"
             if grids_dir.exists():
                 for grid_path in sorted(grids_dir.glob("*.json")):
-                    grids[grid_path.stem] = json.loads(grid_path.read_text(encoding="utf-8"))
+                    grids[grid_path.stem] = json.loads(
+                        grid_path.read_text(encoding="utf-8")
+                    )
+
             fields_path = field_dir / "fields.ndjson"
             if not fields_path.is_file() or fields_path.stat().st_size == 0:
                 continue
 
-            # Keep each JSON frame small enough to be consumed and attached as
-            # a GitHub Release asset. Large ensemble leads are split by fields.
-            max_fields_per_part = 100
-            with fields_path.open("r", encoding="utf-8") as source:
-                total_fields = sum(1 for line in source if line.strip())
-            part_count = (total_fields + max_fields_per_part - 1) // max_fields_per_part
+            # Exactly one JSON document per available forecast hour, containing
+            # every field/level/member collected for this model and region.
+            total_fields = sum(
+                1 for line in fields_path.open("r", encoding="utf-8") if line.strip()
+            )
+            if total_fields == 0:
+                continue
+
+            file_name = f"F{lead:03d}.json.gz"
+            out_path = forecast_dir / file_name
+            header = {
+                "schema": "sideral-global-nwp-field-frame-v1",
+                "model_key": model_key,
+                "model": catalog_spec["label"],
+                "provider": catalog_spec["provider"],
+                "resolution": catalog_spec.get("resolution"),
+                "run_utc": entry.get("run_utc") or run.isoformat(),
+                "forecast_hour": lead,
+                "valid_time": entry.get("valid_time"),
+                "region": region_id,
+                "coordinate_system": "WGS84",
+                "field_count": total_fields,
+                "parts": 1,
+            }
 
             with fields_path.open("r", encoding="utf-8") as source:
-                for part_number in range(1, part_count + 1):
-                    part_lines = []
-                    while len(part_lines) < max_fields_per_part:
-                        line = source.readline()
-                        if not line:
-                            break
+                with gzip.open(
+                    out_path, "wt", encoding="utf-8", compresslevel=6
+                ) as compressed:
+                    compressed.write("{")
+                    compressed.write('"metadata":')
+                    compressed.write(json.dumps(
+                        header, ensure_ascii=False, separators=(",", ":")
+                    ))
+                    compressed.write(',"grids":')
+                    compressed.write(json.dumps(
+                        grids, ensure_ascii=False, separators=(",", ":")
+                    ))
+                    compressed.write(',"fields":[')
+                    first_field = True
+                    for line in source:
                         line = line.strip()
-                        if line:
-                            part_lines.append(line)
-                    if not part_lines:
-                        break
+                        if not line:
+                            continue
+                        if not first_field:
+                            compressed.write(",")
+                        compressed.write(line)
+                        first_field = False
+                    compressed.write("]}")
 
-                    file_name = f"f{lead:03d}-part{part_number:03d}.json.gz"
-                    out_path = forecast_dir / file_name
-                    header = {
-                        "schema": "sideral-global-nwp-field-frame-v1",
-                        "model_key": model_key,
-                        "model": catalog_spec["label"],
-                        "provider": catalog_spec["provider"],
-                        "resolution": catalog_spec.get("resolution"),
-                        "run_utc": entry.get("run_utc") or run.isoformat(),
-                        "forecast_hour": lead,
-                        "valid_time": entry.get("valid_time"),
-                        "region": region_id,
-                        "coordinate_system": "WGS84",
-                        "field_count": len(part_lines),
-                        "part": part_number,
-                        "part_count": part_count,
-                    }
-                    with gzip.open(out_path, "wt", encoding="utf-8", compresslevel=6) as compressed:
-                        compressed.write("{")
-                        compressed.write('"metadata":')
-                        compressed.write(json.dumps(header, ensure_ascii=False, separators=(",", ":")))
-                        compressed.write(',"grids":')
-                        compressed.write(json.dumps(grids, ensure_ascii=False, separators=(",", ":")))
-                        compressed.write(',"fields":[')
-                        compressed.write(",".join(part_lines))
-                        compressed.write("]}")
-                    validity.append({
-                        "forecast_hour": lead,
-                        "valid_time": entry.get("valid_time"),
-                        "file": f"forecast/{file_name}",
-                        "field_count": len(part_lines),
-                        "part": part_number,
-                        "part_count": part_count,
-                    })
+            validity.append({
+                "forecast_hour": lead,
+                "valid_time": entry.get("valid_time"),
+                "file": f"forecast/{file_name}",
+                "field_count": total_fields,
+            })
+
         if not validity:
             continue
+
+        actual_hours = sorted({item["forecast_hour"] for item in validity})
+        missing_hours = sorted(set(requested_hours) - set(actual_hours))
         manifest = {
             "schema": "sideral-global-nwp-region-manifest-v1",
             "model_key": model_key,
@@ -831,20 +963,32 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
             "source": catalog_spec.get("source"),
             "resolution": catalog_spec.get("resolution"),
             "run_utc": next(
-                (entry.get("run_utc") for entry in leads.values() if entry.get("run_utc")),
+                (
+                    entry.get("run_utc")
+                    for entry in leads.values()
+                    if entry.get("run_utc")
+                ),
                 run.isoformat(),
             ),
             "cycle_utc": next(
-                (str(entry.get("run_utc"))[11:13] for entry in leads.values() if entry.get("run_utc")),
+                (
+                    str(entry.get("run_utc"))[11:13]
+                    for entry in leads.values()
+                    if entry.get("run_utc")
+                ),
                 f"{run.hour:02d}",
             ),
             "region": region,
-            "forecast_hours": sorted({item["forecast_hour"] for item in validity}),
+            "requested_forecast_hours": requested_hours,
+            "forecast_hours": actual_hours,
+            "missing_forecast_hours": missing_hours,
             "validities": validity,
             "variables": inventory.get(region_id, {}).get("variables", []),
-            "variable_level_count": len(inventory.get(region_id, {}).get("variables", [])),
+            "variable_level_count": len(
+                inventory.get(region_id, {}).get("variables", [])
+            ),
             "field_count": sum(item["field_count"] for item in validity),
-            "data_format": "JSON UTF-8 compactado com gzip (.json.gz)",
+            "data_format": "um JSON por validade, compactado individualmente em gzip (.json.gz); não é ZIP",
             "attribution": {
                 "ECMWF": "Contains ECMWF data. © ECMWF. Licensed under CC-BY-4.0 where applicable."
             } if catalog_spec["provider"] == "ECMWF" else None,
@@ -857,9 +1001,10 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
             "forecast_hours": len(validity),
             "field_count": manifest["field_count"],
             "variables": manifest["variable_level_count"],
+            "missing_forecast_hours": len(missing_hours),
         })
-    return written
 
+    return written
 
 def write_model_status(path: Path, model_key: str, status: str, run: datetime,
                        message: str, errors: list[str] | None = None) -> None:
@@ -948,6 +1093,7 @@ def main() -> int:
         "_inventory": {},
         "_inventory_keys": {},
         "_errors": {"items": []},
+        "_requested_hours": requested,
     }
     max_hour = int(spec["max_forecast_hour"])
 
@@ -1010,7 +1156,9 @@ def main() -> int:
             "processed_grib_files": len(processed_files),
             "processed_file_examples": processed_files[:30],
             "regions": written,
+            "requested_forecast_hours": requested,
             "source_hours": available_hours or discovered_hours,
+            "missing_forecast_hours": sorted(set(requested) - set(available_hours)),
             "regionalizer_errors": stats.get("_errors", {}).get("items", []),
             "download_errors": errors[:250],
         }
