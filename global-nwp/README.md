@@ -105,4 +105,4 @@ Todas as regiões são WGS84 e definidas em `regions.json` (limites oeste/sul/le
 
 Um modelo pode terminar com status `published-ready`, `partial`, `failed` ou `blocked`. O catálogo nunca interpreta um modelo apenas configurado como modelo com dados. A disponibilidade operacional precisa ser confirmada pelo `model_status.json`, `collection-summary.json`, `collection-progress.json` e pelos manifestos regionais.
 
-A validação estática exige os 13 IDs de modelo e compara o conjunto com a matriz do workflow. As falhas de provedor são sinalizadas no GitHub Actions, mas os artefatos de diagnóstico são enviados antes de marcar o job como falho. A etapa de publicação roda mesmo se alguns modelos falharem.
+O workflow não possui job de pré-validação nem etapa de bloqueio por catálogo/matriz. Cada modelo inicia diretamente sua coleta. Se uma fonte falhar ou não produzir campos regionais, o modelo registra o diagnóstico sem impedir a publicação dos demais; os arquivos disponíveis continuam sendo publicados.
