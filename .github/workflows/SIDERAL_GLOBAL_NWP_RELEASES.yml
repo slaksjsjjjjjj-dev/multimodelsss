@@ -22,7 +22,6 @@ permissions:
 
 jobs:
   collect:
-    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     name: "Coletar ${{ matrix.model }}"
     concurrency:
       group: sideral-global-nwp-collect-${{ github.ref }}-${{ matrix.model }}
@@ -146,7 +145,7 @@ jobs:
 
   publish:
     name: Publicar Releases regionais
-    if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+    if: ${{ always() }}
     needs: [collect]
     runs-on: ubuntu-24.04
     timeout-minutes: 180
