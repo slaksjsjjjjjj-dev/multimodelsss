@@ -36,6 +36,12 @@ on:
       max_forecast_hour:
         required: true
         type: number
+      location_name:
+        required: false
+        type: string
+      location_state:
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -357,6 +363,8 @@ jobs:
           MODEL_LABEL: ${{ inputs.model_label }}
           MODEL_KEY: ${{ inputs.model_key }}
           RESOLUTION_KM: ${{ inputs.resolution_km }}
+          LOCATION_NAME: ${{ inputs.location_name || 'Ponto selecionado' }}
+          LOCATION_STATE: ${{ inputs.location_state || '' }}
           WRFOUT_ASSET: ${{ matrix.file }}
           SIDERAL_SOURCE_DIR: ${{ github.workspace }}/sideral-source
         run: |
@@ -373,6 +381,8 @@ jobs:
             --model-label "$MODEL_LABEL" \
             --model-key "$MODEL_KEY" \
             --resolution-km "$RESOLUTION_KM" \
+            --location-name "$LOCATION_NAME" \
+            --location-state "$LOCATION_STATE" \
             --output-dir output
           test -s "output/f$(printf '%03d' "$FORECAST_HOUR").png"
           test -s "output/f$(printf '%03d' "$FORECAST_HOUR").json"
