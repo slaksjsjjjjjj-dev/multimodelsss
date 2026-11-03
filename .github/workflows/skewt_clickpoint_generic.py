@@ -101,6 +101,8 @@ def main() -> None:
     parser.add_argument("--model-label", required=True)
     parser.add_argument("--model-key", required=True)
     parser.add_argument("--resolution-km", required=True, type=float)
+    parser.add_argument("--location-name", default="Ponto selecionado")
+    parser.add_argument("--location-state", default="")
     parser.add_argument("--max-distance-km", type=float, default=8.0)
     parser.add_argument("--output-dir", required=True)
     args = parser.parse_args()
@@ -126,10 +128,12 @@ def main() -> None:
         raise FileNotFoundError(f"WRFOUT ausente ou incompleto: {wrfout}")
 
     native = load_native()
-    point_name = f"Ponto selecionado ({args.latitude:.4f}, {args.longitude:.4f})"
+    point_name = str(args.location_name or "Ponto selecionado").strip()
+    if not point_name:
+        point_name = "Ponto selecionado"
     location = {
         "name": point_name,
-        "state": "",
+        "state": str(args.location_state or "").strip(),
         "latitude": args.latitude,
         "longitude": args.longitude,
     }
@@ -161,7 +165,7 @@ def main() -> None:
         temp_dir.mkdir(parents=True, exist_ok=True)
         render_meta = {
             "location": point_name,
-            "state": "",
+            "state": str(args.location_state or "").strip(),
             "model": args.model_label,
             "station": f"{point_name} / {args.model_label}",
             "latitude": args.latitude,
@@ -194,6 +198,8 @@ def main() -> None:
         "request_id": args.request_id,
         "model": args.model_label,
         "model_key": args.model_key,
+        "location_name": point_name,
+        "state": str(args.location_state or "").strip(),
         "source": "WRF-ARW native WRFOUT",
         "native_grid_spacing_km": args.resolution_km,
         "latitude": args.latitude,
