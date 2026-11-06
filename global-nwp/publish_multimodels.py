@@ -76,7 +76,7 @@ def main() -> int:
             manifest_relative = manifest_path.relative_to(stage).as_posix()
             manifest_url = raw_url(repository, manifest_relative)
             run_dir = manifest_path.parent
-            run_relative = run_dir.relative_to(stage).as_posix()
+            run_relative = run_dir.relative_to(data_root).as_posix()
 
             url_map = {}
             lead_map: dict[int, dict[str, str]] = {}
