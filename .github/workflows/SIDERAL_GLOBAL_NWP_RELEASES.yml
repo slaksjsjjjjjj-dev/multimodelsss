@@ -185,30 +185,19 @@ jobs:
 
       - name: Publicar JSONs individuais na árvore nwp-data
         id: publish_data
-        continue-on-error: true
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          PUBLISH_ROOT="$(mktemp -d)"
-          git -C "$PUBLISH_ROOT" init --initial-branch=nwp-data
-          git -C "$PUBLISH_ROOT" config user.name "github-actions[bot]"
-          git -C "$PUBLISH_ROOT" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          cp -a release-assets/data "$PUBLISH_ROOT/data"
-          cp release-assets/catalog.json "$PUBLISH_ROOT/catalog.json"
-          cp release-assets/run-report.json "$PUBLISH_ROOT/run-report.json"
-          touch "$PUBLISH_ROOT/.nojekyll"
-
-          git -C "$PUBLISH_ROOT" add -A
-          git -C "$PUBLISH_ROOT" commit -m "Publish Sideral JSON data ${GITHUB_RUN_ID}"
-
-          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-          git -C "$PUBLISH_ROOT" -c http.extraheader="AUTHORIZATION: basic $AUTH_HEADER" \
-            push --force "https://github.com/$GH_REPO.git" HEAD:nwp-data
-
+          python global-nwp/publish_tree.py \
+            --source release-assets \
+            --branch nwp-data \
+            --repository "$GH_REPO" \
+            --token "$GH_TOKEN" \
+            --commit-message "Publish Sideral global NWP ${GITHUB_RUN_ID}" \
+            --batch-mb 32
           echo "JSON directory tree: https://github.com/$GH_REPO/tree/nwp-data/data" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publicar GitHub Release com JSONs regionais
