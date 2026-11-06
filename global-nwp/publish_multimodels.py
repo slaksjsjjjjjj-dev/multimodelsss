@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -169,16 +170,20 @@ def main() -> int:
             encoding="utf-8",
         )
 
-        gh([
-            "python", "global-nwp/publish_tree.py",
-            "--source", str(stage),
-            "--branch", BRANCH,
-            "--repository", repository,
-            "--token", token,
-            "--commit-message", f"Publish SIDERAL MULTIMODELS {run_id}",
-            "--batch-mb", "8",
-            "--batch-files", "200",
-        ])
+        subprocess.run(
+            [
+                "python", "global-nwp/publish_tree.py",
+                "--source", str(stage),
+                "--branch", BRANCH,
+                "--repository", repository,
+                "--token", token,
+                "--commit-message", f"Publish SIDERAL MULTIMODELS {run_id}",
+                "--batch-mb", "8",
+                "--batch-files", "200",
+            ],
+            check=True,
+            env=os.environ.copy(),
+        )
 
         # A publicação permanente fica toda na branch de dados:
         # frames JSON/PNG, manifests, catálogo e relatório.
