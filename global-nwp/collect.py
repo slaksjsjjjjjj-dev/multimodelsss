@@ -751,7 +751,7 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                 magic = probe.read(4)
             if magic == b"GRIB":
                 stream = source.open("rb")
-            elif magic[:2] == b"\\x1f\\x8b":
+            elif magic[:2] == b"\x1f\x8b":
                 stream = gzip.open(source, "rb")
                 if stream.read(4) != b"GRIB":
                     stream.close()
