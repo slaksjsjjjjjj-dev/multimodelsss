@@ -222,8 +222,8 @@ def main() -> int:
         )
     )
 
-    # Metadata files are attached to the GitHub Release. Individual data files
-    # are committed to the dedicated nwp-data branch in their folder hierarchy.
+    # The complete publication (data files, catalog and run report) is committed
+    # to the dedicated nwp-data branch in its folder hierarchy.
     (output_root / "catalog.json").write_text(
         json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8"
     )
