@@ -189,7 +189,8 @@ def main() -> int:
             "--repository", repository,
             "--token", token,
             "--commit-message", f"Publish SIDERAL MULTIMODELS {run_id}",
-            "--batch-mb", "32",
+            "--batch-mb", "8",
+            "--batch-files", "200",
         ])
 
         # A release is only created after the persistent branch push succeeds.
