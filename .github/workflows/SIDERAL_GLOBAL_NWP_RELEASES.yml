@@ -148,7 +148,7 @@ jobs:
           compression-level: 1
 
   publish:
-    name: Publicar Releases regionais
+    name: Publicar JSONs na branch nwp-data
     if: ${{ always() }}
     needs: [collect]
     runs-on: ubuntu-24.04
@@ -203,48 +203,7 @@ jobs:
             --commit-message "Publish Sideral global NWP ${GITHUB_RUN_ID}" \
             --batch-mb 8 \
             --batch-files 200
-          echo "JSON directory tree: https://github.com/$GH_REPO/tree/nwp-data/data" >> "$GITHUB_STEP_SUMMARY"
+          echo "Dados: https://github.com/$GH_REPO/tree/nwp-data/data" >> "$GITHUB_STEP_SUMMARY"
+          echo "Catálogo: https://github.com/$GH_REPO/blob/nwp-data/catalog.json" >> "$GITHUB_STEP_SUMMARY"
+          echo "Relatório: https://github.com/$GH_REPO/blob/nwp-data/run-report.json" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Publicar GitHub Release com JSONs regionais
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          RUN_DATE: ${{ inputs.run_date }}
-          RUN_CYCLE: ${{ inputs.run_cycle }}
-          DATA_PUBLISH_STATUS: ${{ steps.publish_data.outcome }}
-        run: |
-          set -euo pipefail
-          if [[ -n "${RUN_DATE:-}" ]]; then
-            DATE_STAMP="$RUN_DATE"
-          else
-            DATE_STAMP="$(python -c 'from datetime import datetime, timezone, timedelta; print((datetime.now(timezone.utc)-timedelta(hours=9)).strftime("%Y%m%d"))')"
-          fi
-          if [[ -n "${RUN_CYCLE:-}" && "${RUN_CYCLE:-}" != "auto" ]]; then
-            CYCLE_STAMP="$RUN_CYCLE"
-          else
-            CYCLE_STAMP="$(python -c 'from datetime import datetime, timezone, timedelta; d=datetime.now(timezone.utc)-timedelta(hours=9); print(f"{(d.hour//6)*6:02d}")')"
-          fi
-          TAG="sideral-global-nwp-${DATE_STAMP}-${CYCLE_STAMP}-${GITHUB_RUN_ID}"
-          cat > /tmp/release-notes.md <<EOF
-          Publicação Sideral de modelos globais e variantes de IA.
-
-          Os JSONs individuais estão organizados por modelo e região na branch nwp-data:
-          data/<modelo>/<regiao>/FNNN.json.gz (um arquivo por validade publicada).
-          Cada F contém todos os campos, níveis e membros coletados para aquela
-          validade e região. Não há ZIP com os dados meteorológicos.
-          Os horários ausentes na origem são informados no manifest.json e no
-          run-report.json; nenhum horário é inventado.
-
-          Publicação da árvore nwp-data: ${DATA_PUBLISH_STATUS}
-          Dados organizados: https://github.com/${GH_REPO}/tree/nwp-data/data
-          Catálogo: https://github.com/${GH_REPO}/blob/nwp-data/catalog.json
-          Execução: ${GITHUB_SERVER_URL}/${GH_REPO}/actions/runs/${GITHUB_RUN_ID}
-          EOF
-          gh release create "$TAG" release-assets/catalog.json release-assets/run-report.json \
-            --repo "$GH_REPO" \
-            --title "Sideral Global NWP — ${DATE_STAMP} ${CYCLE_STAMP}Z" \
-            --notes-file /tmp/release-notes.md \
-            --latest=false
-
-          echo "Release: https://github.com/${GH_REPO}/releases/tag/${TAG}" >> "$GITHUB_STEP_SUMMARY"
