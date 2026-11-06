@@ -4,25 +4,12 @@ import json
 import os
 import re
 import shutil
-import subprocess
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
 
 BRANCH = "multimodels-data"
-
-
-def gh(command: list[str], *, capture: bool = False) -> str:
-    result = subprocess.run(
-        command,
-        check=True,
-        text=True,
-        stdout=subprocess.PIPE if capture else None,
-        stderr=subprocess.STDOUT if capture else None,
-        env=os.environ.copy(),
-    )
-    return result.stdout.strip() if capture else ""
 
 
 def raw_url(repository: str, relative: str) -> str:
@@ -193,36 +180,11 @@ def main() -> int:
             "--batch-files", "200",
         ])
 
-        # A release is only created after the persistent branch push succeeds.
-        run_stamp = regions[0]["run_directory"].rstrip("/").split("/")[-1]
-        tag = f"sideral-multimodels-025-{run_id}"
-        notes = "\\n".join([
-            "Publicação permanente do SIDERAL MULTIMODELS 0.25.",
-            "",
-            f"Dados: https://github.com/{repository}/tree/{BRANCH}/data",
-            f"Catálogo: https://github.com/{repository}/blob/{BRANCH}/catalog.json",
-            f"Execução: https://github.com/{repository}/actions/runs/{run_id}",
-            "Os links JSON/PNG individuais estão no catálogo e nos manifests.",
-            "O artefato temporário do Actions não é a publicação principal.",
-        ])
-        with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".md", delete=False) as note_file:
-            note_file.write(notes)
-            notes_path = note_file.name
-        try:
-            gh([
-                "gh", "release", "create", tag,
-                str(stage / "catalog.json"),
-                str(stage / "run-report.json"),
-                "--repo", repository,
-                "--title", f"SIDERAL MULTIMODELS 0.25 — {run_stamp}",
-                "--notes-file", notes_path,
-                "--latest=false",
-            ])
-        finally:
-            Path(notes_path).unlink(missing_ok=True)
-
-        print(f"Release permanente: https://github.com/{repository}/releases/tag/{tag}")
+        # A publicação permanente fica toda na branch de dados:
+        # frames JSON/PNG, manifests, catálogo e relatório.
         print(f"Dados permanentes: https://github.com/{repository}/tree/{BRANCH}/data")
+        print(f"Catálogo: https://github.com/{repository}/blob/{BRANCH}/catalog.json")
+        print(f"Relatório: https://github.com/{repository}/blob/{BRANCH}/run-report.json")
         print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
