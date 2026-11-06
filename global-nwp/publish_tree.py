@@ -6,31 +6,155 @@ import os
 import shutil
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 from urllib.parse import quote
 
 
-def run(command: list[str], *, cwd: Path | None = None, capture: bool = False) -> str:
+def git(
+    command: list[str],
+    *,
+    cwd: Path,
+    capture: bool = False,
+    check: bool = True,
+) -> str:
     result = subprocess.run(
         command,
         cwd=cwd,
-        check=True,
+        check=False,
         text=True,
-        stdout=subprocess.PIPE if capture else None,
-        stderr=subprocess.STDOUT if capture else None,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
     )
-    return result.stdout.strip() if capture else ""
+    output = result.stdout.strip()
+    if check and result.returncode:
+        raise RuntimeError(
+            f"Comando falhou ({result.returncode}): {' '.join(command)}\n{output[-6000:]}"
+        )
+    if not check and result.returncode not in (0, 1):
+        raise RuntimeError(
+            f"Comando falhou ({result.returncode}): {' '.join(command)}\n{output[-6000:]}"
+        )
+    return output
+
+
+def remote_branch_sha(
+    repo_url: str,
+    branch: str,
+    extra_header: str,
+    *,
+    cwd: Path,
+) -> str:
+    output = git(
+        [
+            "git", "-c", "http.version=HTTP/1.1",
+            "-c", f"http.extraheader={extra_header}",
+            "ls-remote", "--heads", repo_url, f"refs/heads/{branch}",
+        ],
+        cwd=cwd,
+    )
+    return output.split()[0] if output else ""
+
+
+def push_head(
+    *,
+    repo_url: str,
+    branch: str,
+    extra_header: str,
+    cwd: Path,
+    force: bool = False,
+) -> None:
+    local_sha = git(["git", "rev-parse", "HEAD"], cwd=cwd)
+    delays = (2, 5, 10, 20, 30, 45)
+
+    for attempt, delay in enumerate((*delays, None), start=1):
+        # A conexão pode cair depois que o GitHub já aceitou o push.
+        # Confira o SHA remoto antes de retransmitir o mesmo commit.
+        remote_sha = remote_branch_sha(repo_url, branch, extra_header, cwd=cwd)
+        if remote_sha == local_sha:
+            print(f"Push confirmado: {branch} @ {local_sha}")
+            return
+
+        command = [
+            "git",
+            "-c", "http.version=HTTP/1.1",
+            "-c", "http.postBuffer=524288000",
+            "-c", "http.lowSpeedLimit=1000",
+            "-c", "http.lowSpeedTime=120",
+            "-c", f"http.extraheader={extra_header}",
+            "push",
+        ]
+        if force:
+            command.append("--force")
+        command.extend([repo_url, f"HEAD:refs/heads/{branch}"])
+
+        result = subprocess.run(
+            command,
+            cwd=cwd,
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+        )
+        if result.returncode == 0:
+            print(result.stdout.strip())
+            return
+
+        output = result.stdout.strip()
+        print(
+            f"Push {attempt}/7 falhou (código {result.returncode}); "
+            f"verificando e tentando novamente.\n{output[-2500:]}"
+        )
+
+        remote_after = remote_branch_sha(repo_url, branch, extra_header, cwd=cwd)
+        if remote_after == local_sha:
+            print(f"GitHub recebeu o commit apesar da queda de conexão: {local_sha}")
+            return
+
+        if delay is not None:
+            time.sleep(delay)
+
+    raise RuntimeError(
+        f"Não foi possível publicar {branch}. Commit local: {local_sha}; "
+        f"commit remoto: {remote_branch_sha(repo_url, branch, extra_header, cwd=cwd)}"
+    )
+
+
+def commit_and_push(
+    message: str,
+    *,
+    cwd: Path,
+    repo_url: str,
+    branch: str,
+    extra_header: str,
+    force: bool = False,
+) -> None:
+    staged = git(["git", "diff", "--cached", "--name-only"], cwd=cwd)
+    if not staged:
+        return
+    git(["git", "commit", "-m", message], cwd=cwd)
+    push_head(
+        repo_url=repo_url,
+        branch=branch,
+        extra_header=extra_header,
+        cwd=cwd,
+        force=force,
+    )
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Publica uma árvore de dados em commits pequenos.")
+    parser = argparse.ArgumentParser(
+        description="Publica uma árvore de dados em commits pequenos, com retry de rede."
+    )
     parser.add_argument("--source", required=True)
     parser.add_argument("--branch", required=True)
     parser.add_argument("--repository", default=os.getenv("GITHUB_REPOSITORY", ""))
     parser.add_argument("--token", default=os.getenv("GH_TOKEN", ""))
     parser.add_argument("--commit-message", default="Publish Sideral data")
-    parser.add_argument("--batch-mb", type=int, default=32)
+    parser.add_argument("--batch-mb", type=int, default=8)
+    parser.add_argument("--batch-files", type=int, default=200)
     args = parser.parse_args()
 
     source = Path(args.source).resolve()
@@ -47,99 +171,135 @@ def main() -> int:
     auth = base64.b64encode(f"x-access-token:{args.token}".encode()).decode()
     extra_header = f"AUTHORIZATION: basic {auth}"
     batch_limit = max(1, args.batch_mb) * 1024 * 1024
+    batch_file_limit = max(1, args.batch_files)
+
+    metadata_names = {"catalog.json", "run-report.json", ".nojekyll"}
+    metadata_files = [
+        path for path in files
+        if len(path.relative_to(source).parts) == 1
+        and path.name in metadata_names
+    ]
+    data_files = [
+        path for path in files
+        if path not in metadata_files
+    ]
 
     with tempfile.TemporaryDirectory(prefix="sideral-publish-") as temp:
         work = Path(temp)
-        run(["git", "init", "--initial-branch=publish"], cwd=work)
-        run(["git", "config", "user.name", "github-actions[bot]"], cwd=work)
-        run(
-            ["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"],
+        git(["git", "init", "--initial-branch=publish"], cwd=work)
+        git(["git", "config", "user.name", "github-actions[bot]"], cwd=work)
+        git(
+            [
+                "git", "config", "user.email",
+                "41898282+github-actions[bot]@users.noreply.github.com",
+            ],
             cwd=work,
         )
 
-        def commit_and_push(message: str, first: bool) -> None:
-            run(["git", "commit", "-m", message], cwd=work)
-            command = [
-                "git", "-c", "http.version=HTTP/1.1",
-                "-c", f"http.extraheader={extra_header}",
-                "push",
-            ]
-            if first:
-                command.append("--force")
-            command.extend([repo_url, f"HEAD:refs/heads/{args.branch}"])
-            run(command, cwd=work)
+        # Primeiro commit pequeno: cria a branch e envia somente o primeiro lote.
+        # Catálogo/relatório ficam para o final, quando todos os dados já existem.
+        (work / ".nojekyll").touch()
+        git(["git", "add", "--", ".nojekyll"], cwd=work)
 
-        # Publish catalog/report first so the branch is immediately discoverable.
-        metadata = [
-            path for path in files
-            if len(path.relative_to(source).parts) == 1
-            and path.name in {"catalog.json", "run-report.json", ".nojekyll"}
-        ]
-        if not any(path.name == ".nojekyll" for path in metadata):
-            marker = work / ".nojekyll"
-            marker.touch()
-            metadata.append(marker)
-
-        for path in metadata:
-            relative = Path(path.name)
-            destination = work / relative
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            if path.resolve() != destination.resolve():
-                shutil.copy2(path, destination)
-            run(["git", "add", "--", relative.as_posix()], cwd=work)
-
-        run(["git", "commit", "-m", f"{args.commit_message} (catalog)"], cwd=work)
-        command = [
-            "git", "-c", "http.version=HTTP/1.1",
-            "-c", f"http.extraheader={extra_header}",
-            "push", "--force", repo_url, f"HEAD:refs/heads/{args.branch}",
-        ]
-        run(command, cwd=work)
-        pushed_any = True
-
-        metadata_set = {str(path.resolve()) for path in metadata if path.exists()}
-        data_files = [path for path in files if str(path.resolve()) not in metadata_set]
         pending_bytes = 0
+        pending_files = 0
         batch_number = 0
+        first_push = True
+
+        def flush_batch() -> None:
+            nonlocal pending_bytes, pending_files, batch_number, first_push
+            if pending_files == 0:
+                return
+            batch_number += 1
+            commit_and_push(
+                f"{args.commit_message} (data batch {batch_number})",
+                cwd=work,
+                repo_url=repo_url,
+                branch=args.branch,
+                extra_header=extra_header,
+                force=first_push,
+            )
+            first_push = False
+            print(
+                f"Lote {batch_number} publicado: {pending_files} arquivos, "
+                f"{pending_bytes / 1048576:.1f} MiB"
+            )
+            pending_bytes = 0
+            pending_files = 0
 
         for path in data_files:
             relative = path.relative_to(source)
             destination = work / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(path, destination)
-            run(["git", "add", "--", relative.as_posix()], cwd=work)
+            git(["git", "add", "--", relative.as_posix()], cwd=work)
             pending_bytes += path.stat().st_size
+            pending_files += 1
 
-            if pending_bytes >= batch_limit:
-                batch_number += 1
-                commit_and_push(
-                    f"{args.commit_message} (data batch {batch_number})",
-                    first=False,
-                )
-                print(f"Publicado lote {batch_number}: {pending_bytes / 1048576:.1f} MiB")
-                pending_bytes = 0
+            if pending_bytes >= batch_limit or pending_files >= batch_file_limit:
+                flush_batch()
 
-        if pending_bytes:
-            batch_number += 1
+        flush_batch()
+
+        if first_push:
+            # Publicações sem frames ainda podem publicar diagnósticos e catálogo.
             commit_and_push(
-                f"{args.commit_message} (data batch {batch_number})",
-                first=False,
+                f"{args.commit_message} (initialize data tree)",
+                cwd=work,
+                repo_url=repo_url,
+                branch=args.branch,
+                extra_header=extra_header,
+                force=True,
             )
-            print(f"Publicado lote {batch_number}: {pending_bytes / 1048576:.1f} MiB")
+            first_push = False
 
-        published_ref = run(
-            [
-                "git", "-c", "http.version=HTTP/1.1",
-                "-c", f"http.extraheader={extra_header}",
-                "ls-remote", "--heads", repo_url, f"refs/heads/{args.branch}",
-            ],
-            capture=True,
+        # Só disponibilize o catálogo depois que os arquivos referenciados estiverem no branch.
+        for path in metadata_files:
+            relative = Path(path.name)
+            destination = work / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            if path.resolve() != destination.resolve():
+                shutil.copy2(path, destination)
+            git(["git", "add", "--", relative.as_posix()], cwd=work)
+
+        commit_and_push(
+            f"{args.commit_message} (publish catalog)",
+            cwd=work,
+            repo_url=repo_url,
+            branch=args.branch,
+            extra_header=extra_header,
         )
-        if not published_ref:
-            raise SystemExit(f"A branch {args.branch} não foi confirmada no GitHub.")
 
-    print(f"Publicação confirmada: https://github.com/{args.repository}/tree/{quote(args.branch, safe='')}")
-    print(f"Arquivos enviados: {len(files)}")
+        # Confirma todos os caminhos da origem no commit que ficou no GitHub.
+        expected_paths = {
+            path.relative_to(source).as_posix()
+            for path in files
+        }
+        expected_paths.add(".nojekyll")
+        tree_output = git(["git", "ls-tree", "-r", "--name-only", "HEAD"], cwd=work)
+        committed_paths = set(tree_output.splitlines())
+        missing = sorted(expected_paths - committed_paths)
+        if missing:
+            raise RuntimeError(
+                "A publicação terminou sem incluir todos os arquivos: "
+                + ", ".join(missing[:40])
+            )
+
+        local_sha = git(["git", "rev-parse", "HEAD"], cwd=work)
+        published_sha = remote_branch_sha(
+            repo_url, args.branch, extra_header, cwd=work
+        )
+        if published_sha != local_sha:
+            raise RuntimeError(
+                f"Branch não está no commit completo. Local={local_sha}; remoto={published_sha}"
+            )
+
+    print(
+        f"Publicação confirmada: "
+        f"https://github.com/{args.repository}/tree/{quote(args.branch, safe='')}"
+    )
+    print(f"Arquivos confirmados: {len(files)}")
+    print(f"Commit publicado: {local_sha}")
     return 0
 
 
