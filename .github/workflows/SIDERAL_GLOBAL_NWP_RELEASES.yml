@@ -1,4 +1,4 @@
-name: SIDERAL — Global NWP JSON Releases
+name: SIDERAL — Global NWP JSON Branch
 
 on:
   schedule:
@@ -188,7 +188,6 @@ jobs:
             "${CYCLE_ARG[@]}"
 
       - name: Publicar JSONs individuais na árvore nwp-data
-        id: publish_data
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
