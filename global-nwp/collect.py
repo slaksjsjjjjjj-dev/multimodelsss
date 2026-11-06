@@ -732,6 +732,7 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
     requested = set(requested_hours)
     errors: list[str] = []
     diagnostics = {
+        "grib_files_opened": 0,
         "grib_messages_read": 0,
         "messages_with_forecast_hour": 0,
         "messages_rejected_by_hour": 0,
@@ -741,13 +742,35 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
     }
 
     for source in raw_files:
-        if source.suffix.lower() not in {".grib2", ".grb2", ".grb"}:
-            continue
+        # Do not filter by filename extension here. NOAA/Herbie GFS objects
+        # are published on AWS with names ending in f000/f003/... and have no
+        # .grib2 suffix. Herbie still downloads them as valid GRIB2 files.
+        # Identify the payload by its GRIB magic instead of its filename.
         try:
-            stream = source.open("rb")
+            with source.open("rb") as probe:
+                magic = probe.read(4)
+            if magic == b"GRIB":
+                stream = source.open("rb")
+            elif magic[:2] == b"\\x1f\\x8b":
+                stream = gzip.open(source, "rb")
+                if stream.read(4) != b"GRIB":
+                    stream.close()
+                    errors.append(
+                        f"{source.name}: arquivo gzip não contém payload GRIB2."
+                    )
+                    continue
+                stream.seek(0)
+            else:
+                errors.append(
+                    f"{source.name}: arquivo ignorado; assinatura inicial "
+                    f"{magic!r} não é GRIB2 nem gzip de GRIB2."
+                )
+                continue
         except OSError as exc:
             errors.append(f"{source.name}: {exc}")
             continue
+
+        diagnostics["grib_files_opened"] += 1
         with stream:
             while True:
                 gid = codes_grib_new_from_file(stream)
