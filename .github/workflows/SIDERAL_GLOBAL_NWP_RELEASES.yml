@@ -20,6 +20,10 @@ permissions:
   contents: write
   actions: read
 
+concurrency:
+  group: sideral-global-nwp-publish-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   collect:
     name: "Coletar ${{ matrix.model }}"
