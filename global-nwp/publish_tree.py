@@ -119,7 +119,7 @@ def main() -> int:
                 print(f"Publicado lote {batch_number}: {pending_bytes / 1048576:.1f} MiB")
                 pending_bytes = 0
 
-        if pending_bytes or not data_files:
+        if pending_bytes:
             batch_number += 1
             commit_and_push(
                 f"{args.commit_message} (data batch {batch_number})",
