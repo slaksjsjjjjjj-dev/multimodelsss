@@ -39,7 +39,7 @@ on:
     - cron: "15 1,13 * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: sideral-multimodels-05
@@ -152,51 +152,21 @@ jobs:
             python -m sideral_multimodels "${COMMON_ARGS[@]}"
           fi
 
-      - name: Validar continuidade dos frames PNG/JSON
-        working-directory: sideral-multimodels-05
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          output = Path("output")
-          manifests = sorted(output.rglob("manifest.json"))
-          if not manifests:
-              raise SystemExit("ERRO: nenhum manifest.json de rodada foi gerado")
-
-          for manifest_path in manifests:
-              run_dir = manifest_path.parent
-              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-              hours = manifest.get("productForecastHours", manifest.get("forecastHours", []))
-              products = manifest.get("forecastProducts", [])
-              if not hours:
-                  raise SystemExit(f"ERRO: forecastHours vazio em {manifest_path}")
-              expected = list(range(int(hours[0]), int(hours[-1]) + 1))
-              if [int(hour) for hour in hours] != expected:
-                  raise SystemExit(f"ERRO: manifest contém lacunas em {manifest_path}")
-              product_hours = [int(item["forecastHour"]) for item in products]
-              if product_hours != expected:
-                  raise SystemExit(f"ERRO: lista de produtos não é contínua em {manifest_path}")
-
-              missing = []
-              for lead in expected:
-                  for suffix in ("png", "json"):
-                      product_path = run_dir / "forecast" / f"f{lead:03d}.{suffix}"
-                      if not product_path.is_file() or product_path.stat().st_size == 0:
-                          missing.append(str(product_path))
-              if missing:
-                  raise SystemExit("ERRO: frames ausentes: " + ", ".join(missing[:30]))
-              print(f"OK: {run_dir}: {len(expected)} leads contínuos, cada um com PNG e JSON.")
-          PY
-
-      - name: Publicar artefato multimodelo
+      - name: Guardar cópia temporária do processamento
         uses: actions/upload-artifact@v4
         with:
           name: sideral-multimodels-025-regions-${{ github.run_id }}
           path: sideral-multimodels-05/output/
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publicar multimodels permanentemente
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MULTIMODEL_OUTPUT: sideral-multimodels-05/output
+        run: |
+          set -euo pipefail
+          python global-nwp/publish_multimodels.py
 
 # Runtime payload SHA-256: 10c08ef3becc4dcccd31a9960c5a18df75c54525fd4eda3fe767f79758baba39
