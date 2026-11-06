@@ -168,5 +168,8 @@ jobs:
         run: |
           set -euo pipefail
           python global-nwp/publish_multimodels.py
+          echo "Dados: https://github.com/$GITHUB_REPOSITORY/tree/multimodels-data/data" >> "$GITHUB_STEP_SUMMARY"
+          echo "Catálogo: https://github.com/$GITHUB_REPOSITORY/blob/multimodels-data/catalog.json" >> "$GITHUB_STEP_SUMMARY"
+          echo "Relatório: https://github.com/$GITHUB_REPOSITORY/blob/multimodels-data/run-report.json" >> "$GITHUB_STEP_SUMMARY"
 
 # Runtime payload SHA-256: 10c08ef3becc4dcccd31a9960c5a18df75c54525fd4eda3fe767f79758baba39
