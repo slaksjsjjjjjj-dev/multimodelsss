@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import quote
 
 PREFIX = "global-nwp-"
 
@@ -27,6 +29,8 @@ def main() -> int:
     reference = datetime.now(timezone.utc) - timedelta(hours=9)
     date_stamp = args.date or reference.strftime("%Y%m%d")
     cycle_stamp = args.cycle or f"{(reference.hour // 6) * 6:02d}"
+    repository = os.getenv("GITHUB_REPOSITORY", "slaksjsjjjjjj-dev/multimodelsss")
+    raw_data_base_url = f"https://raw.githubusercontent.com/{repository}/nwp-data/data/"
     source_catalog = json.loads(
         (Path(__file__).resolve().parent / "catalog.json").read_text(encoding="utf-8")
     )
@@ -48,6 +52,9 @@ def main() -> int:
         ),
         "data_branch": "nwp-data",
         "data_root": "data/",
+        "repository": repository,
+        "data_base_url": raw_data_base_url,
+        "data_tree_url": f"https://github.com/{repository}/tree/nwp-data/data",
         "models": [],
         "regional_assets": [],
         "source_attributions": [
@@ -138,11 +145,17 @@ def main() -> int:
                 "em gzip (.json.gz); não é ZIP."
             )
             manifest["files"] = files
+            manifest["download_base_url"] = raw_data_base_url + f"{model_key}/{region_id}/"
+            manifest["file_urls"] = {
+                file_name: manifest["download_base_url"] + quote(file_name, safe="")
+                for file_name in files
+            }
             for validity in manifest.get("validities", []):
                 file_name = Path(validity.get("file", "")).name
                 file_match = re.match(r"^[fF](\d{3})(?:-part\d{3})?\.json\.gz$", file_name)
                 if file_match:
                     validity["file"] = f"F{int(file_match.group(1)):03d}.json.gz"
+                    validity["download_url"] = manifest["file_urls"].get(validity["file"])
 
             (region_data_dir / "manifest.json").write_text(
                 json.dumps(manifest, ensure_ascii=False, indent=2),
@@ -160,6 +173,9 @@ def main() -> int:
                 "region_id": region_id,
                 "label": manifest.get("region", {}).get("label", region_id),
                 "data_directory": f"data/{model_key}/{region_id}/",
+                "download_base_url": manifest["download_base_url"],
+                "file_urls": manifest["file_urls"],
+                "manifest_url": raw_data_base_url + f"{model_key}/{region_id}/manifest.json",
                 "files": files,
                 "file_count": len(files),
                 "forecast_hours": forecast_hours,
