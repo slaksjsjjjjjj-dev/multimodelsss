@@ -195,14 +195,15 @@ def main() -> int:
         # A release is only created after the persistent branch push succeeds.
         run_stamp = regions[0]["run_directory"].rstrip("/").split("/")[-1]
         tag = f"sideral-multimodels-025-{run_id}"
-        notes = (
-            "Publicação permanente do SIDERAL MULTIMODELS 0.25.\\n\\n"
-            f"Dados: https://github.com/{repository}/tree/{BRANCH}/data\\n"
-            f"Catálogo: https://github.com/{repository}/blob/{BRANCH}/catalog.json\\n"
-            f"Execução: https://github.com/{repository}/actions/runs/{run_id}\\n"
-            "Os links JSON/PNG individuais estão no catálogo e nos manifests. "
-            "O artefato temporário do Actions não é a publicação principal."
-        )
+        notes = "\\n".join([
+            "Publicação permanente do SIDERAL MULTIMODELS 0.25.",
+            "",
+            f"Dados: https://github.com/{repository}/tree/{BRANCH}/data",
+            f"Catálogo: https://github.com/{repository}/blob/{BRANCH}/catalog.json",
+            f"Execução: https://github.com/{repository}/actions/runs/{run_id}",
+            "Os links JSON/PNG individuais estão no catálogo e nos manifests.",
+            "O artefato temporário do Actions não é a publicação principal.",
+        ])
         with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".md", delete=False) as note_file:
             note_file.write(notes)
             notes_path = note_file.name
