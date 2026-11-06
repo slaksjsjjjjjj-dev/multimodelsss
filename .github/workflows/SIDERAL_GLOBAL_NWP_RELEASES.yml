@@ -197,7 +197,8 @@ jobs:
             --repository "$GH_REPO" \
             --token "$GH_TOKEN" \
             --commit-message "Publish Sideral global NWP ${GITHUB_RUN_ID}" \
-            --batch-mb 32
+            --batch-mb 8 \
+            --batch-files 200
           echo "JSON directory tree: https://github.com/$GH_REPO/tree/nwp-data/data" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publicar GitHub Release com JSONs regionais
