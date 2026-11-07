@@ -1,0 +1,2658 @@
+{
+  "schema": "sideral-global-nwp-region-manifest-v1",
+  "model_key": "ecmwf_ifs",
+  "model": "ECMWF / IFS 0.25°",
+  "provider": "ECMWF",
+  "source": "https://www.ecmwf.int/en/forecasts/datasets/open-data",
+  "resolution": "0.25°",
+  "run_utc": "2026-11-07T00:00:00+00:00",
+  "cycle_utc": "00",
+  "region": {
+    "id": "brazil_south",
+    "label": "Brasil — Sul",
+    "bounds": [
+      -58,
+      -34,
+      -48,
+      -22
+    ]
+  },
+  "requested_forecast_hours": [
+    0,
+    3,
+    6,
+    9,
+    12,
+    15,
+    18,
+    21,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39,
+    42,
+    45,
+    48,
+    51,
+    54,
+    57,
+    60,
+    63,
+    66,
+    69,
+    72,
+    75,
+    78,
+    81,
+    84,
+    87,
+    90,
+    93,
+    96,
+    99,
+    102,
+    105,
+    108,
+    111,
+    114,
+    117,
+    120,
+    123,
+    126,
+    129,
+    132,
+    135,
+    138,
+    141,
+    144,
+    150,
+    156,
+    162,
+    168,
+    174,
+    180,
+    186,
+    192,
+    198,
+    204,
+    210,
+    216,
+    222,
+    228,
+    234,
+    240,
+    246,
+    252,
+    258,
+    264,
+    270,
+    276,
+    282,
+    288,
+    294,
+    300,
+    306,
+    312,
+    318,
+    324,
+    330,
+    336,
+    342,
+    348,
+    354,
+    360
+  ],
+  "forecast_hours": [
+    0,
+    3,
+    6,
+    9,
+    12,
+    15,
+    18,
+    21,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39,
+    42,
+    45,
+    48,
+    51,
+    54,
+    57,
+    60,
+    63,
+    66,
+    69,
+    72,
+    75,
+    78,
+    81,
+    84,
+    87,
+    90,
+    93,
+    96,
+    99,
+    102,
+    105,
+    108,
+    111,
+    114,
+    117,
+    120,
+    123,
+    126,
+    129,
+    132,
+    135,
+    138,
+    141,
+    144,
+    150,
+    156,
+    162,
+    168,
+    174,
+    180,
+    186,
+    192,
+    198,
+    204,
+    210,
+    216,
+    222,
+    228,
+    234,
+    240,
+    246,
+    252,
+    258,
+    264,
+    270,
+    276,
+    282,
+    288,
+    294,
+    300,
+    306,
+    312,
+    318,
+    324,
+    330,
+    336,
+    342,
+    348,
+    354,
+    360
+  ],
+  "missing_forecast_hours": [],
+  "validities": [
+    {
+      "forecast_hour": 0,
+      "valid_time": "2026-11-07T00:00:00+00:00",
+      "file": "F000.json.gz",
+      "field_count": 205,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F000.json.gz"
+    },
+    {
+      "forecast_hour": 3,
+      "valid_time": "2026-11-07T03:00:00+00:00",
+      "file": "F003.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F003.json.gz"
+    },
+    {
+      "forecast_hour": 6,
+      "valid_time": "2026-11-07T06:00:00+00:00",
+      "file": "F006.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F006.json.gz"
+    },
+    {
+      "forecast_hour": 9,
+      "valid_time": "2026-11-07T09:00:00+00:00",
+      "file": "F009.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F009.json.gz"
+    },
+    {
+      "forecast_hour": 12,
+      "valid_time": "2026-11-07T12:00:00+00:00",
+      "file": "F012.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F012.json.gz"
+    },
+    {
+      "forecast_hour": 15,
+      "valid_time": "2026-11-07T15:00:00+00:00",
+      "file": "F015.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F015.json.gz"
+    },
+    {
+      "forecast_hour": 18,
+      "valid_time": "2026-11-07T18:00:00+00:00",
+      "file": "F018.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F018.json.gz"
+    },
+    {
+      "forecast_hour": 21,
+      "valid_time": "2026-11-07T21:00:00+00:00",
+      "file": "F021.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F021.json.gz"
+    },
+    {
+      "forecast_hour": 24,
+      "valid_time": "2026-11-08T00:00:00+00:00",
+      "file": "F024.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F024.json.gz"
+    },
+    {
+      "forecast_hour": 27,
+      "valid_time": "2026-11-08T03:00:00+00:00",
+      "file": "F027.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F027.json.gz"
+    },
+    {
+      "forecast_hour": 30,
+      "valid_time": "2026-11-08T06:00:00+00:00",
+      "file": "F030.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F030.json.gz"
+    },
+    {
+      "forecast_hour": 33,
+      "valid_time": "2026-11-08T09:00:00+00:00",
+      "file": "F033.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F033.json.gz"
+    },
+    {
+      "forecast_hour": 36,
+      "valid_time": "2026-11-08T12:00:00+00:00",
+      "file": "F036.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F036.json.gz"
+    },
+    {
+      "forecast_hour": 39,
+      "valid_time": "2026-11-08T15:00:00+00:00",
+      "file": "F039.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F039.json.gz"
+    },
+    {
+      "forecast_hour": 42,
+      "valid_time": "2026-11-08T18:00:00+00:00",
+      "file": "F042.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F042.json.gz"
+    },
+    {
+      "forecast_hour": 45,
+      "valid_time": "2026-11-08T21:00:00+00:00",
+      "file": "F045.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F045.json.gz"
+    },
+    {
+      "forecast_hour": 48,
+      "valid_time": "2026-11-09T00:00:00+00:00",
+      "file": "F048.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F048.json.gz"
+    },
+    {
+      "forecast_hour": 51,
+      "valid_time": "2026-11-09T03:00:00+00:00",
+      "file": "F051.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F051.json.gz"
+    },
+    {
+      "forecast_hour": 54,
+      "valid_time": "2026-11-09T06:00:00+00:00",
+      "file": "F054.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F054.json.gz"
+    },
+    {
+      "forecast_hour": 57,
+      "valid_time": "2026-11-09T09:00:00+00:00",
+      "file": "F057.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F057.json.gz"
+    },
+    {
+      "forecast_hour": 60,
+      "valid_time": "2026-11-09T12:00:00+00:00",
+      "file": "F060.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F060.json.gz"
+    },
+    {
+      "forecast_hour": 63,
+      "valid_time": "2026-11-09T15:00:00+00:00",
+      "file": "F063.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F063.json.gz"
+    },
+    {
+      "forecast_hour": 66,
+      "valid_time": "2026-11-09T18:00:00+00:00",
+      "file": "F066.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F066.json.gz"
+    },
+    {
+      "forecast_hour": 69,
+      "valid_time": "2026-11-09T21:00:00+00:00",
+      "file": "F069.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F069.json.gz"
+    },
+    {
+      "forecast_hour": 72,
+      "valid_time": "2026-11-10T00:00:00+00:00",
+      "file": "F072.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F072.json.gz"
+    },
+    {
+      "forecast_hour": 75,
+      "valid_time": "2026-11-10T03:00:00+00:00",
+      "file": "F075.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F075.json.gz"
+    },
+    {
+      "forecast_hour": 78,
+      "valid_time": "2026-11-10T06:00:00+00:00",
+      "file": "F078.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F078.json.gz"
+    },
+    {
+      "forecast_hour": 81,
+      "valid_time": "2026-11-10T09:00:00+00:00",
+      "file": "F081.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F081.json.gz"
+    },
+    {
+      "forecast_hour": 84,
+      "valid_time": "2026-11-10T12:00:00+00:00",
+      "file": "F084.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F084.json.gz"
+    },
+    {
+      "forecast_hour": 87,
+      "valid_time": "2026-11-10T15:00:00+00:00",
+      "file": "F087.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F087.json.gz"
+    },
+    {
+      "forecast_hour": 90,
+      "valid_time": "2026-11-10T18:00:00+00:00",
+      "file": "F090.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F090.json.gz"
+    },
+    {
+      "forecast_hour": 93,
+      "valid_time": "2026-11-10T21:00:00+00:00",
+      "file": "F093.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F093.json.gz"
+    },
+    {
+      "forecast_hour": 96,
+      "valid_time": "2026-11-11T00:00:00+00:00",
+      "file": "F096.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F096.json.gz"
+    },
+    {
+      "forecast_hour": 99,
+      "valid_time": "2026-11-11T03:00:00+00:00",
+      "file": "F099.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F099.json.gz"
+    },
+    {
+      "forecast_hour": 102,
+      "valid_time": "2026-11-11T06:00:00+00:00",
+      "file": "F102.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F102.json.gz"
+    },
+    {
+      "forecast_hour": 105,
+      "valid_time": "2026-11-11T09:00:00+00:00",
+      "file": "F105.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F105.json.gz"
+    },
+    {
+      "forecast_hour": 108,
+      "valid_time": "2026-11-11T12:00:00+00:00",
+      "file": "F108.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F108.json.gz"
+    },
+    {
+      "forecast_hour": 111,
+      "valid_time": "2026-11-11T15:00:00+00:00",
+      "file": "F111.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F111.json.gz"
+    },
+    {
+      "forecast_hour": 114,
+      "valid_time": "2026-11-11T18:00:00+00:00",
+      "file": "F114.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F114.json.gz"
+    },
+    {
+      "forecast_hour": 117,
+      "valid_time": "2026-11-11T21:00:00+00:00",
+      "file": "F117.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F117.json.gz"
+    },
+    {
+      "forecast_hour": 120,
+      "valid_time": "2026-11-12T00:00:00+00:00",
+      "file": "F120.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F120.json.gz"
+    },
+    {
+      "forecast_hour": 123,
+      "valid_time": "2026-11-12T03:00:00+00:00",
+      "file": "F123.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F123.json.gz"
+    },
+    {
+      "forecast_hour": 126,
+      "valid_time": "2026-11-12T06:00:00+00:00",
+      "file": "F126.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F126.json.gz"
+    },
+    {
+      "forecast_hour": 129,
+      "valid_time": "2026-11-12T09:00:00+00:00",
+      "file": "F129.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F129.json.gz"
+    },
+    {
+      "forecast_hour": 132,
+      "valid_time": "2026-11-12T12:00:00+00:00",
+      "file": "F132.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F132.json.gz"
+    },
+    {
+      "forecast_hour": 135,
+      "valid_time": "2026-11-12T15:00:00+00:00",
+      "file": "F135.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F135.json.gz"
+    },
+    {
+      "forecast_hour": 138,
+      "valid_time": "2026-11-12T18:00:00+00:00",
+      "file": "F138.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F138.json.gz"
+    },
+    {
+      "forecast_hour": 141,
+      "valid_time": "2026-11-12T21:00:00+00:00",
+      "file": "F141.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F141.json.gz"
+    },
+    {
+      "forecast_hour": 144,
+      "valid_time": "2026-11-13T00:00:00+00:00",
+      "file": "F144.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F144.json.gz"
+    },
+    {
+      "forecast_hour": 150,
+      "valid_time": "2026-11-13T06:00:00+00:00",
+      "file": "F150.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F150.json.gz"
+    },
+    {
+      "forecast_hour": 156,
+      "valid_time": "2026-11-13T12:00:00+00:00",
+      "file": "F156.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F156.json.gz"
+    },
+    {
+      "forecast_hour": 162,
+      "valid_time": "2026-11-13T18:00:00+00:00",
+      "file": "F162.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F162.json.gz"
+    },
+    {
+      "forecast_hour": 168,
+      "valid_time": "2026-11-14T00:00:00+00:00",
+      "file": "F168.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F168.json.gz"
+    },
+    {
+      "forecast_hour": 174,
+      "valid_time": "2026-11-14T06:00:00+00:00",
+      "file": "F174.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F174.json.gz"
+    },
+    {
+      "forecast_hour": 180,
+      "valid_time": "2026-11-14T12:00:00+00:00",
+      "file": "F180.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F180.json.gz"
+    },
+    {
+      "forecast_hour": 186,
+      "valid_time": "2026-11-14T18:00:00+00:00",
+      "file": "F186.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F186.json.gz"
+    },
+    {
+      "forecast_hour": 192,
+      "valid_time": "2026-11-15T00:00:00+00:00",
+      "file": "F192.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F192.json.gz"
+    },
+    {
+      "forecast_hour": 198,
+      "valid_time": "2026-11-15T06:00:00+00:00",
+      "file": "F198.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F198.json.gz"
+    },
+    {
+      "forecast_hour": 204,
+      "valid_time": "2026-11-15T12:00:00+00:00",
+      "file": "F204.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F204.json.gz"
+    },
+    {
+      "forecast_hour": 210,
+      "valid_time": "2026-11-15T18:00:00+00:00",
+      "file": "F210.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F210.json.gz"
+    },
+    {
+      "forecast_hour": 216,
+      "valid_time": "2026-11-16T00:00:00+00:00",
+      "file": "F216.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F216.json.gz"
+    },
+    {
+      "forecast_hour": 222,
+      "valid_time": "2026-11-16T06:00:00+00:00",
+      "file": "F222.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F222.json.gz"
+    },
+    {
+      "forecast_hour": 228,
+      "valid_time": "2026-11-16T12:00:00+00:00",
+      "file": "F228.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F228.json.gz"
+    },
+    {
+      "forecast_hour": 234,
+      "valid_time": "2026-11-16T18:00:00+00:00",
+      "file": "F234.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F234.json.gz"
+    },
+    {
+      "forecast_hour": 240,
+      "valid_time": "2026-11-17T00:00:00+00:00",
+      "file": "F240.json.gz",
+      "field_count": 204,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F240.json.gz"
+    },
+    {
+      "forecast_hour": 246,
+      "valid_time": "2026-11-17T06:00:00+00:00",
+      "file": "F246.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F246.json.gz"
+    },
+    {
+      "forecast_hour": 252,
+      "valid_time": "2026-11-17T12:00:00+00:00",
+      "file": "F252.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F252.json.gz"
+    },
+    {
+      "forecast_hour": 258,
+      "valid_time": "2026-11-17T18:00:00+00:00",
+      "file": "F258.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F258.json.gz"
+    },
+    {
+      "forecast_hour": 264,
+      "valid_time": "2026-11-18T00:00:00+00:00",
+      "file": "F264.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F264.json.gz"
+    },
+    {
+      "forecast_hour": 270,
+      "valid_time": "2026-11-18T06:00:00+00:00",
+      "file": "F270.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F270.json.gz"
+    },
+    {
+      "forecast_hour": 276,
+      "valid_time": "2026-11-18T12:00:00+00:00",
+      "file": "F276.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F276.json.gz"
+    },
+    {
+      "forecast_hour": 282,
+      "valid_time": "2026-11-18T18:00:00+00:00",
+      "file": "F282.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F282.json.gz"
+    },
+    {
+      "forecast_hour": 288,
+      "valid_time": "2026-11-19T00:00:00+00:00",
+      "file": "F288.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F288.json.gz"
+    },
+    {
+      "forecast_hour": 294,
+      "valid_time": "2026-11-19T06:00:00+00:00",
+      "file": "F294.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F294.json.gz"
+    },
+    {
+      "forecast_hour": 300,
+      "valid_time": "2026-11-19T12:00:00+00:00",
+      "file": "F300.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F300.json.gz"
+    },
+    {
+      "forecast_hour": 306,
+      "valid_time": "2026-11-19T18:00:00+00:00",
+      "file": "F306.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F306.json.gz"
+    },
+    {
+      "forecast_hour": 312,
+      "valid_time": "2026-11-20T00:00:00+00:00",
+      "file": "F312.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F312.json.gz"
+    },
+    {
+      "forecast_hour": 318,
+      "valid_time": "2026-11-20T06:00:00+00:00",
+      "file": "F318.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F318.json.gz"
+    },
+    {
+      "forecast_hour": 324,
+      "valid_time": "2026-11-20T12:00:00+00:00",
+      "file": "F324.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F324.json.gz"
+    },
+    {
+      "forecast_hour": 330,
+      "valid_time": "2026-11-20T18:00:00+00:00",
+      "file": "F330.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F330.json.gz"
+    },
+    {
+      "forecast_hour": 336,
+      "valid_time": "2026-11-21T00:00:00+00:00",
+      "file": "F336.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F336.json.gz"
+    },
+    {
+      "forecast_hour": 342,
+      "valid_time": "2026-11-21T06:00:00+00:00",
+      "file": "F342.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F342.json.gz"
+    },
+    {
+      "forecast_hour": 348,
+      "valid_time": "2026-11-21T12:00:00+00:00",
+      "file": "F348.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F348.json.gz"
+    },
+    {
+      "forecast_hour": 354,
+      "valid_time": "2026-11-21T18:00:00+00:00",
+      "file": "F354.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F354.json.gz"
+    },
+    {
+      "forecast_hour": 360,
+      "valid_time": "2026-11-22T00:00:00+00:00",
+      "file": "F360.json.gz",
+      "field_count": 13,
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F360.json.gz"
+    }
+  ],
+  "variables": [
+    {
+      "short_name": "100u",
+      "name": "100 metre U wind component",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "100v",
+      "name": "100 metre V wind component",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "10fg",
+      "name": "Maximum 10 metre wind gust since previous post-processing",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "10u",
+      "name": "10 metre U wind component",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "10v",
+      "name": "10 metre V wind component",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "2d",
+      "name": "2 metre dewpoint temperature",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "2t",
+      "name": "2 metre temperature",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "asn",
+      "name": "Snow albedo",
+      "units": "(0 - 1)",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "cp",
+      "name": "Convective precipitation",
+      "units": "m",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "d",
+      "name": "Divergence",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "ewss",
+      "name": "Time-integrated eastward turbulent surface stress",
+      "units": "N m**-2 s",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "hcc",
+      "name": "High cloud cover",
+      "units": "(0 - 1)",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "lcc",
+      "name": "Low cloud cover",
+      "units": "(0 - 1)",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "lsm",
+      "name": "Land-sea mask",
+      "units": "(0 - 1)",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mcc",
+      "name": "Medium cloud cover",
+      "units": "(0 - 1)",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "msl",
+      "name": "Mean sea level pressure",
+      "units": "Pa",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mucape",
+      "name": "Most-unstable CAPE",
+      "units": "J kg**-1",
+      "level_type": "mostUnstableParcel",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "nsss",
+      "name": "Time-integrated northward turbulent surface stress",
+      "units": "N m**-2 s",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "ptype",
+      "name": "Precipitation type",
+      "units": "(Code table 4.201)",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "r",
+      "name": "Relative humidity",
+      "units": "%",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "ro",
+      "name": "Runoff",
+      "units": "m",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "rsn",
+      "name": "Snow density",
+      "units": "kg m**-3",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sd",
+      "name": "Snow depth",
+      "units": "m of water equivalent",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sdor",
+      "name": "Standard deviation of sub-gridscale orography",
+      "units": "m",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sf",
+      "name": "Snowfall",
+      "units": "m of water equivalent",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sithick",
+      "name": "Sea ice thickness",
+      "units": "m",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "skt",
+      "name": "Skin temperature",
+      "units": "K",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "slor",
+      "name": "Slope of sub-gridscale orography",
+      "units": "Numeric",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sot",
+      "name": "Soil temperature",
+      "units": "K",
+      "level_type": "soilLayer",
+      "level": "1",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sot",
+      "name": "Soil temperature",
+      "units": "K",
+      "level_type": "soilLayer",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sot",
+      "name": "Soil temperature",
+      "units": "K",
+      "level_type": "soilLayer",
+      "level": "3",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sot",
+      "name": "Soil temperature",
+      "units": "K",
+      "level_type": "soilLayer",
+      "level": "4",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sp",
+      "name": "Surface pressure",
+      "units": "Pa",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "ssr",
+      "name": "Surface net short-wave (solar) radiation",
+      "units": "J m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "ssrd",
+      "name": "Surface short-wave (solar) radiation downwards",
+      "units": "J m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "str",
+      "name": "Surface net long-wave (thermal) radiation",
+      "units": "J m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "strd",
+      "name": "Surface long-wave (thermal) radiation downwards",
+      "units": "J m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "sve",
+      "name": "Eastward surface sea water velocity",
+      "units": "m s**-1",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "svn",
+      "name": "Northward surface sea water velocity",
+      "units": "m s**-1",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tcc",
+      "name": "Total cloud cover",
+      "units": "(0 - 1)",
+      "level_type": "entireAtmosphere",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tciw",
+      "name": "Total column cloud ice water",
+      "units": "kg m**-2",
+      "level_type": "entireAtmosphere",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tclw",
+      "name": "Total column cloud liquid water",
+      "units": "kg m**-2",
+      "level_type": "entireAtmosphere",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tcrw",
+      "name": "Total column rain water",
+      "units": "kg m**-2",
+      "level_type": "entireAtmosphere",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tcw",
+      "name": "Total column water",
+      "units": "kg m**-2",
+      "level_type": "entireAtmosphere",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tcwv",
+      "name": "Total column vertically-integrated water vapour",
+      "units": "kg m**-2",
+      "level_type": "entireAtmosphere",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tp",
+      "name": "Total precipitation",
+      "units": "m",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tprate",
+      "name": "Total precipitation rate",
+      "units": "kg m**-2 s**-1",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "ttr",
+      "name": "Top net long-wave (thermal) radiation",
+      "units": "J m**-2",
+      "level_type": "nominalTop",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vo",
+      "name": "Vorticity (relative)",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vsw",
+      "name": "Volumetric soil moisture",
+      "units": "m**3 m**-3",
+      "level_type": "soilLayer",
+      "level": "1",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vsw",
+      "name": "Volumetric soil moisture",
+      "units": "m**3 m**-3",
+      "level_type": "soilLayer",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vsw",
+      "name": "Volumetric soil moisture",
+      "units": "m**3 m**-3",
+      "level_type": "soilLayer",
+      "level": "3",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vsw",
+      "name": "Volumetric soil moisture",
+      "units": "m**3 m**-3",
+      "level_type": "soilLayer",
+      "level": "4",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "z",
+      "name": "Geopotential",
+      "units": "m**2 s**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "zos",
+      "name": "Sea surface height",
+      "units": "m",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mn2t3",
+      "name": "Minimum temperature at 2 metres in the last 3 hours",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mx2t3",
+      "name": "Maximum temperature at 2 metres in the last 3 hours",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "10fg3",
+      "name": "Maximum 10 metre wind gust in the last 3 hours",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mn2t6",
+      "name": "Minimum temperature at 2 metres in the last 6 hours",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mx2t6",
+      "name": "Maximum temperature at 2 metres in the last 6 hours",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "cdww",
+      "name": "Coefficient of drag with waves",
+      "units": "dimensionless",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "h1012",
+      "name": "Significant wave height of all waves with periods within the inclusive range from 10 to 12 seconds",
+      "units": "m",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "h1214",
+      "name": "Significant wave height of all waves with periods within the inclusive range from 12 to 14 seconds",
+      "units": "m",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "h1417",
+      "name": "Significant wave height of all waves with periods within the inclusive range from 14 to 17 seconds",
+      "units": "m",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "h1721",
+      "name": "Significant wave height of all waves with periods within the inclusive range from 17 to 21 seconds",
+      "units": "m",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "h2125",
+      "name": "Significant wave height of all waves with periods within the inclusive range from 21 to 25 seconds",
+      "units": "m",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "h2530",
+      "name": "Significant wave height of all waves with periods within the inclusive range from 25 to 30 seconds",
+      "units": "m",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mp2",
+      "name": "Mean zero-crossing wave period",
+      "units": "s",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mwd",
+      "name": "Mean wave direction",
+      "units": "Degree true",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "mwp",
+      "name": "Mean wave period",
+      "units": "s",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pp1d",
+      "name": "Peak wave period",
+      "units": "s",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "swh",
+      "name": "Significant height of combined wind waves and swell",
+      "units": "m",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "wmb",
+      "name": "Model bathymetry",
+      "units": "m",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    }
+  ],
+  "variable_level_count": 210,
+  "field_count": 13521,
+  "data_format": "Um JSON independente por forecast hour, compactado individualmente em gzip (.json.gz); não é ZIP.",
+  "collection_status": "complete",
+  "attribution": {
+    "ECMWF": "Contains ECMWF data. © ECMWF. Licensed under CC-BY-4.0 where applicable."
+  },
+  "collection_errors_count": 0,
+  "data_directory": "data/ecmwf_ifs/brazil_south/",
+  "files": [
+    "F000.json.gz",
+    "F003.json.gz",
+    "F006.json.gz",
+    "F009.json.gz",
+    "F012.json.gz",
+    "F015.json.gz",
+    "F018.json.gz",
+    "F021.json.gz",
+    "F024.json.gz",
+    "F027.json.gz",
+    "F030.json.gz",
+    "F033.json.gz",
+    "F036.json.gz",
+    "F039.json.gz",
+    "F042.json.gz",
+    "F045.json.gz",
+    "F048.json.gz",
+    "F051.json.gz",
+    "F054.json.gz",
+    "F057.json.gz",
+    "F060.json.gz",
+    "F063.json.gz",
+    "F066.json.gz",
+    "F069.json.gz",
+    "F072.json.gz",
+    "F075.json.gz",
+    "F078.json.gz",
+    "F081.json.gz",
+    "F084.json.gz",
+    "F087.json.gz",
+    "F090.json.gz",
+    "F093.json.gz",
+    "F096.json.gz",
+    "F099.json.gz",
+    "F102.json.gz",
+    "F105.json.gz",
+    "F108.json.gz",
+    "F111.json.gz",
+    "F114.json.gz",
+    "F117.json.gz",
+    "F120.json.gz",
+    "F123.json.gz",
+    "F126.json.gz",
+    "F129.json.gz",
+    "F132.json.gz",
+    "F135.json.gz",
+    "F138.json.gz",
+    "F141.json.gz",
+    "F144.json.gz",
+    "F150.json.gz",
+    "F156.json.gz",
+    "F162.json.gz",
+    "F168.json.gz",
+    "F174.json.gz",
+    "F180.json.gz",
+    "F186.json.gz",
+    "F192.json.gz",
+    "F198.json.gz",
+    "F204.json.gz",
+    "F210.json.gz",
+    "F216.json.gz",
+    "F222.json.gz",
+    "F228.json.gz",
+    "F234.json.gz",
+    "F240.json.gz",
+    "F246.json.gz",
+    "F252.json.gz",
+    "F258.json.gz",
+    "F264.json.gz",
+    "F270.json.gz",
+    "F276.json.gz",
+    "F282.json.gz",
+    "F288.json.gz",
+    "F294.json.gz",
+    "F300.json.gz",
+    "F306.json.gz",
+    "F312.json.gz",
+    "F318.json.gz",
+    "F324.json.gz",
+    "F330.json.gz",
+    "F336.json.gz",
+    "F342.json.gz",
+    "F348.json.gz",
+    "F354.json.gz",
+    "F360.json.gz"
+  ],
+  "download_base_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/",
+  "file_urls": {
+    "F000.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F000.json.gz",
+    "F003.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F003.json.gz",
+    "F006.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F006.json.gz",
+    "F009.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F009.json.gz",
+    "F012.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F012.json.gz",
+    "F015.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F015.json.gz",
+    "F018.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F018.json.gz",
+    "F021.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F021.json.gz",
+    "F024.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F024.json.gz",
+    "F027.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F027.json.gz",
+    "F030.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F030.json.gz",
+    "F033.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F033.json.gz",
+    "F036.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F036.json.gz",
+    "F039.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F039.json.gz",
+    "F042.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F042.json.gz",
+    "F045.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F045.json.gz",
+    "F048.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F048.json.gz",
+    "F051.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F051.json.gz",
+    "F054.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F054.json.gz",
+    "F057.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F057.json.gz",
+    "F060.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F060.json.gz",
+    "F063.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F063.json.gz",
+    "F066.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F066.json.gz",
+    "F069.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F069.json.gz",
+    "F072.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F072.json.gz",
+    "F075.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F075.json.gz",
+    "F078.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F078.json.gz",
+    "F081.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F081.json.gz",
+    "F084.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F084.json.gz",
+    "F087.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F087.json.gz",
+    "F090.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F090.json.gz",
+    "F093.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F093.json.gz",
+    "F096.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F096.json.gz",
+    "F099.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F099.json.gz",
+    "F102.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F102.json.gz",
+    "F105.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F105.json.gz",
+    "F108.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F108.json.gz",
+    "F111.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F111.json.gz",
+    "F114.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F114.json.gz",
+    "F117.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F117.json.gz",
+    "F120.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F120.json.gz",
+    "F123.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F123.json.gz",
+    "F126.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F126.json.gz",
+    "F129.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F129.json.gz",
+    "F132.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F132.json.gz",
+    "F135.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F135.json.gz",
+    "F138.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F138.json.gz",
+    "F141.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F141.json.gz",
+    "F144.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F144.json.gz",
+    "F150.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F150.json.gz",
+    "F156.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F156.json.gz",
+    "F162.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F162.json.gz",
+    "F168.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F168.json.gz",
+    "F174.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F174.json.gz",
+    "F180.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F180.json.gz",
+    "F186.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F186.json.gz",
+    "F192.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F192.json.gz",
+    "F198.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F198.json.gz",
+    "F204.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F204.json.gz",
+    "F210.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F210.json.gz",
+    "F216.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F216.json.gz",
+    "F222.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F222.json.gz",
+    "F228.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F228.json.gz",
+    "F234.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F234.json.gz",
+    "F240.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F240.json.gz",
+    "F246.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F246.json.gz",
+    "F252.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F252.json.gz",
+    "F258.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F258.json.gz",
+    "F264.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F264.json.gz",
+    "F270.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F270.json.gz",
+    "F276.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F276.json.gz",
+    "F282.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F282.json.gz",
+    "F288.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F288.json.gz",
+    "F294.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F294.json.gz",
+    "F300.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F300.json.gz",
+    "F306.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F306.json.gz",
+    "F312.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F312.json.gz",
+    "F318.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F318.json.gz",
+    "F324.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F324.json.gz",
+    "F330.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F330.json.gz",
+    "F336.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F336.json.gz",
+    "F342.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F342.json.gz",
+    "F348.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F348.json.gz",
+    "F354.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F354.json.gz",
+    "F360.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/ecmwf_ifs/brazil_south/F360.json.gz"
+  }
+}
