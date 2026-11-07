@@ -23,7 +23,13 @@ import requests
 ROOT = Path(__file__).resolve().parent
 CATALOG = json.loads((ROOT / "catalog.json").read_text(encoding="utf-8"))
 REGION_CATALOG = json.loads((ROOT / "regions.json").read_text(encoding="utf-8"))
-REGIONS = REGION_CATALOG["regions"]
+# Modo enxuto: as regiões do Brasil e da Argentina estão contidas em
+# south_america e podem ser recortadas pelo cliente. Para voltar a publicá-las,
+# remova o filtro abaixo.
+REGIONS = [
+    region for region in REGION_CATALOG["regions"]
+    if not region["id"].startswith(("brazil_", "argentina_"))
+]
 CATALOG_BY_KEY = {item["key"]: item for item in CATALOG["models"]}
 USER_AGENT = "Sideral-Global-NWP/1.0 (+https://github.com/slaksjsjjjjjj-dev/multimodelsss)"
 
@@ -216,15 +222,16 @@ def _ecmwf_tasks(model_key: str, run: datetime) -> list[tuple[str, str, list[int
         ]
 
     if model_key == "ecmwf_eps":
+        # Modo enxuto: sem membros individuais (pf). Só média (em),
+        # espalhamento (es) e probabilidades (ep). Os 50 membros multiplicavam
+        # o volume e o tempo de coleta e interrompiam o job.
         ensemble_steps = ens_00_12 if run.hour in (0, 12) else ens_06_18
         tasks = [
-            ("enfo", "pf", ensemble_steps, "atmosphere-members"),
-            ("waef", "pf", ensemble_steps, "wave-members"),
+            ("enfo", "em", ensemble_steps, "atmosphere-mean"),
+            ("enfo", "es", ensemble_steps, "atmosphere-spread"),
         ]
         if run.hour in (0, 12):
             tasks.extend([
-                ("enfo", "em", ens_00_12, "atmosphere-mean"),
-                ("enfo", "es", ens_00_12, "atmosphere-spread"),
                 ("enfo", "ep", ep_instant, "atmosphere-probabilities-instant"),
                 ("enfo", "ep", ep_daily, "atmosphere-probabilities-daily"),
                 ("waef", "ep", ep_instant, "wave-probabilities-instant"),
@@ -238,13 +245,10 @@ def _ecmwf_tasks(model_key: str, run: datetime) -> list[tuple[str, str, list[int
         ]
 
     if model_key == "ecmwf_aifs_ens":
+        # Modo enxuto: sem controle (cf) nem membros (pf).
         return [
-            ("enfo", "cf", aifs_steps, "atmosphere-control"),
-            ("enfo", "pf", aifs_steps, "atmosphere-members"),
             ("enfo", "em", aifs_steps, "atmosphere-mean"),
             ("enfo", "es", aifs_steps, "atmosphere-spread"),
-            ("waef", "cf", aifs_steps, "wave-control"),
-            ("waef", "pf", aifs_steps, "wave-members"),
             ("enfo", "ep", ep_instant, "atmosphere-probabilities-instant"),
             ("enfo", "ep", ep_daily, "atmosphere-probabilities-daily"),
             ("enfo", "ep", ep_averaged, "atmosphere-probabilities-averaged"),
@@ -262,7 +266,8 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     """Download every available field in each documented ECMWF product stream.
 
     The requests do not specify param/levelist/number, so every published
-    parameter, level and (for PF products) ensemble member is returned.
+    parameter and level is returned for the product types listed in
+    _ecmwf_tasks (ensemble members are no longer requested).
     """
     from ecmwf.opendata import Client
 
@@ -500,21 +505,36 @@ def list_grib_links(url: str) -> list[str]:
     return sorted(set(urljoin(url, link) for link in parser.links))
 
 
+def eccc_base_urls(product_path: str, source_run: datetime, cycle: str,
+                   lead: int) -> list[str]:
+    """Diretórios do Datamart para uma validade, do melhor candidato ao pior.
+
+    /today/ sempre significa o dia UTC atual, então só vale quando a rodada é
+    de hoje. Os diretórios datados (YYYYMMDD/WXO-DD) ficam disponíveis por cerca
+    de 30 dias e funcionam também para rodadas manuais ou atrasadas.
+    """
+    day = source_run.strftime("%Y%m%d")
+    suffix = f"{product_path}/{cycle}/{lead:03d}/"
+    bases = [f"https://dd.weather.gc.ca/{day}/WXO-DD/{suffix}"]
+    if day == datetime.now(timezone.utc).strftime("%Y%m%d"):
+        bases.append(f"https://dd.weather.gc.ca/today/{suffix}")
+    return bases
+
+
 def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
                  process_file: Callable[[Path], None] | None = None
                  ) -> tuple[list[Path], list[int], list[str]]:
-    # GDPS and GEPS both publish on the current Datamart /today tree.
-    # Both issue runs at 00Z/12Z; 06Z/18Z consumers use the latest prior run.
+    # GDPS and GEPS both publish on the MSC Datamart. Both issue runs at
+    # 00Z/12Z; 06Z/18Z consumers use the latest prior run. The URL uses the
+    # dated tree of the run itself, with /today/ only as a same-day fallback.
     source_run = run.replace(hour=0 if run.hour < 12 else 12)
     cycle = f"{source_run.hour:02d}"
     if model_key == "cmc_gdps":
         product_types = ("model_gdps/15km",)
     elif model_key == "cmc_geps":
-        # raw = every member; products = ensemble probabilities/statistics.
-        product_types = (
-            "ensemble/geps/grib2/raw",
-            "ensemble/geps/grib2/products",
-        )
+        # Modo enxuto: só products (probabilidades/estatísticas do ensemble);
+        # os arquivos raw de todos os membros não são coletados.
+        product_types = ("ensemble/geps/grib2/products",)
     else:
         raise ValueError(f"Modelo ECCC desconhecido: {model_key}")
 
@@ -524,12 +544,12 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
     for lead in requested:
         lead_downloaded = False
         for product_path in product_types:
-            base = (
-                f"https://dd.weather.gc.ca/today/{product_path}/"
-                f"{cycle}/{lead:03d}/"
-            )
             try:
-                links = list_grib_links(base)
+                links: list[str] = []
+                for candidate in eccc_base_urls(product_path, source_run, cycle, lead):
+                    links = list_grib_links(candidate)
+                    if links:
+                        break
                 if not links:
                     errors.append(
                         f"{product_path}/F{lead:03d}: nenhum GRIB2 publicado neste ciclo."
