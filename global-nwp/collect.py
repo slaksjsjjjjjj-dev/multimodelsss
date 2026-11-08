@@ -724,14 +724,63 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
 
 
 
+
+
+def regrid_icon_grib(source: Path) -> Path:
+    """Regrid native triangular DWD ICON GRIB to SIDERAL's regional lat/lon grid."""
+    grid_root = Path(os.environ.get("ICON_REGRID_DIR", ".cache/icon-regrid"))
+    target_candidates = list(grid_root.rglob("target_grid_world_025.txt"))
+    weight_candidates = list(grid_root.rglob("weights_icogl2world_025.nc"))
+    if not target_candidates or not weight_candidates:
+        raise RuntimeError(
+            "Pesos oficiais do DWD não encontrados. "
+            "Esperados target_grid_world_025.txt e weights_icogl2world_025.nc "
+            f"em {grid_root}."
+        )
+    if shutil.which("cdo") is None:
+        raise RuntimeError("CDO não está instalado para regrade da malha ICON.")
+
+    target_grid = target_candidates[0]
+    weights = weight_candidates[0]
+    output = source.with_name(source.stem + ".sideral-latlon.grib2")
+    command = [
+        "cdo", "-f", "grb2",
+        "sellonlatbox,120,330,-60,15",
+        f"-remap,{target_grid},{weights}",
+        str(source),
+        str(output),
+    ]
+    result = subprocess.run(
+        command,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        env={**os.environ, "OMP_NUM_THREADS": "4"},
+    )
+    if result.returncode != 0:
+        output.unlink(missing_ok=True)
+        raise RuntimeError(
+            "CDO não conseguiu regrar o GRIB nativo ICON. "
+            + result.stdout[-5000:]
+        )
+    if not output.is_file() or output.stat().st_size < 16:
+        output.unlink(missing_ok=True)
+        raise RuntimeError("CDO terminou sem produzir um GRIB regional válido.")
+    with output.open("rb") as stream:
+        if stream.read(4) != b"GRIB":
+            output.unlink(missing_ok=True)
+            raise RuntimeError("A saída CDO não possui assinatura GRIB2.")
+    return output
+
 def collect_dwd(model_key: str, raw_dir: Path,
                 process_file: Callable[[Path], None] | None = None
                 ) -> tuple[list[Path], list[int], list[str]]:
-    """Collect every DWD field on its native ICON mesh.
+    """Collect all DWD fields and remap ICON's native triangular mesh.
 
-    ecCodes exposes a latitude/longitude coordinate for every unstructured
-    ICON point, so the regionalizer can clip the native mesh directly. No
-    CDO remapping or interpolation is required for the regional JSON archive.
+    DWD's ICON GRIB messages do not contain per-cell latitude/longitude arrays.
+    Use DWD's published CDO target grid and precomputed weights, then clip the
+    regridded field to the union of SIDERAL's South America/South Pacific area.
     """
     upstream = {
         "icon_dwd": "icon",
@@ -800,7 +849,11 @@ def collect_dwd(model_key: str, raw_dir: Path,
                             plan.download(str(target))
                             if target.is_file() and target.stat().st_size > 0:
                                 if process_file:
-                                    process_file(target)
+                                    regridded = regrid_icon_grib(target)
+                                    try:
+                                        process_file(regridded)
+                                    finally:
+                                        regridded.unlink(missing_ok=True)
                                 else:
                                     downloaded.append(target)
                             else:
