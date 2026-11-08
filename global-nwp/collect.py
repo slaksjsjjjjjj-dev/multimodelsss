@@ -986,6 +986,7 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
     # Coordinate arrays and regional point indices are identical for every
     # field on the same grid. Compute them once per grid, not once per field.
     coordinate_cache: dict[tuple, dict] = {}
+    coordinate_point_counts: dict[tuple, int] = {}
 
     for source in raw_files:
         # Do not filter by filename extension here. NOAA/Herbie GFS objects
@@ -1097,13 +1098,17 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                                 signature, grid_signature,
                             )
                         coordinate_cache[grid_key] = grid_regions
+                        coordinate_point_counts[grid_key] = int(lats.size)
                         diagnostics["coordinate_grids_cached"] += 1
                     else:
                         diagnostics["coordinate_grid_cache_hits"] += 1
 
                     vals = np.asarray(codes_get_values(gid), dtype=np.float64)
                     expected_points = int(message_value(gid, "numberOfDataPoints", vals.size))
-                    if vals.size != expected_points:
+                    if (
+                        vals.size != expected_points
+                        or vals.size != coordinate_point_counts.get(grid_key, vals.size)
+                    ):
                         diagnostics["messages_without_coordinates"] += 1
                         continue
                     source_key = source.stem.split("-", 1)[0]
