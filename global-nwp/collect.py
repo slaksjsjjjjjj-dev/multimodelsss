@@ -790,10 +790,12 @@ def regrid_icon_grib(source: Path) -> Path:
     target_grid = target_candidates[0]
     weights = weight_candidates[0]
     output = source.with_name(source.stem + ".sideral-latlon.grib2")
+    # The DWD global target grid uses the normal -180..180 longitude
+    # convention. Regrid the complete global field here; regionalize() below
+    # clips the required SIDERAL boxes after normalizing longitudes.
     command = [
         "cdo", "-f", "grb2",
-        "sellonlatbox,120,330,-60,15",
-        f"-remap,{target_grid},{weights}",
+        f"remap,{target_grid},{weights}",
         str(source),
         str(output),
     ]
