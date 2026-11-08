@@ -72,6 +72,26 @@ jobs:
           sudo apt-get install -y libeccodes0 libeccodes-dev
           python -m pip install --upgrade pip wheel setuptools
 
+      - name: Instalar dependências Python de todos os modelos
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install \
+            "herbie-data>=2026.10.0" \
+            "ecmwf-opendata>=0.3.0" \
+            "dwdopen>=1.0.0" \
+            "eccodes>=2.42.0" \
+            "numpy>=1.26,<3" \
+            "requests>=2.31"
+          python - <<'PY'
+          import eccodes
+          import numpy
+          import requests
+          print(f"NumPy {numpy.__version__}: OK")
+          print(f"Requests {requests.__version__}: OK")
+          print("ecCodes: OK")
+          PY
+
       - name: Preparar CDO e pesos oficiais de regrade ICON
         if: ${{ matrix.model == 'icon_dwd' || matrix.model == 'icon_ai' }}
         shell: bash
@@ -88,13 +108,6 @@ jobs:
           test -n "$(find .cache/icon-regrid -name target_grid_world_025.txt -print -quit)"
           test -n "$(find .cache/icon-regrid -name weights_icogl2world_025.nc -print -quit)"
           cdo -V | head -n 2
-          python -m pip install \
-            "herbie-data>=2026.10.0" \
-            "ecmwf-opendata>=0.3.0" \
-            "dwdopen>=1.0.0" \
-            "eccodes>=2.42.0" \
-            "numpy>=1.26,<3" \
-            "requests>=2.31"
 
       - name: Coletar todas as variáveis/níveis e validades publicadas
         id: collect
