@@ -662,34 +662,46 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
     downloaded: list[Path] = []
     found_hours: set[int] = set()
     errors: list[str] = []
-    for lead in requested:
-        lead_downloaded = False
+
+    def download_one_lead(lead: int) -> tuple[int, list[Path], list[str]]:
+        lead_files: list[Path] = []
+        lead_errors: list[str] = []
         for product_path in product_types:
+            links: list[str] = []
             try:
-                links: list[str] = []
                 for candidate in eccc_base_urls(product_path, source_run, cycle, lead):
                     links = list_grib_links(candidate)
                     if links:
                         break
                 if not links:
-                    errors.append(
+                    lead_errors.append(
                         f"{product_path}/F{lead:03d}: nenhum GRIB2 publicado neste ciclo."
                     )
                     continue
+
                 lead_dir = raw_dir / product_path.rsplit("/", 1)[-1] / f"f{lead:03d}"
                 lead_dir.mkdir(parents=True, exist_ok=True)
 
                 def download_one(url: str) -> Path | None:
                     name = url.rsplit("/", 1)[-1]
                     target = lead_dir / name
-                    if ensure_request(url, target, timeout=(20, 240)):
-                        return target
-                    return None
+                    last_error: Exception | None = None
+                    for attempt, wait in enumerate((5, 15, 30), start=1):
+                        try:
+                            if ensure_request(url, target, timeout=(20, 300)):
+                                return target
+                            return None
+                        except Exception as exc:
+                            last_error = exc
+                            if attempt < 3:
+                                time.sleep(wait)
+                    raise RuntimeError(
+                        f"download falhou após 3 tentativas: "
+                        f"{type(last_error).__name__}: {last_error}"
+                    ) from last_error
 
-                # Download each forecast lead concurrently to avoid crawling
-                # thousands of Datamart files serially. Decoding and writes to
-                # the regional spool remain serial to keep the JSON intact.
-                with ThreadPoolExecutor(max_workers=8) as executor:
+                # Variáveis/arquivos de uma validade são baixados juntos.
+                with ThreadPoolExecutor(max_workers=4) as executor:
                     futures = {
                         executor.submit(download_one, url): url for url in links
                     }
@@ -698,31 +710,66 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
                         name = url.rsplit("/", 1)[-1]
                         try:
                             target = future.result()
-                            if target is None:
-                                continue
-                            lead_downloaded = True
-                            if process_file:
-                                process_file(target)
-                            else:
-                                downloaded.append(target)
+                            if target is not None:
+                                lead_files.append(target)
                         except Exception as exc:
-                            errors.append(
+                            lead_errors.append(
                                 f"{product_path}/F{lead:03d} {name}: "
                                 f"{type(exc).__name__}: {exc}"
                             )
             except Exception as exc:
-                errors.append(
+                lead_errors.append(
                     f"{product_path}/F{lead:03d}: {type(exc).__name__}: {exc}"
                 )
-        if lead_downloaded:
-            found_hours.add(lead)
-        else:
-            errors.append(f"F{lead:03d}: nenhum produto ECCC disponível.")
-        time.sleep(0.05)
+
+        return lead, sorted(set(lead_files)), lead_errors
+
+    completed = 0
+    # Cada validade é independente. Mantemos no máximo quatro leads no runner
+    # ao mesmo tempo para acelerar listagem/download sem lotar o disco.
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        future_to_lead = {
+            executor.submit(download_one_lead, lead): lead for lead in requested
+        }
+        for future in as_completed(future_to_lead):
+            lead = future_to_lead[future]
+            try:
+                returned_lead, lead_files, lead_errors = future.result()
+                if returned_lead != lead:
+                    raise RuntimeError("O worker retornou uma validade diferente da solicitada.")
+            except Exception as exc:
+                lead_files = []
+                lead_errors = [
+                    f"F{lead:03d}: erro inesperado no worker: "
+                    f"{type(exc).__name__}: {exc}"
+                ]
+
+            errors.extend(lead_errors)
+            if lead_files:
+                found_hours.add(lead)
+                # GRIB decoding and writes to the F-hour spool stay serial.
+                for target in lead_files:
+                    if process_file:
+                        try:
+                            process_file(target)
+                        except Exception as exc:
+                            errors.append(
+                                f"F{lead:03d} {target.name}: processamento GRIB falhou: "
+                                f"{type(exc).__name__}: {exc}"
+                            )
+                    else:
+                        downloaded.append(target)
+            else:
+                errors.append(f"F{lead:03d}: nenhum produto ECCC disponível.")
+
+            completed += 1
+            print(
+                f"[{model_key}] progresso {completed}/{len(requested)} validade(s); "
+                f"última F{lead:03d}; {len(found_hours)} com arquivos.",
+                flush=True,
+            )
 
     return sorted(set(downloaded)), sorted(found_hours), errors
-
-
 
 
 
