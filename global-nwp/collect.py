@@ -8,7 +8,9 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
+import threading
 import time
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -184,6 +186,120 @@ def download_herbie_file(model: str, product: str, run: datetime, lead: int,
             time.sleep(wait)
 
     raise RuntimeError(f"Download Herbie falhou: {last_error}") from last_error
+
+
+# NOMADS recommends spacing automated GRIB-filter requests by 10 seconds.
+# A single shared gate applies that limit across all GFS worker threads.
+_NOMADS_REQUEST_LOCK = threading.Lock()
+_NOMADS_NEXT_REQUEST_AT = 0.0
+
+
+def _wait_for_nomads_slot() -> None:
+    global _NOMADS_NEXT_REQUEST_AT
+    with _NOMADS_REQUEST_LOCK:
+        delay = _NOMADS_NEXT_REQUEST_AT - time.monotonic()
+        if delay > 0:
+            time.sleep(delay)
+        _NOMADS_NEXT_REQUEST_AT = time.monotonic() + 10.0
+
+
+def download_gfs_regional(
+    product: str, run: datetime, lead: int, raw_dir: Path
+) -> Path:
+    """Download the complete GFS parameter/level set, clipped to SIDERAL's AOI."""
+    scripts = {
+        "pgrb2.0p25": "filter_gfs_0p25.pl",
+        "pgrb2b.0p25": "filter_gfs_0p25b.pl",
+    }
+    try:
+        script = scripts[product]
+    except KeyError as exc:
+        raise ValueError(f"Produto GFS desconhecido: {product}") from exc
+
+    target_dir = (
+        raw_dir / f"f{lead:03d}" / "gfs" / product
+        / f"gfs.{run:%Y%m%d}" / f"{run.hour:02d}"
+    )
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / f"gfs.t{run.hour:02d}z.{product}.f{lead:03d}.grib2"
+    if target.is_file() and target.stat().st_size > 0:
+        return target
+
+    url = f"https://nomads.ncep.noaa.gov/cgi-bin/{script}"
+    params = {
+        "file": f"gfs.t{run.hour:02d}z.{product}.f{lead:03d}",
+        "all_var": "on",
+        "all_lev": "on",
+        "subregion": "",
+        # One continuous 120E–330E box includes the South Pacific, South
+        # America and the western South Pacific edge used by SIDERAL.
+        "leftlon": "120",
+        "rightlon": "330",
+        "toplat": "15",
+        "bottomlat": "-60",
+        "dir": f"/gfs.{run:%Y%m%d}/{run.hour:02d}/atmos/",
+    }
+
+    delays = (15, 30, 60)
+    last_error: Exception | None = None
+    for attempt in range(1, len(delays) + 1):
+        _wait_for_nomads_slot()
+        temp = target.with_suffix(target.suffix + ".part")
+        try:
+            with requests.get(
+                url,
+                params=params,
+                headers={"User-Agent": USER_AGENT},
+                timeout=(30, 900),
+                stream=True,
+            ) as response:
+                if response.status_code == 404:
+                    raise FileNotFoundError(
+                        f"NOMADS não publicou {product} F{lead:03d} "
+                        f"para {run:%Y-%m-%d %H}Z."
+                    )
+                response.raise_for_status()
+                with temp.open("wb") as output:
+                    for chunk in response.iter_content(1024 * 1024):
+                        if chunk:
+                            output.write(chunk)
+
+            with temp.open("rb") as downloaded:
+                magic = downloaded.read(4)
+            if magic != b"GRIB":
+                try:
+                    detail = temp.read_text(encoding="utf-8", errors="replace")[:400]
+                except OSError:
+                    detail = repr(magic)
+                raise RuntimeError(
+                    f"NOMADS não retornou GRIB para {product} F{lead:03d}: "
+                    f"{detail!r}"
+                )
+            if temp.stat().st_size < 16:
+                raise RuntimeError(f"GRIB truncado para {product} F{lead:03d}.")
+            temp.replace(target)
+            return target
+        except FileNotFoundError:
+            temp.unlink(missing_ok=True)
+            raise
+        except Exception as exc:
+            last_error = exc
+            temp.unlink(missing_ok=True)
+            if attempt == len(delays):
+                break
+            wait = delays[attempt - 1]
+            print(
+                f"[GFS/NOMADS] {product} F{lead:03d}: tentativa "
+                f"{attempt}/{len(delays)} falhou ({type(exc).__name__}: {exc}); "
+                f"nova tentativa em {wait}s.",
+                flush=True,
+            )
+            time.sleep(wait)
+
+    raise RuntimeError(
+        f"NOMADS falhou em {product} F{lead:03d}: "
+        f"{type(last_error).__name__}: {last_error}"
+    ) from last_error
 
 def _ecmwf_step_end(step: int | str) -> int:
     if isinstance(step, int):
@@ -396,9 +512,14 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
                 / "_".join(f"{key}-{value}" for key, value in sorted(options.items()))
             )
             try:
-                found = download_herbie_file(
-                    source_model, product, run, lead, dest, **options
-                )
+                if model_key == "gfs":
+                    found = [
+                        download_gfs_regional(product, run, lead, raw_dir)
+                    ]
+                else:
+                    found = download_herbie_file(
+                        source_model, product, run, lead, dest, **options
+                    )
                 if found:
                     lead_files.extend(found)
                 else:
