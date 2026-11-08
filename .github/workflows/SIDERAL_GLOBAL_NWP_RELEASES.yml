@@ -98,7 +98,7 @@ jobs:
 
       - name: Coletar todas as variáveis/níveis e validades publicadas
         id: collect
-        timeout-minutes: 320
+        timeout-minutes: 340
         continue-on-error: true
         env:
           MODEL_KEY: ${{ matrix.model }}
