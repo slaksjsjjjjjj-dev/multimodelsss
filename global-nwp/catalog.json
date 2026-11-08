@@ -71,7 +71,7 @@
       "status": "configured",
       "source": "https://opendata.dwd.de/weather/nwp/v1/m/",
       "native_grid": "ICON icosahedral triangular mesh",
-      "notes": "A malha triangular nativa é remapeada com os pesos oficiais CDO do DWD para a grade lat/lon 0.25° e recortada para América do Sul/Pacífico Sul."
+      "notes": "A malha triangular nativa é remapeada com os pesos oficiais CDO do DWD para a grade lat/lon global de 0.25°; o arquivador aplica os recortes regionais SIDERAL na etapa JSON."
     },
     {
       "key": "icon_ai",
@@ -86,7 +86,7 @@
       "status": "configured",
       "source": "https://opendata.dwd.de/weather/nwp/v1/m/",
       "native_grid": "ICON icosahedral triangular mesh",
-      "notes": "A malha triangular nativa é remapeada com os pesos oficiais CDO do DWD para a grade lat/lon 0.25° e recortada para América do Sul/Pacífico Sul."
+      "notes": "A malha triangular nativa é remapeada com os pesos oficiais CDO do DWD para a grade lat/lon global de 0.25°; o arquivador aplica os recortes regionais SIDERAL na etapa JSON."
     },
     {
       "key": "gfs",
@@ -189,7 +189,7 @@
     "ECMWF EPS: publica CF, EM, ES e EP; EP somente nos ciclos 00/12 e steps disponíveis a cada 12 h. AIFS-ENS: publica PF (todos os membros, sem filtrar number), CF e EP (00/12).",
     "IFS atmospheric and wave products use different maximum forecast hours; the region manifests store only leads that have fields.",
     "CMC GEPS releases both raw all-member GRIB fields and processed probabilistic/statistical products from the official /today Datamart tree.",
-    "DWD ICON/AICON é remapeado da malha triangular nativa para lat/lon 0.25° usando os pesos oficiais CDO do DWD; o coletor não presume que as coordenadas estejam embutidas nos GRIBs.",
+    "DWD ICON/AICON é remapeado da malha triangular nativa para a grade lat/lon global 0.25° usando os pesos oficiais CDO do DWD; os recortes América do Sul/Pacífico Sul são aplicados na conversão JSON.",
     "GFS 0.25°: F000–F120 horário e F123–F384 a cada 3 h; a NOAA NOMADS faz o recorte regional mantendo todas as variáveis e níveis de pgrb2 e pgrb2b.",
     "A publicação cria um único arquivo JSON completo por forecast hour e região, compactado individualmente como .json.gz; cada arquivo contém todos os campos coletados daquela validade.",
     "A branch nwp-data mantém apenas a rodada mais recente; catalog.json e run-report.json identificam os diretórios e as horas realmente disponíveis."
