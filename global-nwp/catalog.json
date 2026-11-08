@@ -65,13 +65,13 @@
       "family": "icon",
       "adapter": "dwdopen",
       "upstream_model": "icon",
-      "resolution": "Malha triangular nativa ICON (grade global não estruturada)",
+      "resolution": "0.25° lat/lon após regrade da malha triangular nativa",
       "max_forecast_hour": 180,
       "ensemble": false,
       "status": "configured",
       "source": "https://opendata.dwd.de/weather/nwp/v1/m/",
       "native_grid": "ICON icosahedral triangular mesh",
-      "notes": "Publicado no grid nativo triangular; o arquivador recorta pontos por latitude/longitude GRIB sem interpolação/regrade."
+      "notes": "A malha triangular nativa é remapeada com os pesos oficiais CDO do DWD para a grade lat/lon 0.25° e recortada para América do Sul/Pacífico Sul."
     },
     {
       "key": "icon_ai",
@@ -80,21 +80,21 @@
       "family": "aicon",
       "adapter": "dwdopen",
       "upstream_model": "aicon",
-      "resolution": "Malha triangular nativa ICON (grade global não estruturada)",
+      "resolution": "0.25° lat/lon após regrade da malha triangular nativa",
       "max_forecast_hour": 180,
       "ensemble": false,
       "status": "configured",
       "source": "https://opendata.dwd.de/weather/nwp/v1/m/",
       "native_grid": "ICON icosahedral triangular mesh",
-      "notes": "Publicado no grid nativo triangular; o arquivador recorta pontos por latitude/longitude GRIB sem interpolação/regrade."
+      "notes": "A malha triangular nativa é remapeada com os pesos oficiais CDO do DWD para a grade lat/lon 0.25° e recortada para América do Sul/Pacífico Sul."
     },
     {
       "key": "gfs",
       "label": "GFS / GEV3",
       "provider": "NOAA",
       "family": "gfs",
-      "adapter": "herbie",
-      "product": "pgrb2.0p25 + pgrb2b.0p25",
+      "adapter": "nomads-filter",
+      "product": "pgrb2.0p25 + pgrb2b.0p25; todos os parâmetros e níveis, filtrados para a área SIDERAL no NOMADS",
       "resolution": "0.25°",
       "max_forecast_hour": 384,
       "ensemble": false,
@@ -189,8 +189,8 @@
     "ECMWF EPS: publica CF, EM, ES e EP; EP somente nos ciclos 00/12 e steps disponíveis a cada 12 h. AIFS-ENS: publica PF (todos os membros, sem filtrar number), CF e EP (00/12).",
     "IFS atmospheric and wave products use different maximum forecast hours; the region manifests store only leads that have fields.",
     "CMC GEPS releases both raw all-member GRIB fields and processed probabilistic/statistical products from the official /today Datamart tree.",
-    "DWD ICON/AICON é preservado em sua grade triangular nativa; os JSONs regionais contêm as coordenadas lat/lon dos pontos da malha dentro de cada recorte.",
-    "GFS 0.25°: F000–F120 horário e F123–F384 a cada 3 h, conforme disponibilidade publicada pela NOAA; F121/F122 não são produzidos por esse produto.",
+    "DWD ICON/AICON é remapeado da malha triangular nativa para lat/lon 0.25° usando os pesos oficiais CDO do DWD; o coletor não presume que as coordenadas estejam embutidas nos GRIBs.",
+    "GFS 0.25°: F000–F120 horário e F123–F384 a cada 3 h; a NOAA NOMADS faz o recorte regional mantendo todas as variáveis e níveis de pgrb2 e pgrb2b.",
     "A publicação cria um único arquivo JSON completo por forecast hour e região, compactado individualmente como .json.gz; cada arquivo contém todos os campos coletados daquela validade.",
     "A branch nwp-data mantém apenas a rodada mais recente; catalog.json e run-report.json identificam os diretórios e as horas realmente disponíveis."
   ]
