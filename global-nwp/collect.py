@@ -643,7 +643,8 @@ def eccc_base_urls(product_path: str, source_run: datetime, cycle: str,
 
 
 def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
-                 process_file: Callable[[Path], None] | None = None
+                 process_file: Callable[[Path], None] | None = None,
+                 checkpoint: Callable[[int], None] | None = None
                  ) -> tuple[list[Path], list[int], list[str]]:
     # GDPS and GEPS both publish on the MSC Datamart. Both issue runs at
     # 00Z/12Z; 06Z/18Z consumers use the latest prior run. The URL uses the
@@ -661,7 +662,34 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
 
     downloaded: list[Path] = []
     found_hours: set[int] = set()
+    completed_hours: set[int] = set()
+    missing_hours: set[int] = set()
     errors: list[str] = []
+    model_output = raw_dir.parent.parent / model_key
+    model_output.mkdir(parents=True, exist_ok=True)
+    progress_path = model_output / "collection-progress.json"
+
+    def write_progress(status: str = "collecting") -> None:
+        payload = {
+            "schema": "sideral-global-nwp-progress-v1",
+            "model_key": model_key,
+            "run_utc": run.isoformat(),
+            "status": status,
+            "requested_forecast_hours": len(requested),
+            "completed_forecast_hours": sorted(completed_hours),
+            "available_forecast_hours": sorted(found_hours),
+            "missing_forecast_hours": sorted(missing_hours),
+            "completed_count": len(completed_hours),
+            "errors": errors[:250],
+            "updated_utc": datetime.now(timezone.utc).isoformat(),
+        }
+        temp_path = progress_path.with_suffix(".tmp")
+        temp_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        temp_path.replace(progress_path)
+
+    write_progress()
 
     def download_one_lead(lead: int) -> tuple[int, list[Path], list[str]]:
         lead_files: list[Path] = []
@@ -759,16 +787,31 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
                             )
                     else:
                         downloaded.append(target)
+
+                # Write a complete per-validity JSON as soon as that lead's
+                # downloaded fields have been processed.
+                if checkpoint:
+                    try:
+                        checkpoint(lead)
+                    except Exception as exc:
+                        errors.append(
+                            f"F{lead:03d}: checkpoint JSON falhou: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
             else:
+                missing_hours.add(lead)
                 errors.append(f"F{lead:03d}: nenhum produto ECCC disponível.")
 
+            completed_hours.add(lead)
             completed += 1
+            write_progress()
             print(
                 f"[{model_key}] progresso {completed}/{len(requested)} validade(s); "
                 f"última F{lead:03d}; {len(found_hours)} com arquivos.",
                 flush=True,
             )
 
+    write_progress("download-finished")
     return sorted(set(downloaded)), sorted(found_hours), errors
 
 
@@ -1538,7 +1581,7 @@ def main() -> int:
             if model_key not in {"cmc_gdps", "cmc_geps"}:
                 raise RuntimeError("Adaptador Datamart desconhecido.")
             _, discovered_hours, errors = collect_eccc(
-                model_key, run, raw_dir, requested, process_file
+                model_key, run, raw_dir, requested, process_file, checkpoint_lead
             )
         else:
             raise RuntimeError(f"Adaptador desconhecido: {spec['adapter']}")
