@@ -980,7 +980,12 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
         "messages_without_coordinates": 0,
         "messages_outside_regions": 0,
         "messages_written_to_regions": 0,
+        "coordinate_grid_cache_hits": 0,
+        "coordinate_grids_cached": 0,
     }
+    # Coordinate arrays and regional point indices are identical for every
+    # field on the same grid. Compute them once per grid, not once per field.
+    coordinate_cache: dict[tuple, dict] = {}
 
     for source in raw_files:
         # Do not filter by filename extension here. NOAA/Herbie GFS objects
@@ -1033,13 +1038,74 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                     if requested and lead not in requested and model_key not in {"icon_dwd", "icon_ai"}:
                         diagnostics["messages_rejected_by_hour"] += 1
                         continue
-                    lats = np.asarray(codes_get_array(gid, "latitudes"), dtype=np.float64)
-                    lons = np.asarray(codes_get_array(gid, "longitudes"), dtype=np.float64)
+                    grid_key_names = (
+                        "gridType", "numberOfDataPoints", "Ni", "Nj",
+                        "latitudeOfFirstGridPointInDegrees",
+                        "longitudeOfFirstGridPointInDegrees",
+                        "latitudeOfLastGridPointInDegrees",
+                        "longitudeOfLastGridPointInDegrees",
+                        "iDirectionIncrementInDegrees",
+                        "jDirectionIncrementInDegrees",
+                        "iScansNegatively", "jScansPositively",
+                        "jPointsAreConsecutive", "alternativeRowScanning",
+                    )
+                    grid_key = tuple(message_value(gid, key) for key in grid_key_names)
+                    grid_regions = coordinate_cache.get(grid_key)
+                    if grid_regions is None:
+                        lats = np.asarray(
+                            codes_get_array(gid, "latitudes"), dtype=np.float64
+                        )
+                        lons = np.asarray(
+                            codes_get_array(gid, "longitudes"), dtype=np.float64
+                        )
+                        if lats.size == 0 or lats.size != lons.size:
+                            diagnostics["messages_without_coordinates"] += 1
+                            continue
+                        lons = ((lons + 180.0) % 360.0) - 180.0
+                        grid_signature = {
+                            "grid_type": str(message_value(gid, "gridType", "unknown")),
+                            "grid_ni": message_value(gid, "Ni"),
+                            "grid_nj": message_value(gid, "Nj"),
+                            "grid_points": message_value(gid, "numberOfDataPoints"),
+                            "i_scans_negatively": message_value(gid, "iScansNegatively"),
+                            "j_scans_positively": message_value(gid, "jScansPositively"),
+                            "j_points_consecutive": message_value(gid, "jPointsAreConsecutive"),
+                            "alternative_row_scanning": message_value(gid, "alternativeRowScanning"),
+                        }
+                        grid_regions = {}
+                        for region in REGIONS:
+                            west, south, east, north = [
+                                float(x) for x in region["bounds"]
+                            ]
+                            indices = np.flatnonzero(
+                                (lats >= south) & (lats <= north) &
+                                (lons >= west) & (lons <= east)
+                            )
+                            if indices.size == 0:
+                                continue
+                            selected_lats = np.round(lats[indices], 4)
+                            selected_lons = np.round(lons[indices], 4)
+                            signature = hashlib.sha1(
+                                selected_lats.tobytes()
+                                + selected_lons.tobytes()
+                                + json.dumps(
+                                    grid_signature, sort_keys=True
+                                ).encode("utf-8")
+                            ).hexdigest()[:16]
+                            grid_regions[region["id"]] = (
+                                indices, selected_lats, selected_lons,
+                                signature, grid_signature,
+                            )
+                        coordinate_cache[grid_key] = grid_regions
+                        diagnostics["coordinate_grids_cached"] += 1
+                    else:
+                        diagnostics["coordinate_grid_cache_hits"] += 1
+
                     vals = np.asarray(codes_get_values(gid), dtype=np.float64)
-                    if lats.size == 0 or lats.size != lons.size or lats.size != vals.size:
+                    expected_points = int(message_value(gid, "numberOfDataPoints", vals.size))
+                    if vals.size != expected_points:
                         diagnostics["messages_without_coordinates"] += 1
                         continue
-                    lons = ((lons + 180.0) % 360.0) - 180.0
                     source_key = source.stem.split("-", 1)[0]
                     short_name_value = message_value(gid, "shortName", "")
                     readable_name_value = message_value(gid, "name", "")
@@ -1074,35 +1140,18 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                         "valid_time": valid_utc,
                     }
                     for region in REGIONS:
-                        west, south, east, north = [float(x) for x in region["bounds"]]
-                        indices = np.flatnonzero(
-                            (lats >= south) & (lats <= north) &
-                            (lons >= west) & (lons <= east)
-                        )
-                        if indices.size == 0:
+                        cached_geometry = grid_regions.get(region["id"])
+                        if cached_geometry is None:
                             continue
+                        (
+                            indices, selected_lats, selected_lons,
+                            signature, grid_signature,
+                        ) = cached_geometry
                         diagnostics["messages_written_to_regions"] += 1
                         region_id = region["id"]
                         field_dir = spool_root / region_id / f"f{lead:03d}"
                         grids_dir = field_dir / "grids"
                         grids_dir.mkdir(parents=True, exist_ok=True)
-                        selected_lats = np.round(lats[indices], 4)
-                        selected_lons = np.round(lons[indices], 4)
-                        grid_signature = {
-                            "grid_type": meta["grid_type"],
-                            "grid_ni": meta["grid_ni"],
-                            "grid_nj": meta["grid_nj"],
-                            "grid_points": meta["grid_points"],
-                            "i_scans_negatively": meta["i_scans_negatively"],
-                            "j_scans_positively": meta["j_scans_positively"],
-                            "j_points_consecutive": meta["j_points_consecutive"],
-                            "alternative_row_scanning": meta["alternative_row_scanning"],
-                        }
-                        signature = hashlib.sha1(
-                            selected_lats.tobytes()
-                            + selected_lons.tobytes()
-                            + json.dumps(grid_signature, sort_keys=True).encode("utf-8")
-                        ).hexdigest()[:16]
                         grid_path = grids_dir / f"{signature}.json"
                         if not grid_path.exists():
                             grid_path.write_text(
