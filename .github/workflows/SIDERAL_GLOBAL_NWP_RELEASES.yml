@@ -140,7 +140,32 @@ jobs:
           STATUS=global-nwp-output/"$MODEL_KEY"/model_status.json
           PROGRESS=global-nwp-output/"$MODEL_KEY"/collection-progress.json
           if [[ ! -f "$STATUS" ]]; then
-            printf '{"model_key":"%s","status":"failed","message":"Coletor interrompido antes de escrever model_status.json; consulte collection-progress.json."}\n' "$MODEL_KEY" > "$STATUS"
+            python - "$MODEL_KEY" "$STATUS" "$PROGRESS" <<'PY'
+          import json, pathlib, sys
+          model, status_name, progress_name = sys.argv[1:]
+          progress_path = pathlib.Path(progress_name)
+          progress = (
+              json.loads(progress_path.read_text(encoding="utf-8"))
+              if progress_path.is_file() else {}
+          )
+          available = progress.get("available_forecast_hours", [])
+          partial = bool(available)
+          status = "partial" if partial else "failed"
+          message = (
+              f"Coleta interrompida; {len(available)} validades foram salvas antes da interrupção."
+              if partial else
+              "Coletor interrompido antes de produzir dados regionais; consulte collection-progress.json."
+          )
+          pathlib.Path(status_name).write_text(
+              json.dumps({
+                  "model_key": model,
+                  "status": status,
+                  "message": message,
+                  "errors": progress.get("errors", [])[:100],
+              }, ensure_ascii=False, indent=2),
+              encoding="utf-8",
+          )
+          PY
           fi
           python - "$STATUS" "$PROGRESS" >> "$GITHUB_STEP_SUMMARY" <<'PY'
           import json, pathlib, sys
