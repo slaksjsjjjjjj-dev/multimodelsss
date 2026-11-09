@@ -99,7 +99,7 @@ def main() -> int:
         ):
             source_file = model_dir / diagnostic_name
             if source_file.is_file():
-                shutil.copy2(source_file, model_data_dir / diagnostic_name)
+                shutil.move(str(source_file), str(model_data_dir / diagnostic_name))
 
         for manifest_path in sorted(model_dir.glob("*/manifest.json")):
             region_dir = manifest_path.parent
@@ -138,7 +138,7 @@ def main() -> int:
                     raise SystemExit(
                         f"Arquivo duplicado em {model_key}/{region_id}: {normalized_name}"
                     )
-                shutil.copy2(frame, destination)
+                shutil.move(str(frame), str(destination))
                 files.append(destination.name)
                 files_by_lead.setdefault(lead, []).append(destination.name)
 
