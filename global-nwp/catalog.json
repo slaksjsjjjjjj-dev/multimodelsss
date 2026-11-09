@@ -1,7 +1,7 @@
 {
   "schema": "sideral-global-nwp-catalog-v1",
   "area_of_interest": "South America and South Pacific",
-  "output": "Arquivos JSON independentes compactados individualmente em gzip (.json.gz), organizados em data/<model_key>/<region_id>/FNNN.json.gz na branch nwp-data; sem ZIP.",
+  "output": "Arquivos JSON independentes compactados individualmente em gzip (.json.gz), organizados em data/<model_key>/<region_id>/FNNN.json.gz; validades grandes são divididas em FNNN-partNNN.json.gz, todas listadas em validities[].files na branch nwp-data; sem ZIP.",
   "models": [
     {
       "key": "ecmwf_ifs",
@@ -191,7 +191,7 @@
     "CMC GEPS releases both raw all-member GRIB fields and processed probabilistic/statistical products from the official /today Datamart tree.",
     "DWD ICON/AICON é remapeado da malha triangular nativa para a grade lat/lon global 0.25° usando os pesos oficiais CDO do DWD; os recortes América do Sul/Pacífico Sul são aplicados na conversão JSON.",
     "GFS 0.25°: F000–F120 horário e F123–F384 a cada 3 h; a NOAA NOMADS faz o recorte regional mantendo todas as variáveis e níveis de pgrb2 e pgrb2b.",
-    "A publicação cria um único arquivo JSON completo por forecast hour e região, compactado individualmente como .json.gz; cada arquivo contém todos os campos coletados daquela validade.",
+    "A publicação cria um ou mais arquivos JSON completos por forecast hour e região, compactados individualmente como .json.gz; validades grandes são divididas em partes numeradas, todas listadas no manifesto."
     "A branch nwp-data mantém apenas a rodada mais recente; catalog.json e run-report.json identificam os diretórios e as horas realmente disponíveis."
   ]
 }
