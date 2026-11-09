@@ -23,13 +23,13 @@
       "provider": "ECMWF",
       "family": "ifs",
       "adapter": "ecmwf-opendata",
-      "product": "IFS ENS: enfoque/pf, em, es, ep; waef/pf e waef/ep para ondas; todos parâmetros e membros disponíveis",
+      "product": "IFS ENS: enf o/em e enf o/es; probabilidades EP de atmosfera e ondas nos ciclos 00/12. PF com membros individuais está desativado neste fluxo.",
       "resolution": "0.25°",
       "max_forecast_hour": 360,
       "ensemble": true,
       "status": "configured",
       "source": "https://www.ecmwf.int/en/forecasts/datasets/open-data",
-      "notes": "PF captura todos os membros; EM/ES e EP são coletados nos produtos/horários publicados. EP está disponível nos ciclos 00/12; os arquivos são recolhidos por validade."
+      "notes": "Modo enxuto: coleta média (EM), dispersão (ES) e probabilidades (EP) nos produtos/horários publicados. Membros individuais PF não são baixados. EP está disponível nos ciclos 00/12."
     },
     {
       "key": "ecmwf_aifs",
@@ -50,13 +50,13 @@
       "provider": "ECMWF",
       "family": "aifs",
       "adapter": "ecmwf-opendata",
-      "product": "AIFS-ENS: enfo/cf,pf,em,es,ep; waef/cf,pf,ep; todos parâmetros e membros",
+      "product": "AIFS-ENS: média (EM), dispersão (ES) e probabilidades (EP) de atmosfera e ondas. Controle CF e membros PF estão desativados neste fluxo.",
       "resolution": "0.25°",
       "max_forecast_hour": 360,
       "ensemble": true,
       "status": "configured",
       "source": "https://www.ecmwf.int/en/forecasts/datasets/aifs-machine-learning-data",
-      "notes": "Todos os membros PF; controle CF; média/dispersão EM/ES; probabilidades instantâneas, diárias e agregadas nos intervalos publicados."
+      "notes": "Modo enxuto: coleta EM/ES e probabilidades instantâneas, diárias e agregadas nos intervalos publicados. Controle CF e membros PF não são baixados."
     },
     {
       "key": "icon_dwd",
@@ -164,8 +164,8 @@
       "ensemble": true,
       "status": "configured",
       "source": "https://dd.weather.gc.ca/",
-      "product": "GEPS raw (todos os membros) + products (probabilidades, percentis, média, mediana e desvio)",
-      "notes": "Ciclos 00/12; F000–384; segunda e quinta em 00Z até F936. Recolhe os diretórios raw e products da árvore /today."
+      "product": "GEPS products: produtos estatísticos e probabilísticos disponibilizados pelo ECCC. Os GRIBs raw de todos os membros estão desativados neste fluxo.",
+      "notes": "Ciclos 00/12; F000–384; segunda e quinta em 00Z até F936. Coleta somente /products na árvore do Datamart; /raw (membros individuais) não é baixado."
     },
     {
       "key": "ukmet",
