@@ -3,8 +3,10 @@ from __future__ import annotations
 import gzip
 import json
 import sys
+import types
 import tempfile
 import unittest
+from unittest import mock
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -104,6 +106,75 @@ class CollectHelpersTest(unittest.TestCase):
         finally:
             collect.REGIONS = original_regions
             collect.MAX_FRAME_PART_RAW_BYTES = original_limit
+
+    def test_ecmwf_collection_checkpoints_each_processed_forecast_hour(self) -> None:
+        original_regions = collect.REGIONS
+        try:
+            collect.REGIONS = [{
+                "id": "test_region",
+                "label": "Test Region",
+                "bounds": [0, 0, 1, 1],
+            }]
+
+            class FakeClient:
+                def __init__(self, **kwargs) -> None:
+                    pass
+
+                def retrieve(self, **kwargs) -> None:
+                    Path(kwargs["target"]).write_bytes(
+                        b"GRIB" + (b"\\x00" * 12) + b"7777"
+                    )
+
+            fake_ecmwf = types.ModuleType("ecmwf")
+            fake_ecmwf.__path__ = []
+            fake_opendata = types.ModuleType("ecmwf.opendata")
+            fake_opendata.Client = FakeClient
+
+            with tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                raw_dir = root / "_raw" / "ecmwf_ifs"
+                output = root / "ecmwf_ifs" / "test_region" / "forecast"
+                checkpointed = []
+
+                def process_file(path: Path) -> None:
+                    output.mkdir(parents=True, exist_ok=True)
+                    (output / "F000.json.gz").write_bytes(b"frame")
+
+                with (
+                    mock.patch.object(
+                        collect,
+                        "_ecmwf_tasks",
+                        return_value=[("oper", "fc", [0], "atmosphere")],
+                    ),
+                    mock.patch.dict(
+                        sys.modules,
+                        {
+                            "ecmwf": fake_ecmwf,
+                            "ecmwf.opendata": fake_opendata,
+                        },
+                    ),
+                ):
+                    _, available, errors = collect.collect_ecmwf(
+                        "ecmwf_ifs",
+                        datetime(2026, 11, 9, 0, tzinfo=timezone.utc),
+                        raw_dir,
+                        [0],
+                        process_file,
+                        checkpointed.append,
+                    )
+
+                self.assertEqual(available, [0])
+                self.assertEqual(errors, [])
+                self.assertEqual(checkpointed, [0])
+                progress = json.loads(
+                    (root / "ecmwf_ifs" / "collection-progress.json").read_text(
+                        encoding="utf-8"
+                    )
+                )
+                self.assertEqual(progress["status"], "download-finished")
+                self.assertEqual(progress["available_forecast_hours"], [0])
+        finally:
+            collect.REGIONS = original_regions
 
     def test_grib_integrity_check_rejects_truncated_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
