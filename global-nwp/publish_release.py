@@ -111,8 +111,12 @@ def main() -> int:
             forecast_dir = region_dir / "forecast"
             json_frames = sorted(
                 forecast_dir.glob("F*.json.gz"),
-                key=lambda item: int(re.match(r"F(\d+)", item.name).group(1))
-                if re.match(r"F(\d+)", item.name) else 10**9,
+                key=lambda item: (
+                    int(re.match(r"F(\d+)", item.name).group(1))
+                    if re.match(r"F(\d+)", item.name) else 10**9,
+                    int(re.search(r"-part(\d+)", item.name).group(1))
+                    if re.search(r"-part(\d+)", item.name) else 1,
+                ),
             )
             if not json_frames:
                 # Accept the previous lower-case naming convention only when
