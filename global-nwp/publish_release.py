@@ -46,9 +46,8 @@ def main() -> int:
         "cycle_utc": cycle_stamp,
         "coverage": ["south_america", "south_pacific", "brazil_*", "argentina_*"],
         "format": (
-            "Um arquivo JSON independente por validade, compactado individualmente "
-            "em gzip (.json.gz), organizado em data/<modelo>/<regiao>/FNNN.json.gz. "
-            "Não há arquivos ZIP."
+            "JSON gzip independente por validade; validades grandes podem ser divididas "
+            "em FNNN.json.gz e FNNN-partNNN.json.gz. O catálogo lista todas as partes."
         ),
         "data_branch": "nwp-data",
         "data_root": "data/",
@@ -121,6 +120,7 @@ def main() -> int:
                 json_frames = sorted(forecast_dir.glob("f*.json.gz"))
 
             files = []
+            files_by_lead: dict[int, list[str]] = {}
             for frame in json_frames:
                 match = re.match(r"^[fF](\d{3})(?:-part\d{3})?\.json\.gz$", frame.name)
                 if not match:
@@ -128,21 +128,24 @@ def main() -> int:
                         f"Nome de frame inesperado em {model_key}/{region_id}: {frame.name}"
                     )
                 lead = int(match.group(1))
-                destination = region_data_dir / f"F{lead:03d}.json.gz"
+                normalized_name = frame.name[0].upper() + frame.name[1:]
+                destination = region_data_dir / normalized_name
                 if destination.exists():
                     raise SystemExit(
-                        f"Mais de um arquivo para F{lead:03d} em {model_key}/{region_id}. "
-                        "A coleta deve gerar um único JSON completo por validade."
+                        f"Arquivo duplicado em {model_key}/{region_id}: {normalized_name}"
                     )
                 shutil.copy2(frame, destination)
                 files.append(destination.name)
+                files_by_lead.setdefault(lead, []).append(destination.name)
 
-            # The manifest is in the same folder as all individual F files.
+            # The manifest lists every part for a validity. "file" and
+            # "download_url" remain aliases for the first part for older clients.
             manifest = dict(manifest)
             manifest["data_directory"] = f"data/{model_key}/{region_id}/"
             manifest["data_format"] = (
-                "Um JSON independente por forecast hour, compactado individualmente "
-                "em gzip (.json.gz); não é ZIP."
+                "JSON gzip independente por validade; validades grandes podem ser "
+                "divididas em FNNN.json.gz e FNNN-partNNN.json.gz. Use "
+                "validities[].files/download_urls para recuperar todos os campos."
             )
             manifest["files"] = files
             manifest["download_base_url"] = raw_data_base_url + f"{model_key}/{region_id}/"
@@ -151,11 +154,16 @@ def main() -> int:
                 for file_name in files
             }
             for validity in manifest.get("validities", []):
-                file_name = Path(validity.get("file", "")).name
-                file_match = re.match(r"^[fF](\d{3})(?:-part\d{3})?\.json\.gz$", file_name)
-                if file_match:
-                    validity["file"] = f"F{int(file_match.group(1)):03d}.json.gz"
-                    validity["download_url"] = manifest["file_urls"].get(validity["file"])
+                lead = int(validity.get("forecast_hour", -1))
+                lead_files = files_by_lead.get(lead, [])
+                if lead_files:
+                    validity["files"] = lead_files
+                    validity["part_count"] = len(lead_files)
+                    validity["file"] = lead_files[0]
+                    validity["download_urls"] = [
+                        manifest["file_urls"][name] for name in lead_files
+                    ]
+                    validity["download_url"] = validity["download_urls"][0]
 
             (region_data_dir / "manifest.json").write_text(
                 json.dumps(manifest, ensure_ascii=False, indent=2),
@@ -165,10 +173,10 @@ def main() -> int:
             if not files:
                 continue
 
-            forecast_hours = sorted(
+            forecast_hours = sorted({
                 int(re.match(r"^F(\d{3})", file_name).group(1))
                 for file_name in files
-            )
+            })
             region_entry = {
                 "region_id": region_id,
                 "label": manifest.get("region", {}).get("label", region_id),
