@@ -281,7 +281,7 @@ jobs:
             --repository "$GH_REPO" \
             --token "$GH_TOKEN" \
             --commit-message "Publish Sideral global NWP ${GITHUB_RUN_ID}" \
-            --batch-mb 8 \
+            --batch-mb 64 \
             --batch-files 200
           echo "Dados: https://github.com/$GH_REPO/tree/nwp-data/data" >> "$GITHUB_STEP_SUMMARY"
           echo "Catálogo: https://github.com/$GH_REPO/blob/nwp-data/catalog.json" >> "$GITHUB_STEP_SUMMARY"
