@@ -68,11 +68,14 @@ def leads_for(model_key: str, run: datetime) -> list[int]:
     if model_key == "gfs":
         return list(range(0, 121)) + list(range(123, 385, 3))
     if model_key == "gfs_ai":
-        return list(range(0, 385, 3))
+        # NOAA AIGFS operational files are published every 6 hours.
+        return list(range(0, 385, 6))
     if model_key == "gefs_ai":
-        return list(range(0, 385, 3))
+        # NOAA AIGEFS AI products use 6-hour forecast intervals.
+        return list(range(0, 385, 6))
     if model_key == "hgefs":
-        return list(range(0, 241, 3))
+        # NOAA HGEFS mean/spread products are published every 6 hours.
+        return list(range(0, 241, 6))
     if model_key == "cmc_gdps":
         return list(range(0, 85)) + list(range(87, 241, 3))
     if model_key == "cmc_geps":
@@ -865,21 +868,17 @@ def regrid_icon_grib(source: Path) -> Path:
             raise RuntimeError("A saída CDO não possui assinatura GRIB2.")
     return output
 
-def collect_dwd(model_key: str, raw_dir: Path,
-                process_file: Callable[[Path], None] | None = None
-                ) -> tuple[list[Path], list[int], list[str]]:
-    """Collect all DWD fields and remap ICON's native triangular mesh.
-
-    DWD's ICON GRIB messages do not contain per-cell latitude/longitude arrays.
-    Use DWD's published CDO target grid and precomputed weights, then clip the
-    regridded field to the union of SIDERAL's South America/South Pacific area.
-    """
-    upstream = {
-        "icon_dwd": "icon",
-        "icon_ai": "aicon",
-    }[model_key]
+def collect_dwd(
+    model_key: str,
+    raw_dir: Path,
+    process_file: Callable[[Path], None] | None = None,
+    checkpoint: Callable[[int], None] | None = None,
+) -> tuple[list[Path], list[int], list[str]]:
+    """Collect ICON/AICON in bounded forecast-step batches with checkpoints."""
+    upstream = {"icon_dwd": "icon", "icon_ai": "aicon"}[model_key]
     try:
         from dwdopen import DWD
+
         raw_dir.mkdir(parents=True, exist_ok=True)
         downloaded: list[Path] = []
         errors: list[str] = []
@@ -891,15 +890,25 @@ def collect_dwd(model_key: str, raw_dir: Path,
                     f"Modelos disponíveis: {', '.join(available_models)}"
                 )
             model = dwd.nwp.model(upstream)
-            parameters = model.parameters()
+            parameters = list(model.parameters())
             if not parameters:
                 raise RuntimeError(f"DWD não informou parâmetros para {upstream}.")
             available_runs = model.runs()
             if not available_runs:
                 raise RuntimeError(f"DWD não publicou uma rodada para {upstream}.")
             source_run = available_runs[-1]
-            print(f"[{model_key}] rodada DWD fixada: {source_run}")
-
+            max_step = 180 if int(source_run.hour) in (0, 12) else 120
+            # ICON Global outputs hourly through F078 and every 3 hours
+            # afterwards. Keep each download small enough to survive runner
+            # timeouts and publish completed forecast hours incrementally.
+            forecast_steps = list(range(0, 79)) + list(
+                range(81, max_step + 1, 3)
+            )
+            step_batches = [
+                forecast_steps[index:index + 6]
+                for index in range(0, len(forecast_steps), 6)
+            ]
+            parameter_levels: list[tuple[str, object | None, str]] = []
             for parameter in parameters:
                 try:
                     info = model.parameter(parameter)
@@ -912,65 +921,105 @@ def collect_dwd(model_key: str, raw_dir: Path,
                                 or getattr(level_type, "code", level_type)
                             )
                         )
-                        safe_parameter = re.sub(r"[^A-Za-z0-9_.-]+", "-", parameter)
-                        safe_level = re.sub(r"[^A-Za-z0-9_.-]+", "-", level_suffix)
-                        target = (
-                            raw_dir / safe_parameter / safe_level
-                            / f"{safe_parameter}-{safe_level}-all-members-all-steps.grib2"
+                        parameter_levels.append(
+                            (parameter, level_type, level_suffix)
                         )
+                except Exception as exc:
+                    errors.append(
+                        f"{parameter}: {type(exc).__name__}: {exc}"
+                    )
+
+            print(
+                f"[{model_key}] rodada DWD {source_run}; "
+                f"{len(parameter_levels)} combinações parâmetro/nível; "
+                f"{len(forecast_steps)} validades em {len(step_batches)} lotes.",
+                flush=True,
+            )
+
+            for batch_index, step_batch in enumerate(step_batches, start=1):
+                batch_label = f"f{step_batch[0]:03d}-f{step_batch[-1]:03d}"
+                print(
+                    f"[{model_key}] lote {batch_index}/{len(step_batches)} "
+                    f"{batch_label}: iniciando.",
+                    flush=True,
+                )
+                for parameter, level_type, level_suffix in parameter_levels:
+                    safe_parameter = re.sub(
+                        r"[^A-Za-z0-9_.-]+", "-", parameter
+                    )
+                    safe_level = re.sub(
+                        r"[^A-Za-z0-9_.-]+", "-", level_suffix
+                    )
+                    target = (
+                        raw_dir / safe_parameter / safe_level / batch_label
+                        / f"{safe_parameter}-{safe_level}-{batch_label}.grib2"
+                    )
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    try:
+                        options = {
+                            "parameters": parameter,
+                            "steps": [f"{step}h" for step in step_batch],
+                        }
+                        if level_type is not None:
+                            options["level_type"] = level_type
+                            options["levels"] = "all"
+                        query = model.select(**options)
+                        plan = query.resolve(run=source_run, require="partial")
+                        if not plan.assets:
+                            continue
+                        if getattr(plan, "missing", None):
+                            errors.append(
+                                f"{parameter}/{level_suffix}/{batch_label}: "
+                                f"{len(plan.missing)} combinações ausentes."
+                            )
+                        plan.download(str(target))
+                        if not target.is_file() or target.stat().st_size == 0:
+                            errors.append(
+                                f"{parameter}/{level_suffix}/{batch_label}: "
+                                "download não gerou GRIB2."
+                            )
+                            continue
+                        if process_file:
+                            regridded = regrid_icon_grib(target)
+                            try:
+                                process_file(regridded)
+                            finally:
+                                regridded.unlink(missing_ok=True)
+                        else:
+                            downloaded.append(target)
+                    except Exception as exc:
+                        errors.append(
+                            f"{parameter}/{level_suffix}/{batch_label}: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                    finally:
+                        if process_file:
+                            target.unlink(missing_ok=True)
+
+                if checkpoint:
+                    for lead in step_batch:
                         try:
-                            options = {"parameters": parameter, "steps": "all"}
-                            # ICON/AICON parameters can exist on multiple vertical
-                            # coordinates. Select each coordinate explicitly to avoid
-                            # dwdopen raising AmbiguousSelectionError.
-                            if level_type is not None:
-                                options["level_type"] = level_type
-                                options["levels"] = "all"
-                            query = model.select(**options)
-                            plan = query.resolve(run=source_run, require="partial")
-                            if not plan.assets:
-                                errors.append(
-                                    f"{parameter}/{level_suffix}: nenhum asset disponível."
-                                )
-                                continue
-                            if getattr(plan, "missing", None):
-                                errors.append(
-                                    f"{parameter}/{level_suffix}: "
-                                    f"{len(plan.missing)} combinações de nível/membro/validade ausentes."
-                                )
-                            plan.download(str(target))
-                            if target.is_file() and target.stat().st_size > 0:
-                                if process_file:
-                                    regridded = regrid_icon_grib(target)
-                                    try:
-                                        process_file(regridded)
-                                    finally:
-                                        regridded.unlink(missing_ok=True)
-                                else:
-                                    downloaded.append(target)
-                            else:
-                                errors.append(
-                                    f"{parameter}/{level_suffix}: download não gerou GRIB2."
-                                )
+                            checkpoint(lead)
                         except Exception as exc:
                             errors.append(
-                                f"{parameter}/{level_suffix}: {type(exc).__name__}: {exc}"
+                                f"F{lead:03d}: checkpoint ICON falhou: "
+                                f"{type(exc).__name__}: {exc}"
                             )
-                        finally:
-                            if process_file:
-                                target.unlink(missing_ok=True)
-                except Exception as exc:
-                    errors.append(f"{parameter}: {type(exc).__name__}: {exc}")
-                print(f"[{model_key}] parâmetro {parameter}: concluído.")
+                print(
+                    f"[{model_key}] lote {batch_index}/{len(step_batches)} "
+                    f"{batch_label}: concluído; {len(errors)} ocorrência(s).",
+                    flush=True,
+                )
 
         if process_file:
-            return [], [], errors
+            return [], forecast_steps, errors
         if not downloaded:
-            raise RuntimeError("DWD não forneceu GRIB2 para as variáveis/níveis solicitados.")
-        return sorted(set(downloaded)), [], errors
+            raise RuntimeError(
+                "DWD não forneceu GRIB2 para as variáveis/níveis solicitados."
+            )
+        return sorted(set(downloaded)), forecast_steps, errors
     except Exception as exc:
         return [], [], [f"DWD {upstream}: {type(exc).__name__}: {exc}"]
-
 
 def message_value(gid, key: str, default=None):
     from eccodes import codes_get
@@ -1304,8 +1353,13 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
             if total_fields == 0:
                 continue
 
-            file_name = f"F{lead:03d}.json.gz"
-            out_path = forecast_dir / file_name
+            # GitHub rejects individual Git blobs above 100 MB. Split large
+            # forecast frames by uncompressed NDJSON size, keeping every part
+            # as a complete, independently valid gzip-compressed JSON document.
+            max_part_raw_bytes = 32 * 1024 * 1024
+            for stale_part in forecast_dir.glob(f"F{lead:03d}*.json.gz"):
+                stale_part.unlink(missing_ok=True)
+
             header = {
                 "schema": "sideral-global-nwp-field-frame-v1",
                 "model_key": model_key,
@@ -1318,38 +1372,74 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
                 "region": region_id,
                 "coordinate_system": "WGS84",
                 "field_count": total_fields,
-                "parts": 1,
             }
 
-            with fields_path.open("r", encoding="utf-8") as source:
-                with gzip.open(
-                    out_path, "wt", encoding="utf-8", compresslevel=6
-                ) as compressed:
-                    compressed.write("{")
-                    compressed.write('"metadata":')
-                    compressed.write(json.dumps(
-                        header, ensure_ascii=False, separators=(",", ":")
-                    ))
-                    compressed.write(',"grids":')
-                    compressed.write(json.dumps(
-                        grids, ensure_ascii=False, separators=(",", ":")
-                    ))
-                    compressed.write(',"fields":[')
-                    first_field = True
-                    for line in source:
-                        line = line.strip()
-                        if not line:
-                            continue
-                        if not first_field:
-                            compressed.write(",")
-                        compressed.write(line)
-                        first_field = False
-                    compressed.write("]}")
+            part_paths: list[Path] = []
+            part_index = 0
+            raw_bytes_in_part = 0
+            fields_in_part = 0
+            compressed = None
 
+            def open_part(index: int):
+                name = (
+                    f"F{lead:03d}.json.gz" if index == 1
+                    else f"F{lead:03d}-part{index:03d}.json.gz"
+                )
+                path = forecast_dir / name
+                stream = gzip.open(
+                    path, "wt", encoding="utf-8", compresslevel=6
+                )
+                part_header = {**header, "part_index": index}
+                stream.write("{")
+                stream.write('"metadata":')
+                stream.write(json.dumps(
+                    part_header, ensure_ascii=False, separators=(",", ":")
+                ))
+                stream.write(',"grids":')
+                stream.write(json.dumps(
+                    grids, ensure_ascii=False, separators=(",", ":")
+                ))
+                stream.write(',"fields":[')
+                return path, stream
+
+            with fields_path.open("r", encoding="utf-8") as source:
+                for line in source:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    encoded_size = len(line.encode("utf-8")) + 1
+                    if compressed is None or (
+                        fields_in_part > 0
+                        and raw_bytes_in_part + encoded_size > max_part_raw_bytes
+                    ):
+                        if compressed is not None:
+                            compressed.write("]}")
+                            compressed.close()
+                        part_index += 1
+                        path, compressed = open_part(part_index)
+                        part_paths.append(path)
+                        raw_bytes_in_part = 0
+                        fields_in_part = 0
+                    if fields_in_part:
+                        compressed.write(",")
+                    compressed.write(line)
+                    raw_bytes_in_part += encoded_size
+                    fields_in_part += 1
+
+            if compressed is not None:
+                compressed.write("]}")
+                compressed.close()
+
+            if not part_paths:
+                continue
+
+            part_names = [path.name for path in part_paths]
             validity.append({
                 "forecast_hour": lead,
                 "valid_time": entry.get("valid_time"),
-                "file": f"forecast/{file_name}",
+                "file": f"forecast/{part_names[0]}",
+                "files": [f"forecast/{name}" for name in part_names],
+                "part_count": len(part_names),
                 "field_count": total_fields,
             })
 
@@ -1421,7 +1511,7 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
             "variables": current_variables,
             "variable_level_count": len(current_variables),
             "field_count": sum(item["field_count"] for item in validity),
-            "data_format": "um JSON por validade, compactado individualmente em gzip (.json.gz); não é ZIP",
+            "data_format": "JSON gzip independente por validade; validades grandes são divididas em FNNN.json.gz e FNNN-partNNN.json.gz, todos listados em validities[].files.",
             "collection_status": "in-progress" if only_leads is not None else "finalizing",
             "attribution": {
                 "ECMWF": "Contains ECMWF data. © ECMWF. Licensed under CC-BY-4.0 where applicable."
@@ -1569,14 +1659,18 @@ def main() -> int:
             _, discovered_hours, errors = collect_ecmwf(
                 model_key, run, raw_dir, requested, process_file
             )
-        elif spec["adapter"] == "herbie":
+        elif spec["adapter"] in {"herbie", "nomads-filter"}:
+            # collect_herbie routes the GFS key through the NOMADS filter
+            # downloader; AI/ensemble models continue to use Herbie.
             _, discovered_hours, errors = collect_herbie(
                 model_key, run, raw_dir, requested, process_file, checkpoint_lead
             )
         elif spec["adapter"] == "dwdopen":
             _, discovered_hours, errors = collect_dwd(
-                model_key, raw_dir, process_file
+                model_key, raw_dir, process_file, checkpoint_lead
             )
+            if discovered_hours:
+                stats["_requested_hours"] = discovered_hours
         elif spec["adapter"] == "datamart":
             if model_key not in {"cmc_gdps", "cmc_geps"}:
                 raise RuntimeError("Adaptador Datamart desconhecido.")
