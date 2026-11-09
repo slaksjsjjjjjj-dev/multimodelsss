@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import gzip
+import json
 import sys
 import tempfile
 import unittest
@@ -47,7 +48,7 @@ class CollectHelpersTest(unittest.TestCase):
                 "label": "Test Region",
                 "bounds": [0, 0, 1, 1],
             }]
-            collect.MAX_FRAME_PART_RAW_BYTES = 100
+            collect.MAX_FRAME_PART_RAW_BYTES = 50
             with tempfile.TemporaryDirectory() as temp:
                 root = Path(temp)
                 spool = root / "spool"
@@ -55,8 +56,8 @@ class CollectHelpersTest(unittest.TestCase):
                 fields_dir = spool / "test_region" / "f000"
                 fields_dir.mkdir(parents=True)
                 (fields_dir / "fields.ndjson").write_text(
-                    '{"field":"first","values":[1,2,3]}\\n'
-                    '{"field":"second","values":[4,5,6]}\\n',
+                    '{"field":"first","values":[1,2,3]}\n'
+                    '{"field":"second","values":[4,5,6]}\n',
                     encoding="utf-8",
                 )
                 stats = {
@@ -84,14 +85,14 @@ class CollectHelpersTest(unittest.TestCase):
                 self.assertTrue(first.is_file())
                 self.assertTrue(second.is_file())
                 with gzip.open(first, "rt", encoding="utf-8") as stream:
-                    first_doc = __import__("json").load(stream)
+                    first_doc = json.load(stream)
                 with gzip.open(second, "rt", encoding="utf-8") as stream:
-                    second_doc = __import__("json").load(stream)
+                    second_doc = json.load(stream)
                 self.assertEqual(first_doc["metadata"]["part_index"], 1)
                 self.assertEqual(second_doc["metadata"]["part_index"], 2)
                 self.assertEqual(len(first_doc["fields"]), 1)
                 self.assertEqual(len(second_doc["fields"]), 1)
-                manifest = __import__("json").loads(
+                manifest = json.loads(
                     (forecast_dir.parent / "manifest.json").read_text(encoding="utf-8")
                 )
                 self.assertEqual(manifest["validities"][0]["part_count"], 2)
