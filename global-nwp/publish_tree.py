@@ -208,22 +208,20 @@ def main() -> int:
         if path not in metadata_files
     ]
 
-    # Work directly in release-assets: artifacts and frames have already been
-    # moved there, so creating another temporary copy would exceed runner disk.
+    # Use release-assets directly: frames and diagnostics are moved there
+    # by publish_release.py. Avoid a second full copy of multi-GB model data.
     work = source
     if (work / ".git").exists():
-    raise SystemExit(f"Diretório de publicação já contém .git: {work}")
-    if (work / ".nojekyll").exists():
-    (work / ".nojekyll").unlink()
-    git(["git", "init", "--initial-branch=publish"], cwd=work)
+        raise SystemExit(f"Diretório de publicação já contém .git: {work}")
+work = source
     git(["git", "init", "--initial-branch=publish"], cwd=work)
     git(["git", "config", "user.name", "github-actions[bot]"], cwd=work)
     git(
-    [
-        "git", "config", "user.email",
-        "41898282+github-actions[bot]@users.noreply.github.com",
-    ],
-    cwd=work,
+        [
+            "git", "config", "user.email",
+            "41898282+github-actions[bot]@users.noreply.github.com",
+        ],
+        cwd=work,
     )
 
     # Primeiro commit pequeno: cria a branch e envia somente o primeiro lote.
@@ -237,112 +235,112 @@ def main() -> int:
     first_push = True
 
     def flush_batch() -> None:
-    nonlocal pending_bytes, pending_files, batch_number, first_push
-    if pending_files == 0:
-        return
-    batch_number += 1
-    commit_and_push(
-        f"{args.commit_message} (data batch {batch_number})",
-        cwd=work,
-        repo_url=repo_url,
-        branch=staging_branch,
-        extra_header=extra_header,
-        force=first_push,
-    )
-    first_push = False
-    print(
-        f"Lote {batch_number} publicado: {pending_files} arquivos, "
-        f"{pending_bytes / 1048576:.1f} MiB"
-    )
-    pending_bytes = 0
-    pending_files = 0
+        nonlocal pending_bytes, pending_files, batch_number, first_push
+        if pending_files == 0:
+            return
+        batch_number += 1
+        commit_and_push(
+            f"{args.commit_message} (data batch {batch_number})",
+            cwd=work,
+            repo_url=repo_url,
+            branch=staging_branch,
+            extra_header=extra_header,
+            force=first_push,
+        )
+        first_push = False
+        print(
+            f"Lote {batch_number} publicado: {pending_files} arquivos, "
+            f"{pending_bytes / 1048576:.1f} MiB"
+        )
+        pending_bytes = 0
+        pending_files = 0
 
     for path in data_files:
-    relative = path.relative_to(source)
-    git(["git", "add", "--", relative.as_posix()], cwd=work)
-    pending_bytes += path.stat().st_size
-    pending_files += 1
+        relative = path.relative_to(source)
+        git(["git", "add", "--", relative.as_posix()], cwd=work)
+        pending_bytes += path.stat().st_size
+        pending_files += 1
 
-    if pending_bytes >= batch_limit or pending_files >= batch_file_limit:
-        flush_batch()
+        if pending_bytes >= batch_limit or pending_files >= batch_file_limit:
+            flush_batch()
 
     flush_batch()
 
     if first_push:
-    # Publicações sem frames ainda podem publicar diagnósticos e catálogo.
+        # Publicações sem frames ainda podem publicar diagnósticos e catálogo.
+        commit_and_push(
+            f"{args.commit_message} (initialize data tree)",
+            cwd=work,
+            repo_url=repo_url,
+            branch=staging_branch,
+            extra_header=extra_header,
+            force=True,
+        )
+        first_push = False
+
+    # Só disponibilize o catálogo depois que os arquivos referenciados estiverem no branch.
+    for path in metadata_files:
+        relative = Path(path.name)
+        git(["git", "add", "--", relative.as_posix()], cwd=work)
+
     commit_and_push(
-        f"{args.commit_message} (initialize data tree)",
+        f"{args.commit_message} (publish catalog)",
         cwd=work,
         repo_url=repo_url,
         branch=staging_branch,
         extra_header=extra_header,
-        force=True,
-    )
-    first_push = False
-
-    # Só disponibilize o catálogo depois que os arquivos referenciados estiverem no branch.
-    for path in metadata_files:
-    relative = Path(path.name)
-    git(["git", "add", "--", relative.as_posix()], cwd=work)
-
-    commit_and_push(
-    f"{args.commit_message} (publish catalog)",
-    cwd=work,
-    repo_url=repo_url,
-    branch=staging_branch,
-    extra_header=extra_header,
     )
 
     # Confirma todos os caminhos da origem no commit que ficou no GitHub.
     expected_paths = {
-    path.relative_to(source).as_posix()
-    for path in files
+        path.relative_to(source).as_posix()
+        for path in files
     }
     expected_paths.add(".nojekyll")
     tree_output = git(["git", "ls-tree", "-r", "--name-only", "HEAD"], cwd=work)
     committed_paths = set(tree_output.splitlines())
     missing = sorted(expected_paths - committed_paths)
     if missing:
-    raise RuntimeError(
-        "A publicação terminou sem incluir todos os arquivos: "
-        + ", ".join(missing[:40])
-    )
+        raise RuntimeError(
+            "A publicação terminou sem incluir todos os arquivos: "
+            + ", ".join(missing[:40])
+        )
 
     local_sha = git(["git", "rev-parse", "HEAD"], cwd=work)
     staged_sha = remote_branch_sha(
-    repo_url, staging_branch, extra_header, cwd=work
+        repo_url, staging_branch, extra_header, cwd=work
     )
     if staged_sha != local_sha:
-    raise RuntimeError(
-        f"Staging não está no commit completo. Local={local_sha}; remoto={staged_sha}"
-    )
+        raise RuntimeError(
+            f"Staging não está no commit completo. Local={local_sha}; remoto={staged_sha}"
+        )
 
     # Promote only after every data blob and the complete catalog/report
     # are present. Consumers never see a half-published nwp-data branch.
     push_head(
-    repo_url=repo_url,
-    branch=args.branch,
-    extra_header=extra_header,
-    cwd=work,
-    force=True,
+        repo_url=repo_url,
+        branch=args.branch,
+        extra_header=extra_header,
+        cwd=work,
+        force=True,
     )
     published_sha = remote_branch_sha(
-    repo_url, args.branch, extra_header, cwd=work
+        repo_url, args.branch, extra_header, cwd=work
     )
     if published_sha != local_sha:
-    raise RuntimeError(
-        f"Promoção incompleta. Local={local_sha}; remoto={published_sha}"
-    )
+        raise RuntimeError(
+            f"Promoção incompleta. Local={local_sha}; remoto={published_sha}"
+        )
 
     # The final branch now owns the complete history; remove temporary ref.
     try:
-    git([
-        "git", "-c", "http.version=HTTP/1.1",
-        "-c", f"http.extraheader={extra_header}",
-        "push", repo_url, f":refs/heads/{staging_branch}",
-    ], cwd=work)
+        git([
+            "git", "-c", "http.version=HTTP/1.1",
+            "-c", f"http.extraheader={extra_header}",
+            "push", repo_url, f":refs/heads/{staging_branch}",
+        ], cwd=work)
     except Exception as exc:
-    print(f"Aviso: não foi possível remover staging {staging_branch}: {exc}")
+        print(f"Aviso: não foi possível remover staging {staging_branch}: {exc}")
 
     print(
         f"Publicação confirmada: "
