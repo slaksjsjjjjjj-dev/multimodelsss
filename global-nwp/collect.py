@@ -90,22 +90,50 @@ def leads_for(model_key: str, run: datetime) -> list[int]:
     return []
 
 
+def is_valid_grib2(path: Path) -> bool:
+    """Fast structural check: GRIB magic at start and 7777 terminator at EOF."""
+    try:
+        if not path.is_file() or path.stat().st_size < 20:
+            return False
+        with path.open("rb") as stream:
+            magic = stream.read(4)
+            if magic == b"GRIB":
+                stream.seek(-4, os.SEEK_END)
+                return stream.read(4) == b"7777"
+            if magic[:2] == b"\\x1f\\x8b":
+                with gzip.open(path, "rb") as decoded:
+                    if decoded.read(4) != b"GRIB":
+                        return False
+                    decoded.seek(-4, os.SEEK_END)
+                    return decoded.read(4) == b"7777"
+    except (OSError, EOFError, gzip.BadGzipFile):
+        return False
+    return False
+
+
 def ensure_request(url: str, destination: Path, timeout: tuple[int, int] = (20, 180)) -> bool:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    if destination.is_file() and destination.stat().st_size > 0:
-        return True
-    response = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=timeout, stream=True)
-    if response.status_code == 404:
-        return False
-    response.raise_for_status()
+    if destination.is_file():
+        if is_valid_grib2(destination):
+            return True
+        destination.unlink(missing_ok=True)
+
     temp = destination.with_suffix(destination.suffix + ".part")
-    with temp.open("wb") as stream:
-        for chunk in response.iter_content(1024 * 1024):
-            if chunk:
-                stream.write(chunk)
-    if not temp.is_file() or temp.stat().st_size == 0:
+    temp.unlink(missing_ok=True)
+    with requests.get(
+        url, headers={"User-Agent": USER_AGENT}, timeout=timeout, stream=True
+    ) as response:
+        if response.status_code == 404:
+            return False
+        response.raise_for_status()
+        with temp.open("wb") as stream:
+            for chunk in response.iter_content(1024 * 1024):
+                if chunk:
+                    stream.write(chunk)
+
+    if not is_valid_grib2(temp):
         temp.unlink(missing_ok=True)
-        return False
+        raise RuntimeError(f"Download GRIB2 incompleto ou inválido: {url}")
     temp.replace(destination)
     return True
 
@@ -146,7 +174,7 @@ def download_herbie_file(model: str, product: str, run: datetime, lead: int,
             if result:
                 try:
                     candidate = Path(result)
-                    if candidate.is_file() and candidate.stat().st_size > 0:
+                    if is_valid_grib2(candidate):
                         files.append(candidate)
                 except (TypeError, OSError):
                     pass
@@ -269,7 +297,7 @@ def download_gfs_regional(
 
             with temp.open("rb") as downloaded:
                 magic = downloaded.read(4)
-            if magic != b"GRIB":
+            if magic != b"GRIB" or not is_valid_grib2(temp):
                 try:
                     detail = temp.read_text(encoding="utf-8", errors="replace")[:400]
                 except OSError:
@@ -382,12 +410,7 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
                    requested: list[int],
                    process_file: Callable[[Path], None] | None = None
                    ) -> tuple[list[Path], list[int], list[str]]:
-    """Download every available field in each documented ECMWF product stream.
-
-    The requests do not specify param/levelist/number, so every published
-    parameter and level is returned for the product types listed in
-    _ecmwf_tasks (ensemble members are no longer requested).
-    """
+    """Download ECMWF streams with retries and validate GRIB before decoding."""
     from ecmwf.opendata import Client
 
     upstream_model = {
@@ -411,9 +434,6 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     for stream, product_type, steps, task_label in _ecmwf_tasks(model_key, run):
         if not steps:
             continue
-        # Full forecast files can be very large; process one forecast lead at a
-        # time. EP probability files are much smaller, so keep their step bundles
-        # together to reduce request count.
         step_groups = [steps] if "probabilities" in task_label else [[step] for step in steps]
         for step_group in step_groups:
             step_label = (
@@ -422,19 +442,49 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
             )
             safe_label = re.sub(r"[^A-Za-z0-9_.-]+", "-", task_label)
             target = raw_dir / safe_label / f"{stream}-{product_type}-{step_label}.grib2"
+            target.parent.mkdir(parents=True, exist_ok=True)
+
+            last_error: Exception | None = None
+            valid_download = False
+            for attempt, wait in enumerate((0, 5, 15), start=1):
+                try:
+                    if not is_valid_grib2(target):
+                        target.unlink(missing_ok=True)
+                        client.retrieve(
+                            date=run_date,
+                            time=run.hour,
+                            stream=stream,
+                            type=product_type,
+                            step=step_group if len(step_group) > 1 else step_group[0],
+                            target=str(target),
+                        )
+                    if not is_valid_grib2(target):
+                        raise RuntimeError(
+                            "ECMWF não produziu GRIB2 íntegro (assinatura/terminador inválidos)."
+                        )
+                    valid_download = True
+                    break
+                except Exception as exc:
+                    last_error = exc
+                    target.unlink(missing_ok=True)
+                    if attempt < 3:
+                        print(
+                            f"[{model_key}] {stream}/{product_type}/{step_label}: "
+                            f"tentativa {attempt}/3 falhou ({type(exc).__name__}: {exc}); "
+                            f"nova tentativa em {wait}s.",
+                            flush=True,
+                        )
+                        time.sleep(wait)
+
+            if not valid_download:
+                errors.append(
+                    f"{stream}/{product_type}/{task_label}/{step_label}: "
+                    f"{type(last_error).__name__}: {last_error}"
+                )
+                time.sleep(0.15)
+                continue
+
             try:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                if not target.is_file() or target.stat().st_size == 0:
-                    client.retrieve(
-                        date=run_date,
-                        time=run.hour,
-                        stream=stream,
-                        type=product_type,
-                        step=step_group if len(step_group) > 1 else step_group[0],
-                        target=str(target),
-                    )
-                if not target.is_file() or target.stat().st_size == 0:
-                    raise RuntimeError("ECMWF API did not create a non-empty GRIB2 file.")
                 if process_file:
                     process_file(target)
                 else:
@@ -443,13 +493,12 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
             except Exception as exc:
                 errors.append(
                     f"{stream}/{product_type}/{task_label}/{step_label}: "
-                    f"{type(exc).__name__}: {exc}"
+                    f"processamento {type(exc).__name__}: {exc}"
                 )
                 target.unlink(missing_ok=True)
             time.sleep(0.15)
 
     return sorted(set(downloaded)), sorted(found_hours), errors
-
 
 
 def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
@@ -935,6 +984,50 @@ def collect_dwd(
                 f"{len(forecast_steps)} validades em {len(step_batches)} lotes.",
                 flush=True,
             )
+            model_output = raw_dir.parent.parent / model_key
+            model_output.mkdir(parents=True, exist_ok=True)
+            progress_path = model_output / "collection-progress.json"
+            completed_steps: set[int] = set()
+
+            def write_dwd_progress(status: str = "collecting") -> None:
+                available_steps = []
+                for lead in sorted(completed_steps):
+                    if any(
+                        (
+                            model_output / region["id"] / "forecast"
+                            / f"F{lead:03d}.json.gz"
+                        ).is_file()
+                        or any(
+                            (
+                                model_output / region["id"] / "forecast"
+                            ).glob(f"F{lead:03d}-part*.json.gz")
+                        )
+                        for region in REGIONS
+                    ):
+                        available_steps.append(lead)
+                payload = {
+                    "schema": "sideral-global-nwp-progress-v1",
+                    "model_key": model_key,
+                    "run_utc": str(source_run),
+                    "status": status,
+                    "requested_forecast_hours": len(forecast_steps),
+                    "completed_forecast_hours": sorted(completed_steps),
+                    "available_forecast_hours": available_steps,
+                    "missing_forecast_hours": sorted(
+                        completed_steps - set(available_steps)
+                    ),
+                    "completed_count": len(completed_steps),
+                    "errors": errors[-250:],
+                    "updated_utc": datetime.now(timezone.utc).isoformat(),
+                }
+                temp_progress = progress_path.with_suffix(".tmp")
+                temp_progress.write_text(
+                    json.dumps(payload, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
+                temp_progress.replace(progress_path)
+
+            write_dwd_progress()
 
             for batch_index, step_batch in enumerate(step_batches, start=1):
                 batch_label = f"f{step_batch[0]:03d}-f{step_batch[-1]:03d}"
@@ -1005,11 +1098,15 @@ def collect_dwd(
                                 f"F{lead:03d}: checkpoint ICON falhou: "
                                 f"{type(exc).__name__}: {exc}"
                             )
+                completed_steps.update(step_batch)
+                write_dwd_progress()
                 print(
                     f"[{model_key}] lote {batch_index}/{len(step_batches)} "
                     f"{batch_label}: concluído; {len(errors)} ocorrência(s).",
                     flush=True,
                 )
+
+            write_dwd_progress("download-finished")
 
         if process_file:
             return [], forecast_steps, errors
