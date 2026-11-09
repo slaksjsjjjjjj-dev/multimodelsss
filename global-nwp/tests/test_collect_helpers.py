@@ -122,7 +122,7 @@ class CollectHelpersTest(unittest.TestCase):
 
                 def retrieve(self, **kwargs) -> None:
                     Path(kwargs["target"]).write_bytes(
-                        b"GRIB" + (b"\\x00" * 12) + b"7777"
+                        b"GRIB" + (b"\x00" * 12) + b"7777"
                     )
 
             fake_ecmwf = types.ModuleType("ecmwf")
