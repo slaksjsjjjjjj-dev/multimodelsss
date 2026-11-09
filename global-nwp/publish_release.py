@@ -44,7 +44,7 @@ def main() -> int:
         "region_definitions": region_catalog.get("regions", []),
         "run_date": date_stamp,
         "cycle_utc": cycle_stamp,
-        "coverage": ["south_america", "south_pacific", "brazil_*", "argentina_*"],
+        "coverage": ["south_america", "south_pacific"],
         "format": (
             "JSON gzip independente por validade; validades grandes podem ser divididas "
             "em FNNN.json.gz e FNNN-partNNN.json.gz. O catálogo lista todas as partes."
