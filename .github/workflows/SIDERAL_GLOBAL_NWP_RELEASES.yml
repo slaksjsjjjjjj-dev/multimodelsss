@@ -112,7 +112,6 @@ jobs:
       - name: Coletar todas as variáveis/níveis e validades publicadas
         id: collect
         timeout-minutes: 340
-        continue-on-error: true
         env:
           MODEL_KEY: ${{ matrix.model }}
           RUN_DATE: ${{ inputs.run_date }}
@@ -177,6 +176,31 @@ jobs:
           if-no-files-found: warn
           retention-days: 2
           compression-level: 1
+
+      - name: Marcar falha quando o modelo não produzir dados
+        if: always()
+        shell: bash
+        env:
+          MODEL_KEY: ${{ matrix.model }}
+        run: |
+          set -euo pipefail
+          STATUS="global-nwp-output/$MODEL_KEY/model_status.json"
+          if [[ ! -f "$STATUS" ]]; then
+            echo "::error::O modelo $MODEL_KEY não gerou model_status.json."
+            exit 1
+          fi
+          python - "$STATUS" "$MODEL_KEY" <<'PY'
+          import json, pathlib, sys
+          status = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          model = sys.argv[2]
+          result = status.get("status", "unknown")
+          if result == "failed":
+              print(f"::error::{model} falhou: {status.get('message', 'sem diagnóstico')}")
+              for error in status.get("errors", [])[:10]:
+                  print(f"::error::{error}")
+              raise SystemExit(1)
+          print(f"{model}: {result}")
+          PY
 
   publish:
     name: Publicar JSONs na branch nwp-data
