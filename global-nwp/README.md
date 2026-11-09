@@ -1,4 +1,4 @@
-# SIDERAL — Global NWP JSON Releases
+# SIDERAL — Global NWP JSON Branch
 
 Repositório: `slaksjsjjjjjj-dev/multimodelsss`.
 
@@ -36,9 +36,9 @@ nwp-data/
     └── ...
 ```
 
-Cada `FNNN.json.gz` é um documento JSON independente, comprimido individualmente com gzip — não é um arquivo ZIP. Um arquivo contém todos os campos, níveis verticais e membros efetivamente coletados daquele modelo, daquela região e daquela validade. O manifesto fica na mesma pasta e lista os arquivos, variáveis, níveis, horas disponíveis e horas ausentes.
+Cada `FNNN.json.gz` é um documento JSON independente, comprimido individualmente com gzip — não é um arquivo ZIP. Quando uma validade fica grande demais para um único blob do GitHub, ela é dividida em `FNNN.json.gz`, `FNNN-part002.json.gz` e assim por diante. O manifesto lista todas as partes em `validities[].files` e `validities[].download_urls`; clientes antigos ainda podem usar `file` e `download_url` para abrir a primeira parte.
 
-A branch `nwp-data` é substituída pela publicação mais recente para manter apenas a rodada atual acessível sem acumular todas as rodadas no histórico Git. A GitHub Release correspondente contém `catalog.json` e `run-report.json`, com link direto para a árvore de dados.
+A publicação é preparada em uma branch temporária. A branch `nwp-data` só é atualizada quando todos os lotes de dados, o catálogo e o relatório foram enviados e verificados; assim, falhas intermediárias não substituem a última publicação válida.
 
 Links:
 - Dados: https://github.com/slaksjsjjjjjj-dev/multimodelsss/tree/nwp-data/data
@@ -47,7 +47,7 @@ Links:
 
 ## Cadência das previsões
 
-O coletor grava **todas as validades que a fonte publica para cada modelo**, sem pular uma validade disponível por causa de um empacotamento. Não cria horários artificiais quando o provedor não fornece aquele F.
+O coletor grava **as validades efetivamente oferecidas por cada fonte** e não cria horários artificiais. O AIGFS, AIGEFS e HGEFS usam a cadência de seis horas documentada para esses produtos; GFS mantém F000–F120 horário e depois intervalos de três horas.
 
 No GFS 0,25°, a NOAA publica previsões de hora em hora até F120 e, depois, a cada três horas até F384. Portanto, depois de F120, a sequência esperada é F123, F126, F129 etc.; F121 e F122 não são arquivos publicados nesse produto. Essa cadência é da fonte, não uma falha do coletor. Consulte o [inventário oficial de produtos GFS no NOMADS](https://www.nco.ncep.noaa.gov/pmb/products/gfs/nomads/) e a [descrição do conjunto GFS 0,25°](https://developers.google.com/earth-engine/datasets/catalog/NOAA_GFS0P25).
 
@@ -61,12 +61,12 @@ O campo `requested_forecast_hours` mostra o calendário esperado pelo coletor. `
 | `ecmwf_eps` | IFS ENS — membros, média, dispersão, probabilidades e ondas | ECMWF Open Data | 0,25°; até F360 em 00/12Z |
 | `ecmwf_aifs` | AIFS Single — atmosfera e ondas | ECMWF Open Data | 0,25°; até F360 |
 | `ecmwf_aifs_ens` | AIFS-ENS — controle, membros, média, dispersão, probabilidades e ondas | ECMWF Open Data | 0,25°; até F360 |
-| `icon_dwd` | ICON global determinístico | DWD Open Data | Malha triangular nativa; até F180 |
-| `icon_ai` | AICON global | DWD Open Data | Malha triangular nativa; até F180 |
-| `gfs` | GFS / GEV3 — produtos principais e secundários | NOAA / NOMADS via Herbie | 0,25°; até F384 |
-| `gfs_ai` | AIGFS — superfície e pressão | NOAA / NOMADS via Herbie | 0,25°; até F384 |
-| `gefs_ai` | AIGEFS — média e dispersão de superfície e pressão | NOAA / NOMADS via Herbie | 0,25°; até F384 |
-| `hgefs` | HGEFS — média e dispersão de superfície e pressão | NOAA / NOMADS via Herbie | 0,25°; até F240 |
+| `icon_dwd` | ICON global determinístico | DWD Open Data + regrade CDO | Malha triangular para lat/lon 0,25°; até F180 |
+| `icon_ai` | AICON global | DWD Open Data + regrade CDO | Malha triangular para lat/lon 0,25°; até F180 |
+| `gfs` | GFS / GEV3 — produtos principais e secundários | NOAA / NOMADS GRIB filter | 0,25°; até F384 |
+| `gfs_ai` | AIGFS — superfície e pressão | NOAA / Herbie | 0,25°; até F384, intervalos 6h |
+| `gefs_ai` | AIGEFS — média e dispersão de superfície e pressão | NOAA / Herbie | 0,25°; até F384, intervalos 6h |
+| `hgefs` | HGEFS — média e dispersão de superfície e pressão | NOAA / Herbie | 0,25°; até F240, intervalos 6h |
 | `cmc_gdps` | GDPS determinístico | ECCC Datamart | 0,15°; até F240 |
 | `cmc_geps` | GEPS raw e produtos estatísticos | ECCC Datamart | 0,5°; até F384, com extensão F936 em ciclos específicos |
 | `ukmet` | UKMET Global | Met Office Weather DataHub | Bloqueado até configurar assinatura e credenciais |
@@ -75,7 +75,7 @@ AIGEFS e HGEFS estão configurados para campos agregados de média/dispersão; n
 
 ## Coleta NOAA / GFS
 
-Os downloads via Herbie agora usam erros explícitos em vez do padrão de apenas emitir aviso, tentam novamente falhas transitórias, verificam se o arquivo GRIB foi realmente salvo e executam downloads de até quatro validades em paralelo para GFS. O processamento e gravação dos campos regionais continuam serializados para não corromper os arquivos de saída.
+Os downloads usam validação da assinatura GRIB e do terminador 7777, descartam arquivos truncados e tentam novamente falhas transitórias. GFS operacional usa o filtro regional do NOMADS; AIGFS, AIGEFS e HGEFS usam Herbie e solicitam apenas as validades de seis em seis horas. O processamento e a gravação regional continuam serializados para não corromper os arquivos de saída.
 
 O arquivo `collection-progress.json` é atualizado após cada validade concluída e preserva:
 - total de validades solicitadas;
@@ -84,25 +84,25 @@ O arquivo `collection-progress.json` é atualizado após cada validade concluíd
 - validades sem arquivo;
 - horário da última atualização.
 
-O passo de coleta tem limite próprio de 320 minutos, dentro do limite maior do job, reservando tempo para gravar o diagnóstico e enviar artefatos mesmo quando um provedor demora demais.
+O passo de coleta tem limite próprio de 340 minutos. ICON/AICON são baixados em lotes de seis validades e cada lote gera checkpoints, para que os dados já processados possam ser publicados mesmo quando uma execução é interrompida.
 
 ## Regiões
 
-Todas as regiões são WGS84 e definidas em `regions.json` (limites oeste/sul/leste/norte):
+As áreas atualmente ativadas no coletor são WGS84 e definidas em `regions.json`:
 - América do Sul.
-- Pacífico Sul — faixa principal, Ocidental e Central.
-- Brasil — Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
-- Argentina — NOA, NEA, Cuyo, Pampa e Patagônia.
+- Pacífico Sul.
+
+Os recortes específicos do Brasil e da Argentina estão temporariamente desativados nesta versão para evitar duplicação dentro da região América do Sul.
 
 ## Como consumir
 
 1. Abra a branch **nwp-data** e navegue até `data/<modelo>/<regiao>/`.
 2. Leia o `manifest.json` para obter as validades e a lista de arquivos JSON.
-3. Baixe o `FNNN.json.gz` desejado e descompacte-o com gzip.
+3. Baixe todas as partes listadas em `validities[].files` (ou `download_urls`) e descompacte cada `.json.gz` com gzip. Para validade sem divisão, a lista contém apenas `FNNN.json.gz`.
 4. No JSON, use `metadata.forecast_hour`, `metadata.valid_time`, `fields[].short_name`, `fields[].level`, `fields[].grid_type` e `grids[fields[].grid_id]` para interpretar os valores e coordenadas.
 
 ## Status e diagnóstico
 
 Um modelo pode terminar com status `published-ready`, `partial`, `failed` ou `blocked`. O catálogo nunca interpreta um modelo apenas configurado como modelo com dados. A disponibilidade operacional precisa ser confirmada pelo `model_status.json`, `collection-summary.json`, `collection-progress.json` e pelos manifestos regionais.
 
-O workflow não possui job de pré-validação nem etapa de bloqueio por catálogo/matriz. Cada modelo inicia diretamente sua coleta. Se uma fonte falhar ou não produzir campos regionais, o modelo registra o diagnóstico sem impedir a publicação dos demais; os arquivos disponíveis continuam sendo publicados.
+Cada job de modelo grava seu status e envia o artefato mesmo quando a coleta falha; o workflow marca explicitamente os modelos sem dados como falha. A publicação consolida os artefatos disponíveis, valida o tamanho dos blobs e só promove a branch de dados quando catálogo e arquivos estão completos.
