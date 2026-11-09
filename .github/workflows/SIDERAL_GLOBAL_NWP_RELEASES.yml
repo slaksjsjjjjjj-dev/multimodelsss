@@ -160,6 +160,7 @@ jobs:
               json.dumps({
                   "model_key": model,
                   "status": status,
+                  "run_utc": progress.get("run_utc"),
                   "message": message,
                   "errors": progress.get("errors", [])[:100],
               }, ensure_ascii=False, indent=2),
