@@ -407,11 +407,15 @@ def _ecmwf_tasks(model_key: str, run: datetime) -> list[tuple[str, str, list[int
     raise ValueError(f"Modelo ECMWF desconhecido: {model_key}")
 
 
-def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
-                   requested: list[int],
-                   process_file: Callable[[Path], None] | None = None
-                   ) -> tuple[list[Path], list[int], list[str]]:
-    """Download ECMWF streams with retries and validate GRIB before decoding."""
+def collect_ecmwf(
+    model_key: str,
+    run: datetime,
+    raw_dir: Path,
+    requested: list[int],
+    process_file: Callable[[Path], None] | None = None,
+    checkpoint: Callable[[int], None] | None = None,
+) -> tuple[list[Path], list[int], list[str]]:
+    """Download ECMWF streams with retries, integrity checks and checkpoints."""
     from ecmwf.opendata import Client
 
     upstream_model = {
@@ -427,10 +431,70 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
         infer_stream_keyword=False,
     )
     raw_dir.mkdir(parents=True, exist_ok=True)
+    model_output = raw_dir.parent.parent / model_key
+    model_output.mkdir(parents=True, exist_ok=True)
+    progress_path = model_output / "collection-progress.json"
+
     downloaded: list[Path] = []
     found_hours: set[int] = set()
+    completed_hours: set[int] = set()
     errors: list[str] = []
     run_date = run.strftime("%Y%m%d")
+
+    def write_progress(status: str = "collecting") -> None:
+        available = []
+        for lead in sorted(completed_hours):
+            if any(
+                (
+                    model_output / region["id"] / "forecast"
+                    / f"F{lead:03d}.json.gz"
+                ).is_file()
+                or any(
+                    (
+                        model_output / region["id"] / "forecast"
+                    ).glob(f"F{lead:03d}-part*.json.gz")
+                )
+                for region in REGIONS
+            ):
+                available.append(lead)
+        payload = {
+            "schema": "sideral-global-nwp-progress-v1",
+            "model_key": model_key,
+            "run_utc": run.isoformat(),
+            "status": status,
+            "requested_forecast_hours": len(requested),
+            "completed_forecast_hours": sorted(completed_hours),
+            "available_forecast_hours": available,
+            "missing_forecast_hours": sorted(
+                completed_hours - set(available)
+            ),
+            "completed_count": len(completed_hours),
+            "errors": errors[-250:],
+            "updated_utc": datetime.now(timezone.utc).isoformat(),
+        }
+        temp_path = progress_path.with_suffix(".tmp")
+        temp_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        temp_path.replace(progress_path)
+
+    def finish_group(step_group: list[int | str], success: bool) -> None:
+        leads = sorted({_ecmwf_step_end(step) for step in step_group})
+        completed_hours.update(leads)
+        if success:
+            found_hours.update(leads)
+            if checkpoint:
+                for lead in leads:
+                    try:
+                        checkpoint(lead)
+                    except Exception as exc:
+                        errors.append(
+                            f"F{lead:03d}: checkpoint ECMWF falhou: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
+        write_progress()
+
+    write_progress()
 
     for stream, product_type, steps, task_label in _ecmwf_tasks(model_key, run):
         if not steps:
@@ -444,6 +508,7 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
             ]
         else:
             step_groups = [[step] for step in steps]
+
         for step_group in step_groups:
             step_label = (
                 f"{step_group[0]}-to-{step_group[-1]}-bundle"
@@ -490,23 +555,28 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
                     f"{stream}/{product_type}/{task_label}/{step_label}: "
                     f"{type(last_error).__name__}: {last_error}"
                 )
+                finish_group(step_group, False)
                 time.sleep(0.15)
                 continue
 
+            success = False
             try:
                 if process_file:
                     process_file(target)
                 else:
                     downloaded.append(target)
-                found_hours.update(_ecmwf_step_end(step) for step in step_group)
+                success = True
             except Exception as exc:
                 errors.append(
                     f"{stream}/{product_type}/{task_label}/{step_label}: "
                     f"processamento {type(exc).__name__}: {exc}"
                 )
                 target.unlink(missing_ok=True)
+            finally:
+                finish_group(step_group, success)
             time.sleep(0.15)
 
+    write_progress("download-finished")
     return sorted(set(downloaded)), sorted(found_hours), errors
 
 
@@ -1767,7 +1837,7 @@ def main() -> int:
     try:
         if spec["adapter"] == "ecmwf-opendata":
             _, discovered_hours, errors = collect_ecmwf(
-                model_key, run, raw_dir, requested, process_file
+                model_key, run, raw_dir, requested, process_file, checkpoint_lead
             )
         elif spec["adapter"] in {"herbie", "nomads-filter"}:
             # collect_herbie routes the GFS key through the NOMADS filter
