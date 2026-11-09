@@ -185,7 +185,7 @@ def download_herbie_file(model: str, product: str, run: datetime, lead: int,
                     candidate for candidate in after - before
                     if candidate.is_file()
                     and candidate.suffix.lower() in {".grib2", ".grb2", ".grb"}
-                    and candidate.stat().st_size > 0
+                    and is_valid_grib2(candidate)
                 ]
 
             files = sorted(set(files))
