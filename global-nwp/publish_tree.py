@@ -167,9 +167,35 @@ def main() -> int:
     if not files:
         raise SystemExit(f"Nenhum arquivo para publicar em {source}")
 
+    # GitHub rejects individual Git blobs >= 100 MB. Preflight before any
+    # remote branch is touched; normal NWP frames are split below this limit.
+    max_file_bytes = 80 * 1024 * 1024
+    oversized = [
+        (path, path.stat().st_size) for path in files
+        if path.stat().st_size > max_file_bytes
+    ]
+    if oversized:
+        details = "\n".join(
+            f"- {path.relative_to(source)}: {size / 1048576:.1f} MiB"
+            for path, size in oversized[:30]
+        )
+        raise SystemExit(
+            "Publicação cancelada antes do push: existem arquivos acima de "
+            f"80 MiB. Divida os frames antes de publicar.\n{details}"
+        )
+
+    total_bytes = sum(path.stat().st_size for path in files)
+    print(
+        f"Pré-validação: {len(files)} arquivos, "
+        f"{total_bytes / (1024 ** 3):.2f} GiB; "
+        f"maior arquivo {max(path.stat().st_size for path in files) / 1048576:.1f} MiB."
+    )
+
     repo_url = f"https://github.com/{args.repository}.git"
     auth = base64.b64encode(f"x-access-token:{args.token}".encode()).decode()
     extra_header = f"AUTHORIZATION: basic {auth}"
+    publish_id = os.getenv("GITHUB_RUN_ID") or str(int(time.time()))
+    staging_branch = f"{args.branch}-staging-{publish_id}"
     batch_limit = max(1, args.batch_mb) * 1024 * 1024
     batch_file_limit = max(1, args.batch_files)
 
@@ -215,7 +241,7 @@ def main() -> int:
                 f"{args.commit_message} (data batch {batch_number})",
                 cwd=work,
                 repo_url=repo_url,
-                branch=args.branch,
+                branch=staging_branch,
                 extra_header=extra_header,
                 force=first_push,
             )
@@ -247,7 +273,7 @@ def main() -> int:
                 f"{args.commit_message} (initialize data tree)",
                 cwd=work,
                 repo_url=repo_url,
-                branch=args.branch,
+                branch=staging_branch,
                 extra_header=extra_header,
                 force=True,
             )
@@ -266,7 +292,7 @@ def main() -> int:
             f"{args.commit_message} (publish catalog)",
             cwd=work,
             repo_url=repo_url,
-            branch=args.branch,
+            branch=staging_branch,
             extra_header=extra_header,
         )
 
@@ -286,13 +312,40 @@ def main() -> int:
             )
 
         local_sha = git(["git", "rev-parse", "HEAD"], cwd=work)
+        staged_sha = remote_branch_sha(
+            repo_url, staging_branch, extra_header, cwd=work
+        )
+        if staged_sha != local_sha:
+            raise RuntimeError(
+                f"Staging não está no commit completo. Local={local_sha}; remoto={staged_sha}"
+            )
+
+        # Promote only after every data blob and the complete catalog/report
+        # are present. Consumers never see a half-published nwp-data branch.
+        push_head(
+            repo_url=repo_url,
+            branch=args.branch,
+            extra_header=extra_header,
+            cwd=work,
+            force=True,
+        )
         published_sha = remote_branch_sha(
             repo_url, args.branch, extra_header, cwd=work
         )
         if published_sha != local_sha:
             raise RuntimeError(
-                f"Branch não está no commit completo. Local={local_sha}; remoto={published_sha}"
+                f"Promoção incompleta. Local={local_sha}; remoto={published_sha}"
             )
+
+        # The final branch now owns the complete history; remove temporary ref.
+        try:
+            git([
+                "git", "-c", "http.version=HTTP/1.1",
+                "-c", f"http.extraheader={extra_header}",
+                "push", repo_url, f":refs/heads/{staging_branch}",
+            ], cwd=work)
+        except Exception as exc:
+            print(f"Aviso: não foi possível remover staging {staging_branch}: {exc}")
 
     print(
         f"Publicação confirmada: "
