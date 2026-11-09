@@ -68,7 +68,7 @@ O campo `requested_forecast_hours` mostra o calendário esperado pelo coletor. `
 | `gefs_ai` | AIGEFS — média e dispersão de superfície e pressão | NOAA / Herbie | 0,25°; até F384, intervalos 6h |
 | `hgefs` | HGEFS — média e dispersão de superfície e pressão | NOAA / Herbie | 0,25°; até F240, intervalos 6h |
 | `cmc_gdps` | GDPS determinístico | ECCC Datamart | 0,15°; até F240 |
-| `cmc_geps` | GEPS raw e produtos estatísticos | ECCC Datamart | 0,5°; até F384, com extensão F936 em ciclos específicos |
+| `cmc_geps` | GEPS produtos estatísticos (GRIBs raw all-member ainda desativados) | ECCC Datamart | 0,5°; até F384, com extensão F936 em ciclos específicos |
 | `ukmet` | UKMET Global | Met Office Weather DataHub | Bloqueado até configurar assinatura e credenciais |
 
 AIGEFS e HGEFS estão configurados para campos agregados de média/dispersão; não prometem arquivar todos os membros individuais. UKMET permanece bloqueado até existir uma assinatura Global Atmospheric e uma credencial do Weather DataHub.
