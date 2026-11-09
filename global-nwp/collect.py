@@ -100,7 +100,7 @@ def is_valid_grib2(path: Path) -> bool:
             if magic == b"GRIB":
                 stream.seek(-4, os.SEEK_END)
                 return stream.read(4) == b"7777"
-            if magic[:2] == b"\\x1f\\x8b":
+            if magic[:2] == b"\x1f\x8b":
                 with gzip.open(path, "rb") as decoded:
                     if decoded.read(4) != b"GRIB":
                         return False
