@@ -34,6 +34,7 @@ REGIONS = [
 ]
 CATALOG_BY_KEY = {item["key"]: item for item in CATALOG["models"]}
 USER_AGENT = "Sideral-Global-NWP/1.0 (+https://github.com/slaksjsjjjjjj-dev/multimodelsss)"
+MAX_FRAME_PART_RAW_BYTES = 32 * 1024 * 1024
 
 
 def utc_run(date_text: str | None, cycle_text: str | None) -> datetime:
@@ -1465,7 +1466,7 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
             # GitHub rejects individual Git blobs above 100 MB. Split large
             # forecast frames by uncompressed NDJSON size, keeping every part
             # as a complete, independently valid gzip-compressed JSON document.
-            max_part_raw_bytes = 32 * 1024 * 1024
+            max_part_raw_bytes = MAX_FRAME_PART_RAW_BYTES
             for stale_part in forecast_dir.glob(f"F{lead:03d}*.json.gz"):
                 stale_part.unlink(missing_ok=True)
 
