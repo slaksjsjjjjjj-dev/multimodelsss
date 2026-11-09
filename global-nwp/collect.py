@@ -434,7 +434,15 @@ def collect_ecmwf(model_key: str, run: datetime, raw_dir: Path,
     for stream, product_type, steps, task_label in _ecmwf_tasks(model_key, run):
         if not steps:
             continue
-        step_groups = [steps] if "probabilities" in task_label else [[step] for step in steps]
+        if "probabilities" in task_label:
+            # Avoid a single multi-hundred-hour bundle; short chunks reduce
+            # interrupted ECMWF transfers and WrongLengthError frequency.
+            step_groups = [
+                steps[index:index + 6]
+                for index in range(0, len(steps), 6)
+            ]
+        else:
+            step_groups = [[step] for step in steps]
         for step_group in step_groups:
             step_label = (
                 f"{step_group[0]}-to-{step_group[-1]}-bundle"
@@ -920,6 +928,7 @@ def regrid_icon_grib(source: Path) -> Path:
 def collect_dwd(
     model_key: str,
     raw_dir: Path,
+    requested: list[int],
     process_file: Callable[[Path], None] | None = None,
     checkpoint: Callable[[int], None] | None = None,
 ) -> tuple[list[Path], list[int], list[str]]:
@@ -953,6 +962,9 @@ def collect_dwd(
             forecast_steps = list(range(0, 79)) + list(
                 range(81, max_step + 1, 3)
             )
+            # stats["_requested_hours"] shares this list, so each checkpoint
+            # manifest records the complete DWD forecast schedule as it runs.
+            requested[:] = forecast_steps
             step_batches = [
                 forecast_steps[index:index + 6]
                 for index in range(0, len(forecast_steps), 6)
@@ -1764,7 +1776,7 @@ def main() -> int:
             )
         elif spec["adapter"] == "dwdopen":
             _, discovered_hours, errors = collect_dwd(
-                model_key, raw_dir, process_file, checkpoint_lead
+                model_key, raw_dir, requested, process_file, checkpoint_lead
             )
             if discovered_hours:
                 stats["_requested_hours"] = discovered_hours
