@@ -27,7 +27,7 @@ class CollectHelpersTest(unittest.TestCase):
         self.assertEqual(leads[-1], 384)
 
     def test_grib_integrity_check_accepts_plain_and_gzip(self) -> None:
-        payload = b"GRIB" + (b"\\x00" * 12) + b"7777"
+        payload = b"GRIB" + (b"\x00" * 12) + b"7777"
         with tempfile.TemporaryDirectory() as temp:
             plain = Path(temp) / "sample.grib2"
             plain.write_bytes(payload)
@@ -41,7 +41,7 @@ class CollectHelpersTest(unittest.TestCase):
     def test_grib_integrity_check_rejects_truncated_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             broken = Path(temp) / "broken.grib2"
-            broken.write_bytes(b"GRIB" + (b"\\x00" * 16))
+            broken.write_bytes(b"GRIB" + (b"\x00" * 16))
             self.assertFalse(collect.is_valid_grib2(broken))
 
 
