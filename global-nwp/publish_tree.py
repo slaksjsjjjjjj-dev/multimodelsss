@@ -213,7 +213,6 @@ def main() -> int:
     work = source
     if (work / ".git").exists():
         raise SystemExit(f"Diretório de publicação já contém .git: {work}")
-work = source
     git(["git", "init", "--initial-branch=publish"], cwd=work)
     git(["git", "config", "user.name", "github-actions[bot]"], cwd=work)
     git(
