@@ -38,6 +38,72 @@ class CollectHelpersTest(unittest.TestCase):
                 stream.write(payload)
             self.assertTrue(collect.is_valid_grib2(compressed))
 
+    def test_large_forecast_frame_is_written_as_valid_json_parts(self) -> None:
+        original_regions = collect.REGIONS
+        original_limit = collect.MAX_FRAME_PART_RAW_BYTES
+        try:
+            collect.REGIONS = [{
+                "id": "test_region",
+                "label": "Test Region",
+                "bounds": [0, 0, 1, 1],
+            }]
+            collect.MAX_FRAME_PART_RAW_BYTES = 100
+            with tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                spool = root / "spool"
+                output = root / "output"
+                fields_dir = spool / "test_region" / "f000"
+                fields_dir.mkdir(parents=True)
+                (fields_dir / "fields.ndjson").write_text(
+                    '{"field":"first","values":[1,2,3]}\\n'
+                    '{"field":"second","values":[4,5,6]}\\n',
+                    encoding="utf-8",
+                )
+                stats = {
+                    "_inventory": {"test_region": {"variables": []}},
+                    "_requested_hours": [0],
+                    "test_region": {
+                        0: {
+                            "valid_time": "2026-11-09T00:00:00Z",
+                            "run_utc": "2026-11-09T00:00:00Z",
+                            "field_count": 2,
+                        }
+                    },
+                }
+                result = collect.finalize_spool(
+                    spool,
+                    output,
+                    "test_model",
+                    datetime(2026, 11, 9, 0, tzinfo=timezone.utc),
+                    {"label": "Test Model", "provider": "Test", "resolution": "test"},
+                    stats,
+                )
+                forecast_dir = output / "test_model" / "test_region" / "forecast"
+                first = forecast_dir / "F000.json.gz"
+                second = forecast_dir / "F000-part002.json.gz"
+                self.assertTrue(first.is_file())
+                self.assertTrue(second.is_file())
+                with gzip.open(first, "rt", encoding="utf-8") as stream:
+                    first_doc = __import__("json").load(stream)
+                with gzip.open(second, "rt", encoding="utf-8") as stream:
+                    second_doc = __import__("json").load(stream)
+                self.assertEqual(first_doc["metadata"]["part_index"], 1)
+                self.assertEqual(second_doc["metadata"]["part_index"], 2)
+                self.assertEqual(len(first_doc["fields"]), 1)
+                self.assertEqual(len(second_doc["fields"]), 1)
+                manifest = __import__("json").loads(
+                    (forecast_dir.parent / "manifest.json").read_text(encoding="utf-8")
+                )
+                self.assertEqual(manifest["validities"][0]["part_count"], 2)
+                self.assertEqual(
+                    manifest["validities"][0]["files"],
+                    ["forecast/F000.json.gz", "forecast/F000-part002.json.gz"],
+                )
+                self.assertEqual(result[0]["forecast_hours"], 1)
+        finally:
+            collect.REGIONS = original_regions
+            collect.MAX_FRAME_PART_RAW_BYTES = original_limit
+
     def test_grib_integrity_check_rejects_truncated_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             broken = Path(temp) / "broken.grib2"
