@@ -1925,11 +1925,79 @@ def main() -> int:
         )
         return 0
     except Exception as exc:
+        failure = f"{type(exc).__name__}: {exc}"
+        partial_errors = errors + [failure]
+        available_hours = sorted({
+            int(lead)
+            for region_id, lead_map in stats.items()
+            if not region_id.startswith("_")
+            for lead in lead_map
+        })
+        if available_hours:
+            try:
+                # A late network/processing exception must not discard fields
+                # already converted by earlier forecast hours.
+                written = finalize_spool(
+                    spool_root, output_root, model_key, run, spec, stats
+                )
+                if written:
+                    for item in written:
+                        manifest_path = (
+                            output_root / model_key / item["region"] / "manifest.json"
+                        )
+                        manifest = json.loads(
+                            manifest_path.read_text(encoding="utf-8")
+                        )
+                        manifest["collection_status"] = "partial"
+                        manifest["collection_errors_count"] = len(partial_errors)
+                        manifest_path.write_text(
+                            json.dumps(manifest, ensure_ascii=False, indent=2),
+                            encoding="utf-8",
+                        )
+                    summary = {
+                        "run_utc": run.isoformat(),
+                        "processed_grib_files": len(processed_files),
+                        "processed_file_examples": processed_files[:30],
+                        "regions": written,
+                        "requested_forecast_hours": requested,
+                        "source_hours": available_hours,
+                        "missing_forecast_hours": sorted(
+                            set(requested) - set(available_hours)
+                        ),
+                        "regionalizer_diagnostics": stats.get("_diagnostics", {}),
+                        "regionalizer_errors": stats.get("_errors", {}).get("items", []),
+                        "download_errors": partial_errors[:250],
+                    }
+                    (model_output / "collection-summary.json").write_text(
+                        json.dumps(summary, ensure_ascii=False, indent=2),
+                        encoding="utf-8",
+                    )
+                    total_fields = sum(item["field_count"] for item in written)
+                    write_model_status(
+                        model_output / "model_status.json", model_key, "partial", run,
+                        f"Coleta interrompida após salvar {len(available_hours)} "
+                        f"validades; {len(written)} regiões e {total_fields} campos "
+                        "foram preservados.",
+                        partial_errors,
+                    )
+                    print(
+                        f"[{model_key}] PARCIAL: {failure}; "
+                        f"{len(available_hours)} validade(s) preservada(s).",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    return 0
+            except Exception as finalize_exc:
+                partial_errors.append(
+                    f"Falha ao finalizar dados parciais: "
+                    f"{type(finalize_exc).__name__}: {finalize_exc}"
+                )
+
         write_model_status(
             model_output / "model_status.json", model_key, "failed", run,
-            f"{type(exc).__name__}: {exc}", errors
+            failure, partial_errors
         )
-        print(f"[{model_key}] FALHA: {type(exc).__name__}: {exc}", file=sys.stderr)
+        print(f"[{model_key}] FALHA: {failure}", file=sys.stderr, flush=True)
         return 1
     finally:
         shutil.rmtree(spool_root, ignore_errors=True)
