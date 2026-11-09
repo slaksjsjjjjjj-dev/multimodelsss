@@ -2,15 +2,28 @@
 
 - Repositório: `slaksjsjjjjjj-dev/multimodelsss`, branch `main`.
 - Workflow: `.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml`.
-- O workflow está configurado para duas coletas diárias, após as rodadas 00Z/12Z.
-- Alterações em código/catálogo executam validação estática; pushes não iniciam downloads grandes.
-- Os JSONs são divididos por modelo, região, validade e partes, e publicados em GitHub Releases somente se houver ao menos um pacote regional.
-- Regiões: 14 recortes da América do Sul, Pacífico Sul, Brasil e Argentina.
+- Publicação dos dados: branch `nwp-data`.
+- O workflow agenda coletas às 09Z e 21Z, selecionando a rodada com pelo menos nove horas de atraso.
 
-## Validação operacional
+## Correções aplicadas em 9 de novembro de 2026
 
-A primeira execução agendada observada (run `41328776662`, com uma revisão anterior do coletor) não deve ser considerada uma publicação válida: ECMWF foi consultado antes da disponibilização dos arquivos, Herbie recebeu datetimes com timezone incompatível, e o regridding CDO do ICON reportou erros em alguns templates GRIB2. As correções já foram feitas no código atual: atraso de nove horas para escolher o ciclo, UTC sem tzinfo para Herbie e recorte direto da malha triangular nativa ICON.
+A execução `42599167158` expôs falhas que impediam o download ou a publicação completa. Foram aplicadas as seguintes correções no código:
 
-O CMC-GDPS teve o job cancelado nessa primeira execução e o CMC-GEPS ainda estava executando quando a revisão foi observada. UKMET segue bloqueado por exigir credenciais do Met Office.
+- GFS: o catálogo usava o adaptador `nomads-filter`, mas o despachante não o reconhecia. Agora o GFS passa pelo coletor NOMADS que já estava implementado.
+- AIGFS, AIGEFS e HGEFS: a lista de validades foi alinhada à cadência de seis horas dos produtos NOAA, eliminando pedidos por arquivos F que não são publicados.
+- Downloads GRIB: arquivos truncados ou respostas HTML deixam de ser aceitos como GRIB; transferências inválidas são descartadas e as chamadas ECMWF têm novas tentativas.
+- ECMWF EPS: os pacotes probabilísticos são solicitados em grupos menores para reduzir falhas de transferência.
+- ICON/AICON: os downloads DWD são divididos em lotes de seis validades, com JSONs e progresso salvos a cada lote. Uma interrupção preserva o que já foi processado.
+- Publicação: cada validade grande é dividida em vários JSON gzip independentes, com todas as partes listadas no manifesto. Arquivos acima de 80 MiB são barrados antes do push.
+- Atomicidade: os lotes são enviados primeiro a uma branch temporária; `nwp-data` só recebe a nova versão depois que todos os arquivos, catálogo e relatório foram confirmados.
+- Observabilidade: jobs sem dados deixam de aparecer falsamente como sucesso; modelos parciais mantêm seus artefatos e status.
 
-**Status honesto:** os scripts e o workflow estão versionados; a primeira execução não concluiu uma Release de dados. É necessário que a nova rodada agendada/manual confirme a coleta real de cada fonte antes de marcar todos os modelos como operacionais.
+## Validação
+
+O SIDERAL CI passou no commit `d37ff3322edf55a76634878539d0b80f4d60b9b8`, incluindo compilação dos scripts e testes de regressão para horários NOAA, cadência GFS e integridade de GRIB/gzip.
+
+**Limite desta validação:** o CI não baixa nem processa uma rodada meteorológica real. As correções precisam ser confirmadas pela próxima execução completa do workflow NWP. O erro de regrade CDO em alguns campos estatísticos GRIB2 do ICON ainda pode deixar esses modelos como `partial`; o coletor registra a ocorrência e continua processando os demais campos.
+
+## Status anterior
+
+A execução de 9 de novembro `42599167158` não deve ser usada como publicação completa: GFS não reconheceu o adaptador, ICON-DWD excedeu o tempo de coleta e a publicação foi rejeitada por um arquivo maior que o limite de 100 MB do GitHub. A branch de dados daquela execução ficou incompleta; a promoção atômica evita repetir esse comportamento nas próximas execuções.
