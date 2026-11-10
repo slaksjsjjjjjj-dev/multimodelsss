@@ -2,35 +2,43 @@
 
 - Repositório: `slaksjsjjjjjj-dev/multimodelsss`, branch `main`.
 - Workflow: `.github/workflows/SIDERAL_GLOBAL_NWP_RELEASES.yml`.
-- Publicação dos dados: branch `nwp-data`.
-- O workflow agenda coletas às 09Z e 21Z, selecionando a rodada com pelo menos nove horas de atraso.
+- Branch de dados publicada: `nwp-data`.
+- Regiões ativadas no coletor: América do Sul e Pacífico Sul.
 
-## Correções aplicadas em 9 de novembro de 2026
+## Incidentes confirmados em 10 de novembro de 2026
 
-A execução `42599167158` expôs falhas que impediam downloads e publicação. Foram aplicadas as seguintes correções:
+A execução `42707513399` confirmou falta de espaço em disco durante a coleta:
+- CMC-GDPS chegou a cerca de 97 MB livres e depois recebeu `OSError: [Errno 28] No space left on device`.
+- GFS também recebeu `No space left on device` durante downloads NOMADS.
+- Alguns artefatos de status/progresso ficaram vazios ou incompletos; o agregador parou com `JSONDecodeError` ao ler `model_status.json`.
 
-- **GFS:** o catálogo usava o adaptador `nomads-filter`, mas o despachante não o reconhecia. Agora o GFS é roteado para o filtro regional NOMADS.
-- **AIGFS, AIGEFS e HGEFS:** os horários solicitados foram alinhados aos arquivos de seis em seis horas publicados pela NOAA.
-- **GRIB:** arquivos truncados, respostas HTML e downloads inválidos são descartados. Downloads ECMWF repetem tentativas quando há falha transitória.
-- **ECMWF:** produtos probabilísticos são baixados em grupos menores; cada validade processada recebe checkpoint e atualiza `collection-progress.json`.
-- **ICON/AICON:** DWD é consultado em lotes de seis validades; cada lote grava JSONs e progresso. Uma interrupção não deve apagar os dados já processados.
-- **JSONs grandes:** cada validade pode ser dividida em `FNNN.json.gz` e `FNNN-partNNN.json.gz`. O manifesto lista todas as partes em `validities[].files` e `download_urls`.
-- **Publicação:** os arquivos acima de 80 MiB são barrados antes do push. Os dados são enviados primeiro para uma branch temporária; `nwp-data` só é promovida depois da verificação completa do catálogo, relatório e árvore de arquivos.
-- **Uso de disco:** a agregação move os arquivos dos artefatos para a saída e o publicador Git trabalha nessa pasta diretamente, sem criar outra cópia completa dos vários GB.
-- **Status:** jobs sem dados deixam de aparecer falsamente como sucesso. Falhas tardias preservam as validades que já foram convertidas, marcando o modelo como parcial.
+Na execução `42796440508`, iniciada com a versão anterior do código, ICON-DWD falhou porque o objeto `dwdopen.Run` não possui `.hour`. O ciclo está em `Run.reference_time.hour`.
+
+A configuração do workflow já usa `fail-fast: false`; portanto, o problema observado nos downloads GFS/CMC foi falta de espaço nos respectivos runners, e não cancelamento automático da matriz.
+
+## Correções aplicadas em 10 de novembro de 2026
+
+- **DWD ICON/AICON:** o coletor usa `Run.reference_time.hour` para escolher o horizonte correto.
+- **GFS/NOMADS:** somente uma validade é baixada por vez, evitando acumular vários GRIBs regionais grandes no disco.
+- **CMC-GDPS:** downloads de validades e arquivos por validade foram serializados para reduzir o pico de arquivos temporários.
+- **Spool regional:** depois que os campos de uma validade são convertidos para JSON gzip e o manifesto é gravado, o NDJSON bruto dessa validade é removido. Os manifestos acumulam as validades já publicadas nos checkpoints; a finalização não precisa reconstruir dados a partir de um spool apagado.
+- **Integridade dos diagnósticos:** status, resumos e manifestos do coletor são gravados por substituição atômica, evitando substituir um JSON válido por um arquivo truncado quando o disco enche.
+- **Agregador:** `publish_release.py` trata status, progresso e manifestos vazios/corrompidos sem interromper toda a agregação. Diagnósticos inválidos recebem fallback, e manifestos regionais inválidos são reportados e ignorados.
+- **Workflow:** as etapas de resumo e validação não quebram ao ler um progresso ausente ou incompleto; o modelo é marcado como falha quando o status não existe ou está corrompido.
 
 ## Validação
 
-O SIDERAL CI passou no commit `c6f4f34ad99bfa0a2c15b84a8ba0b15b09402e26`, incluindo compilação dos coletores/publicadores, validação dos catálogos e **6 testes automatizados**: cadência dos modelos NOAA, horários GFS, integridade GRIB/gzip, divisão de frames grandes e checkpoints ECMWF.
+O SIDERAL CI passou no commit `a8a60cf9c245b83dbf08efe87191fcc081c425b9`:
+- compilação Python dos coletores e publicadores;
+- JSON dos catálogos;
+- **11 testes automatizados**, incluindo DWD `Run.reference_time`, retenção de validades após a remoção do spool NDJSON e tratamento de artefatos JSON vazios/truncados.
 
-**Limite desta validação:** o CI não baixa nem processa uma rodada meteorológica real. Nenhuma nova execução completa do workflow NWP foi iniciada com este código nesta sessão; por isso, a branch `nwp-data` ainda não está confirmada como atualizada com uma rodada pós-correção. A próxima execução NWP precisa confirmar download, conversão e promoção da publicação.
+CI: https://github.com/slaksjsjjjjjj-dev/multimodelsss/actions/runs/42800120690
+
+**Status operacional:** as correções de código passaram no CI, mas ainda não foram confirmadas por uma coleta meteorológica completa usando esta versão. A execução `42796440508` foi iniciada antes dessas correções, com o commit `edd4a8937ff30b8e204a50d1d5649452e71a2c34`. Ela não deve ser usada como prova de que o novo coletor está funcionando. A branch `nwp-data` ainda contém a última publicação anterior, no commit `cf3cc2d6daeecebb259c26bc479c770d31f129cc`.
 
 ## Limitações conhecidas
 
-- O regrade CDO ainda pode falhar em alguns campos estatísticos do ICON com template GRIB2 PDT 8. Esses campos podem deixar ICON/AICON como `partial`, enquanto os demais campos continuam.
-- O coletor CMC-GEPS publica atualmente os produtos estatísticos de `/products`; os GRIBs `/raw` de todos os membros continuam desativados.
-- Os recortes separados do Brasil e da Argentina permanecem desativados; as regiões ativas são América do Sul e Pacífico Sul.
-
-## Execução anterior
-
-A execução de 9 de novembro `42599167158` não deve ser usada como publicação completa: GFS não reconheceu o adaptador, ICON-DWD excedeu o tempo de coleta e a publicação foi rejeitada por um arquivo de 109,15 MB, acima do limite de 100 MB do GitHub. A branch de dados daquela execução ficou incompleta.
+- Alguns campos estatísticos ICON podem continuar parciais se o CDO não suportar determinado template GRIB2.
+- CMC-GEPS ainda coleta os produtos estatísticos de `/products`; os GRIBs `/raw` de todos os membros seguem desativados.
+- Os recortes específicos do Brasil e da Argentina continuam desativados; os dados ficam nos recortes América do Sul e Pacífico Sul.
