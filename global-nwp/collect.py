@@ -957,6 +957,16 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
 
 
 
+def dwd_run_hour(source_run) -> int:
+    reference_time = getattr(source_run, "reference_time", None)
+    if reference_time is None or not hasattr(reference_time, "hour"):
+        raise RuntimeError(
+            "DWD retornou uma rodada sem reference_time.hour; "
+            f"tipo recebido: {type(source_run).__name__}"
+        )
+    return int(reference_time.hour)
+
+
 def regrid_icon_grib(source: Path) -> Path:
     """Regrid native triangular DWD ICON GRIB to SIDERAL's regional lat/lon grid."""
     grid_root = Path(os.environ.get("ICON_REGRID_DIR", ".cache/icon-regrid"))
@@ -1036,7 +1046,7 @@ def collect_dwd(
             if not available_runs:
                 raise RuntimeError(f"DWD não publicou uma rodada para {upstream}.")
             source_run = available_runs[-1]
-            max_step = 180 if source_run.reference_time.hour in (0, 12) else 120
+            max_step = 180 if dwd_run_hour(source_run) in (0, 12) else 120
             # ICON Global outputs hourly through F078 and every 3 hours
             # afterwards. Keep each download small enough to survive runner
             # timeouts and publish completed forecast hours incrementally.
