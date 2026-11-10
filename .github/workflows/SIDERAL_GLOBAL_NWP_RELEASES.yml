@@ -143,11 +143,13 @@ jobs:
             python - "$MODEL_KEY" "$STATUS" "$PROGRESS" <<'PY'
           import json, pathlib, sys
           model, status_name, progress_name = sys.argv[1:]
-          progress_path = pathlib.Path(progress_name)
-          progress = (
-              json.loads(progress_path.read_text(encoding="utf-8"))
-              if progress_path.is_file() else {}
-          )
+          def read_json(path):
+              try:
+                  value = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+                  return value if isinstance(value, dict) else {}
+              except (OSError, UnicodeError, json.JSONDecodeError):
+                  return {}
+          progress = read_json(progress_name)
           available = progress.get("available_forecast_hours", [])
           partial = bool(available)
           status = "partial" if partial else "failed"
@@ -156,26 +158,37 @@ jobs:
               if partial else
               "Coletor interrompido antes de produzir dados regionais; consulte collection-progress.json."
           )
-          pathlib.Path(status_name).write_text(
-              json.dumps({
-                  "model_key": model,
-                  "status": status,
-                  "run_utc": progress.get("run_utc"),
-                  "message": message,
-                  "errors": progress.get("errors", [])[:100],
-              }, ensure_ascii=False, indent=2),
-              encoding="utf-8",
-          )
+          payload = {
+              "model_key": model,
+              "status": status,
+              "run_utc": progress.get("run_utc"),
+              "message": message,
+              "errors": progress.get("errors", [])[:100],
+          }
+          target = pathlib.Path(status_name)
+          temp = target.with_name(target.name + ".tmp")
+          try:
+              temp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+              temp.replace(target)
+          except OSError as exc:
+              print(f"::warning::Não foi possível gravar model_status.json: {exc}")
           PY
           fi
           python - "$STATUS" "$PROGRESS" >> "$GITHUB_STEP_SUMMARY" <<'PY'
           import json, pathlib, sys
-          status=json.load(open(sys.argv[1], encoding="utf-8"))
+          def read_json(path):
+              try:
+                  value=json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+                  return value if isinstance(value, dict) else {}
+              except (OSError, UnicodeError, json.JSONDecodeError):
+                  return {}
+          status=read_json(sys.argv[1])
+          if not status:
+              status={"model_key": "unknown", "status": "failed", "message": "Status ausente ou corrompido por falta de espaço/erro do runner."}
           print(f"### {status.get('model_key')} — {status.get('status')}")
           print(status.get("message", ""))
-          progress_path=pathlib.Path(sys.argv[2])
-          if progress_path.is_file():
-              progress=json.load(progress_path.open(encoding="utf-8"))
+          progress=read_json(sys.argv[2])
+          if progress:
               print(
                   f"\n**Progresso:** {progress.get('completed_count', 0)}/"
                   f"{progress.get('requested_forecast_hours', 0)} validades concluídas."
@@ -211,17 +224,18 @@ jobs:
         run: |
           set -euo pipefail
           STATUS="global-nwp-output/$MODEL_KEY/model_status.json"
-          if [[ ! -f "$STATUS" ]]; then
-            echo "::error::O modelo $MODEL_KEY não gerou model_status.json."
-            exit 1
-          fi
           python - "$STATUS" "$MODEL_KEY" <<'PY'
           import json, pathlib, sys
-          status = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          try:
+              status=json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+              if not isinstance(status, dict):
+                  status={}
+          except (OSError, UnicodeError, json.JSONDecodeError):
+              status={}
           model = sys.argv[2]
-          result = status.get("status", "unknown")
+          result = status.get("status", "failed")
           if result == "failed":
-              print(f"::error::{model} falhou: {status.get('message', 'sem diagnóstico')}")
+              print(f"::error::{model} falhou: {status.get('message', 'status ausente ou corrompido')}")
               for error in status.get("errors", [])[:10]:
                   print(f"::error::{error}")
               raise SystemExit(1)
