@@ -176,6 +176,97 @@ class CollectHelpersTest(unittest.TestCase):
         finally:
             collect.REGIONS = original_regions
 
+    def test_dwd_run_hour_uses_reference_time(self) -> None:
+        run_type = type(
+            "DwdRunLike",
+            (),
+            {"reference_time": datetime(2026, 11, 9, 12, tzinfo=timezone.utc)},
+        )
+        self.assertEqual(collect.dwd_run_hour(run_type()), 12)
+
+    def test_checkpoint_frees_ndjson_and_keeps_prior_validities(self) -> None:
+        original_regions = collect.REGIONS
+        try:
+            collect.REGIONS = [{
+                "id": "test_region",
+                "label": "Test Region",
+                "bounds": [0, 0, 1, 1],
+            }]
+            with tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                spool = root / "spool"
+                output = root / "output"
+                run = datetime(2026, 11, 9, 0, tzinfo=timezone.utc)
+                spec = {"label": "Test Model", "provider": "Test", "resolution": "test"}
+                stats = {
+                    "_inventory": {"test_region": {"variables": []}},
+                    "_requested_hours": [0, 1],
+                    "test_region": {
+                        0: {
+                            "valid_time": "2026-11-09T00:00:00Z",
+                            "run_utc": "2026-11-09T00:00:00Z",
+                            "field_count": 1,
+                        },
+                        1: {
+                            "valid_time": "2026-11-09T01:00:00Z",
+                            "run_utc": "2026-11-09T00:00:00Z",
+                            "field_count": 1,
+                        },
+                    },
+                }
+
+                def write_field(lead: int) -> None:
+                    folder = spool / "test_region" / f"f{lead:03d}"
+                    folder.mkdir(parents=True, exist_ok=True)
+                    (folder / "fields.ndjson").write_text(
+                        json.dumps({
+                            "short_name": "t",
+                            "name": "temperature",
+                            "units": "K",
+                            "level_type": "surface",
+                            "level": 0,
+                            "grid_type": "regular_ll",
+                            "grid_id": "test-grid",
+                            "values": [lead + 1],
+                        }) + "\\n",
+                        encoding="utf-8",
+                    )
+
+                write_field(0)
+                collect.finalize_spool(
+                    spool, output, "test_model", run, spec, stats, only_leads={0}
+                )
+                self.assertFalse(
+                    (spool / "test_region" / "f000" / "fields.ndjson").exists()
+                )
+
+                write_field(1)
+                collect.finalize_spool(
+                    spool, output, "test_model", run, spec, stats, only_leads={1}
+                )
+                self.assertFalse(
+                    (spool / "test_region" / "f001" / "fields.ndjson").exists()
+                )
+
+                # Final model-level pass has no raw spool left; it must retain
+                # both forecast hours from the checkpoint manifest.
+                collect.finalize_spool(
+                    spool, output, "test_model", run, spec, stats
+                )
+                manifest = json.loads(
+                    (output / "test_model" / "test_region" / "manifest.json")
+                    .read_text(encoding="utf-8")
+                )
+                self.assertEqual(manifest["forecast_hours"], [0, 1])
+                self.assertTrue(
+                    (output / "test_model" / "test_region" / "forecast" / "F000.json.gz").is_file()
+                )
+                self.assertTrue(
+                    (output / "test_model" / "test_region" / "forecast" / "F001.json.gz").is_file()
+                )
+        finally:
+            collect.REGIONS = original_regions
+
     def test_grib_integrity_check_rejects_truncated_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             broken = Path(temp) / "broken.grib2"
