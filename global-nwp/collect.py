@@ -37,6 +37,16 @@ USER_AGENT = "Sideral-Global-NWP/1.0 (+https://github.com/slaksjsjjjjjj-dev/mult
 MAX_FRAME_PART_RAW_BYTES = 32 * 1024 * 1024
 
 
+def write_json_atomic(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = path.with_name(path.name + ".tmp")
+    temp_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    temp_path.replace(path)
+
+
+
 def utc_run(date_text: str | None, cycle_text: str | None) -> datetime:
     # Global products (especially ECMWF Open Data) are not available at the
     # instant a cycle starts. Select the most recent cycle at least nine hours
@@ -669,7 +679,7 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
     # main thread to avoid concurrent appends to the same regional NDJSON files.
     # GFS has the longest hourly series, so bounded concurrency is particularly
     # important there. Each lead/product writes to its own destination folder.
-    max_workers = 4 if model_key == "gfs" else 3
+    max_workers = 1 if model_key == "gfs" else 3
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_lead = {
             executor.submit(collect_one_lead, lead): lead for lead in requested
@@ -860,7 +870,7 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
                     ) from last_error
 
                 # Variáveis/arquivos de uma validade são baixados juntos.
-                with ThreadPoolExecutor(max_workers=4) as executor:
+                with ThreadPoolExecutor(max_workers=1 if model_key == "cmc_gdps" else 4) as executor:
                     futures = {
                         executor.submit(download_one, url): url for url in links
                     }
@@ -884,9 +894,9 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
         return lead, sorted(set(lead_files)), lead_errors
 
     completed = 0
-    # Cada validade é independente. Mantemos no máximo quatro leads no runner
-    # ao mesmo tempo para acelerar listagem/download sem lotar o disco.
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    # GDPS/NOAA files are very large. Download only one GDPS or GFS lead
+    # at a time so temporary GRIB files cannot fill the runner disk.
+    with ThreadPoolExecutor(max_workers=1 if model_key == "cmc_gdps" else 2) as executor:
         future_to_lead = {
             executor.submit(download_one_lead, lead): lead for lead in requested
         }
@@ -1026,7 +1036,7 @@ def collect_dwd(
             if not available_runs:
                 raise RuntimeError(f"DWD não publicou uma rodada para {upstream}.")
             source_run = available_runs[-1]
-            max_step = 180 if int(source_run.hour) in (0, 12) else 120
+            max_step = 180 if source_run.reference_time.hour in (0, 12) else 120
             # ICON Global outputs hourly through F078 and every 3 hours
             # afterwards. Keep each download small enough to survive runner
             # timeouts and publish completed forecast hours incrementally.
@@ -1509,7 +1519,19 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
         forecast_dir = region_root / "forecast"
         forecast_dir.mkdir(parents=True, exist_ok=True)
         manifest_path = region_root / "manifest.json"
-        validity: list[dict] = []
+        previous_manifest = {}
+        if manifest_path.is_file():
+            try:
+                previous_manifest = json.loads(
+                    manifest_path.read_text(encoding="utf-8")
+                )
+            except (OSError, json.JSONDecodeError):
+                previous_manifest = {}
+        validity_by_hour = {
+            int(item["forecast_hour"]): item
+            for item in previous_manifest.get("validities", [])
+            if "forecast_hour" in item
+        }
 
         for lead in sorted(leads):
             entry = leads[lead]
@@ -1614,31 +1636,20 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
                 continue
 
             part_names = [path.name for path in part_paths]
-            validity.append({
+            validity_by_hour[lead] = {
                 "forecast_hour": lead,
                 "valid_time": entry.get("valid_time"),
                 "file": f"forecast/{part_names[0]}",
                 "files": [f"forecast/{name}" for name in part_names],
                 "part_count": len(part_names),
                 "field_count": total_fields,
-            })
-
-        previous_manifest = {}
-        if only_leads is not None and manifest_path.is_file():
-            previous_manifest = json.loads(
-                manifest_path.read_text(encoding="utf-8")
-            )
-            validity_by_hour = {
-                int(item["forecast_hour"]): item
-                for item in previous_manifest.get("validities", [])
             }
-            validity_by_hour.update({
-                int(item["forecast_hour"]): item for item in validity
-            })
-            validity = [
-                validity_by_hour[lead] for lead in sorted(validity_by_hour)
-            ]
 
+        # Previous checkpoints stay in the manifest even after their raw NDJSON
+        # spool has been deleted to reclaim disk space.
+        validity = [
+            validity_by_hour[lead] for lead in sorted(validity_by_hour)
+        ]
         if not validity:
             continue
 
@@ -1697,9 +1708,12 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
                 "ECMWF": "Contains ECMWF data. © ECMWF. Licensed under CC-BY-4.0 where applicable."
             } if catalog_spec["provider"] == "ECMWF" else None,
         }
-        manifest_path.write_text(
-            json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        write_json_atomic(manifest_path, manifest)
+        # The regional gzip frames now contain the grids and all fields for
+        # these forecast hours. Delete the much larger plain NDJSON spool;
+        # the manifest preserves prior checkpoint entries for finalization.
+        for lead in leads:
+            shutil.rmtree(spool_root / region_id / f"f{int(lead):03d}", ignore_errors=True)
         written.append({
             "region": region_id,
             "forecast_hours": len(validity),
@@ -1712,15 +1726,14 @@ def finalize_spool(spool_root: Path, output_root: Path, model_key: str,
 
 def write_model_status(path: Path, model_key: str, status: str, run: datetime,
                        message: str, errors: list[str] | None = None) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({
+    write_json_atomic(path, {
         "schema": "sideral-global-nwp-model-status-v1",
         "model_key": model_key,
         "status": status,
         "run_utc": run.isoformat(),
         "message": message,
         "errors": (errors or [])[:250],
-    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    })
 
 
 def merge_regional_stats(destination: dict, source: dict) -> None:
@@ -1897,9 +1910,7 @@ def main() -> int:
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             manifest["collection_status"] = "complete" if not all_errors else "partial"
             manifest["collection_errors_count"] = len(all_errors)
-            manifest_path.write_text(
-                json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
-            )
+            write_json_atomic(manifest_path, manifest)
         summary = {
             "run_utc": run.isoformat(),
             "processed_grib_files": len(processed_files),
@@ -1912,9 +1923,7 @@ def main() -> int:
             "regionalizer_errors": stats.get("_errors", {}).get("items", []),
             "download_errors": errors[:250],
         }
-        (model_output / "collection-summary.json").write_text(
-            json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        write_json_atomic(model_output / "collection-summary.json", summary)
         total_fields = sum(item["field_count"] for item in written)
         final_status = "published-ready" if not all_errors else "partial"
         write_model_status(
@@ -1950,10 +1959,7 @@ def main() -> int:
                         )
                         manifest["collection_status"] = "partial"
                         manifest["collection_errors_count"] = len(partial_errors)
-                        manifest_path.write_text(
-                            json.dumps(manifest, ensure_ascii=False, indent=2),
-                            encoding="utf-8",
-                        )
+                        write_json_atomic(manifest_path, manifest)
                     summary = {
                         "run_utc": run.isoformat(),
                         "processed_grib_files": len(processed_files),
@@ -1968,9 +1974,8 @@ def main() -> int:
                         "regionalizer_errors": stats.get("_errors", {}).get("items", []),
                         "download_errors": partial_errors[:250],
                     }
-                    (model_output / "collection-summary.json").write_text(
-                        json.dumps(summary, ensure_ascii=False, indent=2),
-                        encoding="utf-8",
+                    write_json_atomic(
+                        model_output / "collection-summary.json", summary
                     )
                     total_fields = sum(item["field_count"] for item in written)
                     write_model_status(
