@@ -12,6 +12,32 @@ from urllib.parse import quote
 PREFIX = "global-nwp-"
 
 
+def read_json_safe(path: Path, fallback: dict, label: str) -> dict:
+    try:
+        if not path.is_file():
+            return dict(fallback)
+        value = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(value, dict):
+            return value
+        raise ValueError("JSON root is not an object")
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+        print(
+            f"[publish] Ignorando JSON inválido em {label}: "
+            f"{type(exc).__name__}: {exc}",
+            flush=True,
+        )
+        return dict(fallback)
+
+
+def write_json_atomic(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = path.with_name(path.name + ".tmp")
+    temp_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    temp_path.replace(path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="release-input")
@@ -75,14 +101,16 @@ def main() -> int:
         model_data_dir.mkdir(parents=True, exist_ok=True)
 
         status_path = model_dir / "model_status.json"
-        model_status = (
-            json.loads(status_path.read_text(encoding="utf-8"))
-            if status_path.is_file()
-            else {
-                "model_key": model_key,
-                "status": "missing-status",
-                "message": "O coletor não enviou model_status.json."
-            }
+        fallback_status = {
+            "model_key": model_key,
+            "status": "missing-status",
+            "message": "O coletor não enviou um model_status.json válido.",
+            "errors": [
+                "O artefato pode ter sido interrompido por falta de espaço ou falha do runner."
+            ],
+        }
+        model_status = read_json_safe(
+            status_path, fallback_status, f"{model_key}/model_status.json"
         )
         model_entry = {
             "model_key": model_key,
@@ -94,16 +122,38 @@ def main() -> int:
         }
 
         # Keep model-level diagnostics beside its regional forecast folders.
-        for diagnostic_name in (
-            "model_status.json", "collection-summary.json", "collection-progress.json"
-        ):
+        diagnostic_fallbacks = {
+            "model_status.json": model_status,
+            "collection-summary.json": {
+                "model_key": model_key,
+                "status": "unavailable",
+                "message": "Resumo não foi produzido ou chegou incompleto no artefato.",
+            },
+            "collection-progress.json": {
+                "model_key": model_key,
+                "status": "unavailable",
+                "message": "Progresso não foi produzido ou chegou incompleto no artefato.",
+            },
+        }
+        for diagnostic_name, fallback in diagnostic_fallbacks.items():
             source_file = model_dir / diagnostic_name
-            if source_file.is_file():
-                shutil.move(str(source_file), str(model_data_dir / diagnostic_name))
+            diagnostic = read_json_safe(
+                source_file, fallback, f"{model_key}/{diagnostic_name}"
+            )
+            write_json_atomic(model_data_dir / diagnostic_name, diagnostic)
 
         for manifest_path in sorted(model_dir.glob("*/manifest.json")):
             region_dir = manifest_path.parent
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest = read_json_safe(
+                manifest_path,
+                {},
+                f"{model_key}/{manifest_path.relative_to(model_dir)}",
+            )
+            if not manifest or not isinstance(manifest.get("validities", []), list):
+                model_entry["errors"] = list(model_entry.get("errors", [])) + [
+                    f"Manifesto regional inválido: {manifest_path.relative_to(model_dir)}"
+                ]
+                continue
             region_id = manifest.get("region", {}).get("id") or region_dir.name
             region_data_dir = model_data_dir / region_id
             region_data_dir.mkdir(parents=True, exist_ok=True)
@@ -169,10 +219,7 @@ def main() -> int:
                     ]
                     validity["download_url"] = validity["download_urls"][0]
 
-            (region_data_dir / "manifest.json").write_text(
-                json.dumps(manifest, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
+            write_json_atomic(region_data_dir / "manifest.json", manifest)
 
             if not files:
                 continue
@@ -236,22 +283,18 @@ def main() -> int:
 
     # The complete publication (data files, catalog and run report) is committed
     # to the dedicated nwp-data branch in its folder hierarchy.
-    (output_root / "catalog.json").write_text(
-        json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    write_json_atomic(output_root / "catalog.json", catalog)
 
     progress_by_model = {}
     for model in catalog["models"]:
         model_data_dir = data_root / model["model_key"]
         summary_file = model_data_dir / "collection-summary.json"
         progress_file = model_data_dir / "collection-progress.json"
-        summary = (
-            json.loads(summary_file.read_text(encoding="utf-8"))
-            if summary_file.is_file() else {}
+        summary = read_json_safe(
+            summary_file, {}, f"{model['model_key']}/collection-summary.json"
         )
-        progress = (
-            json.loads(progress_file.read_text(encoding="utf-8"))
-            if progress_file.is_file() else {}
+        progress = read_json_safe(
+            progress_file, {}, f"{model['model_key']}/collection-progress.json"
         )
         requested_hours = summary.get("requested_forecast_hours", [])
         progress_by_model[model["model_key"]] = {
@@ -306,9 +349,7 @@ def main() -> int:
             item["field_count"] for item in catalog["regional_assets"]
         ),
     }
-    (output_root / "run-report.json").write_text(
-        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    write_json_atomic(output_root / "run-report.json", report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
