@@ -68,6 +68,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Fallback independente: os espelhos Azure/Ubuntu usam DNS da Canonical.
+          # A Kernel.org só entra quando os mirrors padrão não resolvem.
+          sudo sed -i '$a http://mirrors.edge.kernel.org/ubuntu/' /etc/apt/apt-mirrors.txt
           sudo apt-get update
           sudo apt-get install -y libeccodes0 libeccodes-dev
           python -m pip install --upgrade pip wheel setuptools
