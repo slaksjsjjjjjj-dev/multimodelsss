@@ -646,32 +646,49 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
     def collect_one_lead(lead: int) -> tuple[int, list[Path], list[str]]:
         lead_files: list[Path] = []
         lead_errors: list[str] = []
-        for source_model, product, kwargs in products:
-            options = dict(kwargs)
-            dest = (
-                raw_dir / f"f{lead:03d}" / source_model / product
-                / "_".join(f"{key}-{value}" for key, value in sorted(options.items()))
-            )
-            try:
-                if model_key == "gfs":
-                    found = [
-                        download_gfs_regional(product, run, lead, raw_dir)
-                    ]
-                else:
+        if model_key == "gfs":
+            # Both NOMADS products belong to the same forecast lead. Fetch them
+            # together; the shared 10-second request gate remains in force, and
+            # the outer collector still handles only one lead at a time.
+            with ThreadPoolExecutor(max_workers=2) as product_executor:
+                product_futures = {
+                    product_executor.submit(
+                        download_gfs_regional, product, run, lead, raw_dir
+                    ): product
+                    for _, product, _ in products
+                }
+                for future in as_completed(product_futures):
+                    product = product_futures[future]
+                    try:
+                        lead_files.append(future.result())
+                    except Exception as exc:
+                        lead_errors.append(
+                            f"F{lead:03d} gfs/{product}: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
+        else:
+            for source_model, product, kwargs in products:
+                options = dict(kwargs)
+                dest = (
+                    raw_dir / f"f{lead:03d}" / source_model / product
+                    / "_".join(f"{key}-{value}" for key, value in sorted(options.items()))
+                )
+                try:
                     found = download_herbie_file(
                         source_model, product, run, lead, dest, **options
                     )
-                if found:
-                    lead_files.extend(found)
-                else:
+                    if found:
+                        lead_files.extend(found)
+                    else:
+                        lead_errors.append(
+                            f"F{lead:03d} {source_model}/{product}: "
+                            "fonte não retornou arquivo."
+                        )
+                except Exception as exc:
                     lead_errors.append(
-                        f"F{lead:03d} {source_model}/{product}: fonte não retornou arquivo."
+                        f"F{lead:03d} {source_model}/{product}: "
+                        f"{type(exc).__name__}: {exc}"
                     )
-            except Exception as exc:
-                lead_errors.append(
-                    f"F{lead:03d} {source_model}/{product}: "
-                    f"{type(exc).__name__}: {exc}"
-                )
         return lead, sorted(set(lead_files)), lead_errors
 
     write_progress()
@@ -777,9 +794,16 @@ def eccc_base_urls(product_path: str, source_run: datetime, cycle: str,
     """
     day = source_run.strftime("%Y%m%d")
     suffix = f"{product_path}/{cycle}/{lead:03d}/"
-    bases = [f"https://dd.weather.gc.ca/{day}/WXO-DD/{suffix}"]
-    if day == datetime.now(timezone.utc).strftime("%Y%m%d"):
-        bases.append(f"https://dd.weather.gc.ca/today/{suffix}")
+    bases = []
+    # HPFX is the MSC's documented high-bandwidth alternate. Keep the primary
+    # HTTPS Datamart immediately behind it as a resilient fallback.
+    for host in (
+        "http://hpfx.collab.science.gc.ca",
+        "https://dd.weather.gc.ca",
+    ):
+        bases.append(f"{host}/{day}/WXO-DD/{suffix}")
+        if day == datetime.now(timezone.utc).strftime("%Y%m%d"):
+            bases.append(f"{host}/today/{suffix}")
     return bases
 
 
@@ -838,11 +862,28 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
         for product_path in product_types:
             links: list[str] = []
             try:
+                listing_failures: list[str] = []
                 for candidate in eccc_base_urls(product_path, source_run, cycle, lead):
-                    links = list_grib_links(candidate)
+                    try:
+                        links = list_grib_links(candidate)
+                    except Exception as exc:
+                        listing_failures.append(
+                            f"{candidate}: {type(exc).__name__}: {exc}"
+                        )
+                        continue
                     if links:
+                        if listing_failures:
+                            print(
+                                f"[{model_key}] F{lead:03d}: servidor Datamart "
+                                "alternativo indisponível; usando o próximo.",
+                                flush=True,
+                            )
                         break
                 if not links:
+                    lead_errors.extend(
+                        f"{product_path}/F{lead:03d} índice: {item}"
+                        for item in listing_failures
+                    )
                     lead_errors.append(
                         f"{product_path}/F{lead:03d}: nenhum GRIB2 publicado neste ciclo."
                     )
@@ -870,7 +911,9 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
                     ) from last_error
 
                 # Variáveis/arquivos de uma validade são baixados juntos.
-                with ThreadPoolExecutor(max_workers=1 if model_key == "cmc_gdps" else 4) as executor:
+                # One GDPS lead at a time protects disk space; files within
+                # that lead are independent and safe to fetch concurrently.
+                with ThreadPoolExecutor(max_workers=4) as executor:
                     futures = {
                         executor.submit(download_one, url): url for url in links
                     }
@@ -1016,6 +1059,58 @@ def regrid_icon_grib(source: Path) -> Path:
             raise RuntimeError("A saída CDO não possui assinatura GRIB2.")
     return output
 
+def group_dwd_parameters(
+    model,
+    max_parameters_per_group: int = 4,
+) -> tuple[list[tuple[list[str], object | None, str, int]], list[str]]:
+    """Group compatible DWD parameters to reduce repeated query resolution."""
+    if max_parameters_per_group < 1:
+        raise ValueError("max_parameters_per_group precisa ser positivo.")
+
+    buckets: dict[tuple[bool, str, str], dict] = {}
+    errors: list[str] = []
+    for parameter in model.parameters():
+        try:
+            info = model.parameter(parameter)
+            level_types = list(info.level_types) or [None]
+            for level_type in level_types:
+                if level_type is None:
+                    level_suffix = "single"
+                    key = (True, "", "")
+                else:
+                    code = str(getattr(level_type, "code", "") or "")
+                    alias = str(getattr(level_type, "alias", "") or "")
+                    level_suffix = alias or code or str(level_type)
+                    key = (False, code, alias or level_suffix)
+                bucket = buckets.setdefault(
+                    key,
+                    {
+                        "level_type": level_type,
+                        "level_suffix": level_suffix,
+                        "parameters": [],
+                    },
+                )
+                if parameter not in bucket["parameters"]:
+                    bucket["parameters"].append(parameter)
+        except Exception as exc:
+            errors.append(f"{parameter}: {type(exc).__name__}: {exc}")
+
+    groups: list[tuple[list[str], object | None, str, int]] = []
+    for bucket in buckets.values():
+        parameters = bucket["parameters"]
+        for offset in range(0, len(parameters), max_parameters_per_group):
+            chunk_index = offset // max_parameters_per_group + 1
+            groups.append(
+                (
+                    parameters[offset:offset + max_parameters_per_group],
+                    bucket["level_type"],
+                    bucket["level_suffix"],
+                    chunk_index,
+                )
+            )
+    return groups, errors
+
+
 def collect_dwd(
     model_key: str,
     raw_dir: Path,
@@ -1031,6 +1126,8 @@ def collect_dwd(
         raw_dir.mkdir(parents=True, exist_ok=True)
         downloaded: list[Path] = []
         errors: list[str] = []
+        # One shared HTTP pool caps total DWD traffic at 12 connections.
+        # Multiple plans can use that pool without multiplying active requests.
         with DWD(max_connections=12, progress=False) as dwd:
             available_models = dwd.nwp.models()
             if upstream not in available_models:
@@ -1060,30 +1157,20 @@ def collect_dwd(
                 forecast_steps[index:index + 6]
                 for index in range(0, len(forecast_steps), 6)
             ]
-            parameter_levels: list[tuple[str, object | None, str]] = []
-            for parameter in parameters:
-                try:
-                    info = model.parameter(parameter)
-                    level_types = list(info.level_types) or [None]
-                    for level_type in level_types:
-                        level_suffix = (
-                            "single" if level_type is None
-                            else str(
-                                getattr(level_type, "alias", None)
-                                or getattr(level_type, "code", level_type)
-                            )
-                        )
-                        parameter_levels.append(
-                            (parameter, level_type, level_suffix)
-                        )
-                except Exception as exc:
-                    errors.append(
-                        f"{parameter}: {type(exc).__name__}: {exc}"
-                    )
+            parameter_groups, parameter_errors = group_dwd_parameters(
+                model, max_parameters_per_group=4
+            )
+            errors.extend(parameter_errors)
+            if not parameter_groups:
+                raise RuntimeError(
+                    "DWD não forneceu combinações válidas de parâmetro/nível."
+                )
 
+            original_combinations = sum(len(group[0]) for group in parameter_groups)
             print(
                 f"[{model_key}] rodada DWD {source_run}; "
-                f"{len(parameter_levels)} combinações parâmetro/nível; "
+                f"{original_combinations} combinações parâmetro/nível agrupadas em "
+                f"{len(parameter_groups)} planos; "
                 f"{len(forecast_steps)} validades em {len(step_batches)} lotes.",
                 flush=True,
             )
@@ -1139,21 +1226,29 @@ def collect_dwd(
                     f"{batch_label}: iniciando.",
                     flush=True,
                 )
-                for parameter, level_type, level_suffix in parameter_levels:
-                    safe_parameter = re.sub(
-                        r"[^A-Za-z0-9_.-]+", "-", parameter
+                # Resolve compatible parameter sets, then download up to three
+                # plans concurrently. Regional decoding/regridding stays on this
+                # main thread so NDJSON spool writes remain serialized.
+                plan_jobs: list[tuple[object, Path, str]] = []
+                for parameter_group, level_type, level_suffix, chunk_index in parameter_groups:
+                    parameter_label = "+".join(parameter_group)
+                    safe_parameters = re.sub(
+                        r"[^A-Za-z0-9_.-]+", "-", parameter_label
                     )
                     safe_level = re.sub(
                         r"[^A-Za-z0-9_.-]+", "-", level_suffix
                     )
+                    group_label = (
+                        f"{safe_level}-set{chunk_index:02d}-{safe_parameters}"
+                    )
                     target = (
-                        raw_dir / safe_parameter / safe_level / batch_label
-                        / f"{safe_parameter}-{safe_level}-{batch_label}.grib2"
+                        raw_dir / "grouped" / group_label / batch_label
+                        / f"{group_label}-{batch_label}.grib2"
                     )
                     target.parent.mkdir(parents=True, exist_ok=True)
                     try:
                         options = {
-                            "parameters": parameter,
+                            "parameters": parameter_group,
                             "steps": [f"{step}h" for step in step_batch],
                         }
                         if level_type is not None:
@@ -1165,32 +1260,43 @@ def collect_dwd(
                             continue
                         if getattr(plan, "missing", None):
                             errors.append(
-                                f"{parameter}/{level_suffix}/{batch_label}: "
+                                f"{parameter_label}/{level_suffix}/{batch_label}: "
                                 f"{len(plan.missing)} combinações ausentes."
                             )
-                        plan.download(str(target))
-                        if not target.is_file() or target.stat().st_size == 0:
-                            errors.append(
-                                f"{parameter}/{level_suffix}/{batch_label}: "
-                                "download não gerou GRIB2."
-                            )
-                            continue
-                        if process_file:
-                            regridded = regrid_icon_grib(target)
-                            try:
-                                process_file(regridded)
-                            finally:
-                                regridded.unlink(missing_ok=True)
-                        else:
-                            downloaded.append(target)
+                        plan_jobs.append((plan, target, group_label))
                     except Exception as exc:
                         errors.append(
-                            f"{parameter}/{level_suffix}/{batch_label}: "
+                            f"{parameter_label}/{level_suffix}/{batch_label}: "
                             f"{type(exc).__name__}: {exc}"
                         )
-                    finally:
-                        if process_file:
-                            target.unlink(missing_ok=True)
+
+                with ThreadPoolExecutor(max_workers=3) as executor:
+                    future_to_job = {
+                        executor.submit(plan.download, str(target)): (target, group_label)
+                        for plan, target, group_label in plan_jobs
+                    }
+                    for future in as_completed(future_to_job):
+                        target, group_label = future_to_job[future]
+                        try:
+                            future.result()
+                            if not target.is_file() or target.stat().st_size == 0:
+                                raise RuntimeError("download não gerou GRIB2.")
+                            if process_file:
+                                regridded = regrid_icon_grib(target)
+                                try:
+                                    process_file(regridded)
+                                finally:
+                                    regridded.unlink(missing_ok=True)
+                            else:
+                                downloaded.append(target)
+                        except Exception as exc:
+                            errors.append(
+                                f"{group_label}/{batch_label}: "
+                                f"{type(exc).__name__}: {exc}"
+                            )
+                        finally:
+                            if process_file:
+                                target.unlink(missing_ok=True)
 
                 if checkpoint:
                     for lead in step_batch:

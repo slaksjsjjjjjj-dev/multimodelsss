@@ -42,3 +42,11 @@ CI: https://github.com/slaksjsjjjjjj-dev/multimodelsss/actions/runs/42800120690
 - Alguns campos estatísticos ICON podem continuar parciais se o CDO não suportar determinado template GRIB2.
 - CMC-GEPS ainda coleta os produtos estatísticos de `/products`; os GRIBs `/raw` de todos os membros seguem desativados.
 - Os recortes específicos do Brasil e da Argentina continuam desativados; os dados ficam nos recortes América do Sul e Pacífico Sul.
+
+## Otimizações para timeouts de 11 de novembro de 2026
+
+- **ICON-DWD/AICON:** parâmetros compatíveis passaram a ser agrupados por tipo de nível (até quatro por consulta). Até três planos baixam em paralelo usando o mesmo pool HTTP limitado a 12 conexões; regrade CDO, leitura GRIB, gravação NDJSON e checkpoints continuam serializados na thread principal. Nenhum parâmetro, nível ou validade foi removido.
+- **GFS/NOMADS:** os dois produtos de cada validade são transferidos em paralelo, respeitando o bloqueio global que espaça o início das requisições em 10 segundos. Continua ativa apenas uma validade por vez, preservando a proteção contra falta de disco.
+- **CMC-GDPS:** o espelho oficial HPFX é consultado primeiro e o Datamart HTTPS principal permanece como fallback. As quatro transferências independentes de uma validade podem ocorrer juntas, mas o coletor continua limitado a uma validade GDPS por vez.
+- **Validação operacional:** os testes automatizados verificam agrupamento sem mistura de níveis, concorrência GFS/CMC e ordem dos servidores ECCC. A eficácia em uma coleta global completa depende da próxima execução do workflow; não deve ser considerada confirmada apenas pela aprovação do CI.
+

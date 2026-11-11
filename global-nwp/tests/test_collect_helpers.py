@@ -3,6 +3,7 @@ from __future__ import annotations
 import gzip
 import json
 import sys
+import threading
 import types
 import tempfile
 import unittest
@@ -175,6 +176,112 @@ class CollectHelpersTest(unittest.TestCase):
                 self.assertEqual(progress["available_forecast_hours"], [0])
         finally:
             collect.REGIONS = original_regions
+
+    def test_dwd_parameter_groups_keep_level_types_separate(self) -> None:
+        pressure = types.SimpleNamespace(code=100, alias="pressure")
+        model_levels = types.SimpleNamespace(code=105, alias="model")
+        level_types = {
+            "T_2M": (),
+            "PMSL": (),
+            "T": (pressure, model_levels),
+            "U": (pressure,),
+            "V": (pressure,),
+        }
+
+        class FakeModel:
+            def parameters(self):
+                return list(level_types)
+
+            def parameter(self, name):
+                return types.SimpleNamespace(level_types=level_types[name])
+
+        groups, errors = collect.group_dwd_parameters(
+            FakeModel(), max_parameters_per_group=2
+        )
+        normalized = {
+            (tuple(parameters), suffix)
+            for parameters, _level_type, suffix, _chunk in groups
+        }
+        self.assertIn((("T_2M", "PMSL"), "single"), normalized)
+        self.assertIn((("T", "U"), "pressure"), normalized)
+        self.assertIn((("V",), "pressure"), normalized)
+        self.assertIn((("T",), "model"), normalized)
+        self.assertEqual(sum(len(parameters) for parameters, *_ in groups), 6)
+        self.assertEqual(errors, [])
+
+    def test_gfs_downloads_both_products_concurrently_per_lead(self) -> None:
+        state = {"active": 0, "peak": 0}
+        lock = threading.Lock()
+        barrier = threading.Barrier(2)
+        run = datetime(2026, 11, 9, 0, tzinfo=timezone.utc)
+
+        def fake_download(product, _run, lead, raw_dir):
+            with lock:
+                state["active"] += 1
+                state["peak"] = max(state["peak"], state["active"])
+            try:
+                barrier.wait(timeout=5)
+                target = raw_dir / product / f"f{lead:03d}.grib2"
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(b"GRIB" + (b"\\x00" * 12) + b"7777")
+                return target
+            finally:
+                with lock:
+                    state["active"] -= 1
+
+        with tempfile.TemporaryDirectory() as temp:
+            raw_dir = Path(temp) / "_raw" / "gfs"
+            with mock.patch.object(
+                collect, "download_gfs_regional", side_effect=fake_download
+            ):
+                downloaded, available, errors = collect.collect_herbie(
+                    "gfs", run, raw_dir, [0]
+                )
+            self.assertEqual(available, [0])
+            self.assertEqual(errors, [])
+            self.assertEqual(len(downloaded), 2)
+            self.assertEqual(state["peak"], 2)
+
+    def test_eccc_tries_hpfx_before_the_primary_datamart(self) -> None:
+        run = datetime(2026, 11, 9, 0, tzinfo=timezone.utc)
+        urls = collect.eccc_base_urls("model_gdps/15km", run, "00", 0)
+        self.assertTrue(urls[0].startswith("http://hpfx.collab.science.gc.ca/"))
+        self.assertTrue(urls[1].startswith("https://dd.weather.gc.ca/"))
+
+    def test_cmc_downloads_files_concurrently_but_keeps_one_lead(self) -> None:
+        state = {"active": 0, "peak": 0}
+        lock = threading.Lock()
+        barrier = threading.Barrier(4)
+        run = datetime(2026, 11, 9, 0, tzinfo=timezone.utc)
+        urls = [f"https://example.test/field-{index}.grib2" for index in range(4)]
+
+        def fake_ensure(_url, destination, timeout):
+            with lock:
+                state["active"] += 1
+                state["peak"] = max(state["peak"], state["active"])
+            try:
+                barrier.wait(timeout=5)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(b"GRIB" + (b"\\x00" * 12) + b"7777")
+                return True
+            finally:
+                with lock:
+                    state["active"] -= 1
+
+        with tempfile.TemporaryDirectory() as temp:
+            raw_dir = Path(temp) / "_raw" / "cmc_gdps"
+            with (
+                mock.patch.object(collect, "eccc_base_urls", return_value=["https://example.test/"]),
+                mock.patch.object(collect, "list_grib_links", return_value=urls),
+                mock.patch.object(collect, "ensure_request", side_effect=fake_ensure),
+            ):
+                downloaded, available, errors = collect.collect_eccc(
+                    "cmc_gdps", run, raw_dir, [0]
+                )
+            self.assertEqual(available, [0])
+            self.assertEqual(errors, [])
+            self.assertEqual(len(downloaded), 4)
+            self.assertEqual(state["peak"], 4)
 
     def test_dwd_run_hour_uses_reference_time(self) -> None:
         run_type = type(
