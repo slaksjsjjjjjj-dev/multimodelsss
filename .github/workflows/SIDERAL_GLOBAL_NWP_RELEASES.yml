@@ -247,7 +247,7 @@ jobs:
 
   publish:
     name: Publicar JSONs na branch nwp-data
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs: [collect]
     runs-on: ubuntu-24.04
     timeout-minutes: 180
