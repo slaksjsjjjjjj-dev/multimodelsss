@@ -657,9 +657,9 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
         lead_files: list[Path] = []
         lead_errors: list[str] = []
         if model_key == "gfs":
-            # Both NOMADS products belong to the same forecast lead. Fetch them
-            # together; the shared 10-second request gate remains in force, and
-            # the outer collector still handles only one lead at a time.
+            # Both NOMADS products belong to the same lead. The outer pool
+            # pipelines a bounded number of leads while this pair downloads;
+            # the shared 10-second NOMADS request gate remains in force.
             with ThreadPoolExecutor(max_workers=2) as product_executor:
                 product_futures = {
                     product_executor.submit(
@@ -702,10 +702,9 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
         return lead, sorted(set(lead_files)), lead_errors
 
     write_progress()
-    # Download a few forecast leads concurrently; process GRIB files in the
-    # main thread to avoid concurrent appends to the same regional NDJSON files.
-    # GFS has the longest hourly series, so bounded concurrency is particularly
-    # important there. Each lead/product writes to its own destination folder.
+    # Pipeline downloads for a few forecast leads, but process regional GRIB
+    # bundles on the main thread so spool writes stay serialized. GFS has the
+    # longest hourly series, so it receives a wider bounded download window.
     max_workers = GFS_CONCURRENT_LEADS if model_key == "gfs" else 3
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_lead = {
@@ -930,8 +929,8 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
                     ) from last_error
 
                 # Variáveis/arquivos de uma validade são baixados juntos.
-                # One GDPS lead at a time protects disk space; files within
-                # that lead are independent and safe to fetch concurrently.
+                # Files within a lead are independent; a second GDPS lead may
+                # download at the same time, with four-file pools bounded per lead.
                 with ThreadPoolExecutor(max_workers=4) as executor:
                     futures = {
                         executor.submit(download_one, url): url for url in links
@@ -956,8 +955,8 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
         return lead, sorted(set(lead_files)), lead_errors
 
     completed = 0
-    # GDPS/NOAA files are very large. Download only one GDPS or GFS lead
-    # at a time so temporary GRIB files cannot fill the runner disk.
+    # GDPS/NOAA files are large. Bound active lead downloads so temporary
+    # GRIB files remain below a safe disk footprint.
     lead_workers = ECCC_GDPS_CONCURRENT_LEADS if model_key == "cmc_gdps" else 2
     with ThreadPoolExecutor(max_workers=lead_workers) as executor:
         future_to_lead = {
@@ -1175,8 +1174,8 @@ def collect_dwd(
             source_run = available_runs[-1]
             max_step = 180 if dwd_run_hour(source_run) in (0, 12) else 120
             # ICON Global outputs hourly through F078 and every 3 hours
-            # afterwards. Keep each download small enough to survive runner
-            # timeouts and publish completed forecast hours incrementally.
+            # afterwards. Bundle 12 steps per plan to reduce repeated DWD query
+            # resolution while retaining incremental per-step publication.
             forecast_steps = list(range(0, 79)) + list(
                 range(81, max_step + 1, 3)
             )
@@ -1256,9 +1255,9 @@ def collect_dwd(
                     f"{batch_label}: iniciando.",
                     flush=True,
                 )
-                # Resolve compatible parameter sets, then download up to three
-                # plans concurrently. Regional decoding/regridding stays on this
-                # main thread so NDJSON spool writes remain serialized.
+                # Resolve compatible parameter sets, download four plans at
+                # once, and regionalize small bundles on this main thread so
+                # NDJSON spool writes remain serialized.
                 plan_jobs: list[tuple[object, Path, str]] = []
                 for parameter_group, level_type, level_suffix, chunk_index in parameter_groups:
                     parameter_label = "+".join(parameter_group)
