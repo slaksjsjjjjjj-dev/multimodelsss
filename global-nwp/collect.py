@@ -1467,9 +1467,9 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
         if source_forecast_hour_override is None:
             lead_match = next(
                 (
-                    re.fullmatch(r"f(\\d{3})", part, flags=re.IGNORECASE)
+                    re.fullmatch(r"f(\d{3})", part, flags=re.IGNORECASE)
                     for part in source.parts
-                    if re.fullmatch(r"f(\\d{3})", part, flags=re.IGNORECASE)
+                    if re.fullmatch(r"f(\d{3})", part, flags=re.IGNORECASE)
                 ),
                 None,
             )
