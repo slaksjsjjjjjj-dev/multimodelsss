@@ -35,6 +35,15 @@ REGIONS = [
 CATALOG_BY_KEY = {item["key"]: item for item in CATALOG["models"]}
 USER_AGENT = "Sideral-Global-NWP/1.0 (+https://github.com/slaksjsjjjjjj-dev/multimodelsss)"
 MAX_FRAME_PART_RAW_BYTES = 32 * 1024 * 1024
+# Bounded concurrency/batching for the slow global collectors.
+GFS_CONCURRENT_LEADS = 4
+ECCC_GDPS_CONCURRENT_LEADS = 2
+DWD_PARAMETERS_PER_GROUP = 8
+DWD_STEP_BATCH_SIZE = 12
+DWD_DOWNLOAD_WORKERS = 4
+DWD_REGIONALIZE_BATCH_FILES = 3
+FIELD_WRITE_BUFFER_LINES = 4
+FIELD_WRITE_BUFFER_BYTES = 4 * 1024 * 1024
 
 
 def write_json_atomic(path: Path, payload: dict) -> None:
@@ -138,7 +147,7 @@ def ensure_request(url: str, destination: Path, timeout: tuple[int, int] = (20, 
             return False
         response.raise_for_status()
         with temp.open("wb") as stream:
-            for chunk in response.iter_content(1024 * 1024):
+            for chunk in response.iter_content(4 * 1024 * 1024):
                 if chunk:
                     stream.write(chunk)
 
@@ -302,7 +311,7 @@ def download_gfs_regional(
                     )
                 response.raise_for_status()
                 with temp.open("wb") as output:
-                    for chunk in response.iter_content(1024 * 1024):
+                    for chunk in response.iter_content(4 * 1024 * 1024):
                         if chunk:
                             output.write(chunk)
 
@@ -592,7 +601,8 @@ def collect_ecmwf(
 
 def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
                    process_file: Callable[[Path], None] | None = None,
-                   checkpoint: Callable[[int], None] | None = None
+                   checkpoint: Callable[[int], None] | None = None,
+                   process_files: Callable[[list[Path]], None] | None = None
                    ) -> tuple[list[Path], list[int], list[str]]:
     """Collect NOAA models with bounded parallel downloads and durable progress."""
     spec = {
@@ -696,7 +706,7 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
     # main thread to avoid concurrent appends to the same regional NDJSON files.
     # GFS has the longest hourly series, so bounded concurrency is particularly
     # important there. Each lead/product writes to its own destination folder.
-    max_workers = 1 if model_key == "gfs" else 3
+    max_workers = GFS_CONCURRENT_LEADS if model_key == "gfs" else 3
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_lead = {
             executor.submit(collect_one_lead, lead): lead for lead in requested
@@ -717,8 +727,16 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
             errors.extend(lead_errors)
             if lead_files:
                 found_hours.add(lead)
-                for grib_path in lead_files:
-                    if process_file:
+                if process_files:
+                    try:
+                        process_files(lead_files)
+                    except Exception as exc:
+                        errors.append(
+                            f"F{lead:03d}: processamento GRIB em lote falhou: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                elif process_file:
+                    for grib_path in lead_files:
                         try:
                             process_file(grib_path)
                         except Exception as exc:
@@ -726,8 +744,8 @@ def collect_herbie(model_key: str, run: datetime, raw_dir: Path, requested: list
                                 f"F{lead:03d} {grib_path.name}: processamento GRIB falhou: "
                                 f"{type(exc).__name__}: {exc}"
                             )
-                    else:
-                        downloaded.append(grib_path)
+                else:
+                    downloaded.extend(lead_files)
                 # Persist the complete F-hour immediately. If the runner is
                 # later cancelled, already completed JSON files remain uploadable.
                 if checkpoint:
@@ -809,7 +827,8 @@ def eccc_base_urls(product_path: str, source_run: datetime, cycle: str,
 
 def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[int],
                  process_file: Callable[[Path], None] | None = None,
-                 checkpoint: Callable[[int], None] | None = None
+                 checkpoint: Callable[[int], None] | None = None,
+                 process_files: Callable[[list[Path]], None] | None = None
                  ) -> tuple[list[Path], list[int], list[str]]:
     # GDPS and GEPS both publish on the MSC Datamart. Both issue runs at
     # 00Z/12Z; 06Z/18Z consumers use the latest prior run. The URL uses the
@@ -939,7 +958,8 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
     completed = 0
     # GDPS/NOAA files are very large. Download only one GDPS or GFS lead
     # at a time so temporary GRIB files cannot fill the runner disk.
-    with ThreadPoolExecutor(max_workers=1 if model_key == "cmc_gdps" else 2) as executor:
+    lead_workers = ECCC_GDPS_CONCURRENT_LEADS if model_key == "cmc_gdps" else 2
+    with ThreadPoolExecutor(max_workers=lead_workers) as executor:
         future_to_lead = {
             executor.submit(download_one_lead, lead): lead for lead in requested
         }
@@ -959,9 +979,18 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
             errors.extend(lead_errors)
             if lead_files:
                 found_hours.add(lead)
-                # GRIB decoding and writes to the F-hour spool stay serial.
-                for target in lead_files:
-                    if process_file:
+                # All files for this GDPS validity share the same grid. Decode
+                # them in one pass to reuse coordinates and batched spool writes.
+                if process_files:
+                    try:
+                        process_files(lead_files)
+                    except Exception as exc:
+                        errors.append(
+                            f"F{lead:03d}: processamento GRIB em lote falhou: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                elif process_file:
+                    for target in lead_files:
                         try:
                             process_file(target)
                         except Exception as exc:
@@ -969,8 +998,8 @@ def collect_eccc(model_key: str, run: datetime, raw_dir: Path, requested: list[i
                                 f"F{lead:03d} {target.name}: processamento GRIB falhou: "
                                 f"{type(exc).__name__}: {exc}"
                             )
-                    else:
-                        downloaded.append(target)
+                else:
+                    downloaded.extend(lead_files)
 
                 # Write a complete per-validity JSON as soon as that lead's
                 # downloaded fields have been processed.
@@ -1042,7 +1071,7 @@ def regrid_icon_grib(source: Path) -> Path:
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        env={**os.environ, "OMP_NUM_THREADS": "4"},
+        env={**os.environ, "OMP_NUM_THREADS": "2"},
     )
     if result.returncode != 0:
         output.unlink(missing_ok=True)
@@ -1117,6 +1146,7 @@ def collect_dwd(
     requested: list[int],
     process_file: Callable[[Path], None] | None = None,
     checkpoint: Callable[[int], None] | None = None,
+    process_files: Callable[[list[Path]], None] | None = None,
 ) -> tuple[list[Path], list[int], list[str]]:
     """Collect ICON/AICON in bounded forecast-step batches with checkpoints."""
     upstream = {"icon_dwd": "icon", "icon_ai": "aicon"}[model_key]
@@ -1154,11 +1184,11 @@ def collect_dwd(
             # manifest records the complete DWD forecast schedule as it runs.
             requested[:] = forecast_steps
             step_batches = [
-                forecast_steps[index:index + 6]
-                for index in range(0, len(forecast_steps), 6)
+                forecast_steps[index:index + DWD_STEP_BATCH_SIZE]
+                for index in range(0, len(forecast_steps), DWD_STEP_BATCH_SIZE)
             ]
             parameter_groups, parameter_errors = group_dwd_parameters(
-                model, max_parameters_per_group=4
+                model, max_parameters_per_group=DWD_PARAMETERS_PER_GROUP
             )
             errors.extend(parameter_errors)
             if not parameter_groups:
@@ -1270,7 +1300,35 @@ def collect_dwd(
                             f"{type(exc).__name__}: {exc}"
                         )
 
-                with ThreadPoolExecutor(max_workers=3) as executor:
+                def process_dwd_files(paths: list[Path]) -> None:
+                    if not paths:
+                        return
+                    try:
+                        if process_files:
+                            process_files(paths)
+                        elif process_file:
+                            for path in paths:
+                                try:
+                                    process_file(path)
+                                except Exception as exc:
+                                    errors.append(
+                                        f"{path.name}: processamento GRIB falhou: "
+                                        f"{type(exc).__name__}: {exc}"
+                                    )
+                        else:
+                            downloaded.extend(paths)
+                    except Exception as exc:
+                        errors.append(
+                            f"{batch_label}: processamento GRIB em lote falhou: "
+                            f"{type(exc).__name__}: {exc}"
+                        )
+                    finally:
+                        if process_files or process_file:
+                            for path in paths:
+                                path.unlink(missing_ok=True)
+
+                pending_regridded: list[Path] = []
+                with ThreadPoolExecutor(max_workers=DWD_DOWNLOAD_WORKERS) as executor:
                     future_to_job = {
                         executor.submit(plan.download, str(target)): (target, group_label)
                         for plan, target, group_label in plan_jobs
@@ -1281,12 +1339,8 @@ def collect_dwd(
                             future.result()
                             if not target.is_file() or target.stat().st_size == 0:
                                 raise RuntimeError("download não gerou GRIB2.")
-                            if process_file:
-                                regridded = regrid_icon_grib(target)
-                                try:
-                                    process_file(regridded)
-                                finally:
-                                    regridded.unlink(missing_ok=True)
+                            if process_files or process_file:
+                                pending_regridded.append(regrid_icon_grib(target))
                             else:
                                 downloaded.append(target)
                         except Exception as exc:
@@ -1295,8 +1349,14 @@ def collect_dwd(
                                 f"{type(exc).__name__}: {exc}"
                             )
                         finally:
-                            if process_file:
+                            if process_files or process_file:
                                 target.unlink(missing_ok=True)
+                        if len(pending_regridded) >= DWD_REGIONALIZE_BATCH_FILES:
+                            process_dwd_files(pending_regridded)
+                            pending_regridded = []
+
+                if pending_regridded:
+                    process_dwd_files(pending_regridded)
 
                 if checkpoint:
                     for lead in step_batch:
@@ -1387,6 +1447,17 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
     # field on the same grid. Compute them once per grid, not once per field.
     coordinate_cache: dict[tuple, dict] = {}
     coordinate_point_counts: dict[tuple, int] = {}
+    field_buffers: dict[Path, list[str]] = defaultdict(list)
+    field_buffer_sizes: dict[Path, int] = defaultdict(int)
+
+    def flush_field_buffer(fields_path: Path) -> None:
+        lines = field_buffers.get(fields_path)
+        if not lines:
+            return
+        with fields_path.open("a", encoding="utf-8") as output:
+            output.write("\n".join(lines) + "\n")
+        lines.clear()
+        field_buffer_sizes[fields_path] = 0
 
     for source in raw_files:
         # Do not filter by filename extension here. NOAA/Herbie GFS objects
@@ -1568,18 +1639,26 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                                 encoding="utf-8",
                             )
                         selected_values = vals[indices]
-                        value_list = [
-                            round(float(value), 3) if np.isfinite(value) else None
-                            for value in selected_values
-                        ]
+                        rounded_values = np.round(selected_values, 3)
+                        value_list = np.where(
+                            np.isfinite(rounded_values), rounded_values, None
+                        ).tolist()
                         field = {
                             **meta,
                             "grid_id": signature,
                             "values": value_list,
                             "source_file": source.name,
                         }
-                        with (field_dir / "fields.ndjson").open("a", encoding="utf-8") as output:
-                            output.write(safe_json_line(field) + "\n")
+                        fields_path = field_dir / "fields.ndjson"
+                        encoded_field = safe_json_line(field)
+                        buffer = field_buffers[fields_path]
+                        buffer.append(encoded_field)
+                        field_buffer_sizes[fields_path] += len(encoded_field)
+                        if (
+                            len(buffer) >= FIELD_WRITE_BUFFER_LINES
+                            or field_buffer_sizes[fields_path] >= FIELD_WRITE_BUFFER_BYTES
+                        ):
+                            flush_field_buffer(fields_path)
                         entry = stats[region_id].setdefault(lead, {
                             "valid_time": valid_utc,
                             "run_utc": run_utc,
@@ -1596,6 +1675,9 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                     errors.append(f"{source.name}: {type(exc).__name__}: {exc}")
                 finally:
                     codes_release(gid)
+
+    for fields_path in list(field_buffers):
+        flush_field_buffer(fields_path)
 
     for region_id, leads in stats.items():
         for lead, entry in leads.items():
@@ -1934,28 +2016,30 @@ def main() -> int:
     }
     max_hour = int(spec["max_forecast_hour"])
 
-    def process_file(path: Path) -> None:
-        path = Path(path)
+    def process_files(paths: list[Path]) -> None:
+        paths = [Path(path) for path in paths]
+        valid_paths: list[Path] = []
         try:
-            if not path.is_file() or path.stat().st_size == 0:
-                raise RuntimeError(f"Arquivo GRIB vazio/inexistente: {path.name}")
-            lead_match = next(
-                (
-                    re.fullmatch(r"f(\d{3})", part, flags=re.IGNORECASE)
-                    for part in path.parts
-                    if re.fullmatch(r"f(\d{3})", part, flags=re.IGNORECASE)
-                ),
-                None,
-            )
-            lead_override = int(lead_match.group(1)) if lead_match else None
-            piece = regionalize(
-                [path], spool_root, model_key, requested, max_hour,
-                forecast_hour_override=lead_override,
-            )
+            for path in paths:
+                if not path.is_file() or path.stat().st_size == 0:
+                    stats.setdefault("_errors", {}).setdefault("items", []).append(
+                        f"Arquivo GRIB vazio/inexistente: {path.name}"
+                    )
+                else:
+                    valid_paths.append(path)
+            if not valid_paths:
+                return
+            # Files from the same lead/batch share a grid; reuse coordinate
+            # arrays and regional indexes across all GRIBs in this bundle.
+            piece = regionalize(valid_paths, spool_root, model_key, requested, max_hour)
             merge_regional_stats(stats, piece)
-            processed_files.append(path.name)
+            processed_files.extend(path.name for path in valid_paths)
         finally:
-            path.unlink(missing_ok=True)
+            for path in paths:
+                path.unlink(missing_ok=True)
+
+    def process_file(path: Path) -> None:
+        process_files([Path(path)])
 
     def checkpoint_lead(lead: int) -> None:
         finalize_spool(
@@ -1972,11 +2056,13 @@ def main() -> int:
             # collect_herbie routes the GFS key through the NOMADS filter
             # downloader; AI/ensemble models continue to use Herbie.
             _, discovered_hours, errors = collect_herbie(
-                model_key, run, raw_dir, requested, process_file, checkpoint_lead
+                model_key, run, raw_dir, requested, process_file, checkpoint_lead,
+                process_files=process_files,
             )
         elif spec["adapter"] == "dwdopen":
             _, discovered_hours, errors = collect_dwd(
-                model_key, raw_dir, requested, process_file, checkpoint_lead
+                model_key, raw_dir, requested, process_file, checkpoint_lead,
+                process_files=process_files,
             )
             if discovered_hours:
                 stats["_requested_hours"] = discovered_hours
@@ -1984,7 +2070,8 @@ def main() -> int:
             if model_key not in {"cmc_gdps", "cmc_geps"}:
                 raise RuntimeError("Adaptador Datamart desconhecido.")
             _, discovered_hours, errors = collect_eccc(
-                model_key, run, raw_dir, requested, process_file, checkpoint_lead
+                model_key, run, raw_dir, requested, process_file, checkpoint_lead,
+                process_files=process_files,
             )
         else:
             raise RuntimeError(f"Adaptador desconhecido: {spec['adapter']}")
