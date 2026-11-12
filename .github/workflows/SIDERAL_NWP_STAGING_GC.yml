@@ -1,0 +1,60 @@
+name: SIDERAL — Limpeza de staging NWP
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/SIDERAL_NWP_STAGING_GC.yml"
+  schedule:
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: sideral-nwp-staging-gc
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    name: Remover branches temporárias de execuções encerradas
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Excluir refs staging de execuções concluídas
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Procurando branches nwp-data-staging-*..."
+          mapfile -t branches < <(
+            gh api --paginate "repos/$GH_REPO/branches?per_page=100" --jq '.[].name'
+          )
+
+          removed=0
+          kept=0
+          for branch in "${branches[@]}"; do
+            [[ "$branch" =~ ^nwp-data-staging-([0-9]+)$ ]] || continue
+            run_id="${BASH_REMATCH[1]}"
+
+            run_status="$(gh api "repos/$GH_REPO/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
+            if [[ "$run_status" == "completed" ]]; then
+              echo "Removendo $branch (execução $run_id concluída)."
+              gh api --method DELETE "repos/$GH_REPO/git/refs/heads/$branch"
+              removed=$((removed + 1))
+            else
+              echo "Mantendo $branch (status: ${run_status:-desconhecido}); pode estar em uso."
+              kept=$((kept + 1))
+            fi
+          done
+
+          echo "Limpeza concluída: $removed removida(s), $kept mantida(s)."
+          {
+            echo "### Limpeza de branches temporárias NWP"
+            echo "- Branches removidas: $removed"
+            echo "- Branches preservadas por estarem ativas ou sem status verificável: $kept"
+          } >> "$GITHUB_STEP_SUMMARY"
