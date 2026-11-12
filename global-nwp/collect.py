@@ -1460,6 +1460,22 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
         field_buffer_sizes[fields_path] = 0
 
     for source in raw_files:
+        # Some NOAA/ECCC products omit or encode non-standard GRIB forecast-time
+        # metadata. Preserve the authoritative F-hour embedded in each path,
+        # even when several files are regionalized together.
+        source_forecast_hour_override = forecast_hour_override
+        if source_forecast_hour_override is None:
+            lead_match = next(
+                (
+                    re.fullmatch(r"f(\\d{3})", part, flags=re.IGNORECASE)
+                    for part in source.parts
+                    if re.fullmatch(r"f(\\d{3})", part, flags=re.IGNORECASE)
+                ),
+                None,
+            )
+            if lead_match:
+                source_forecast_hour_override = int(lead_match.group(1))
+
         # Do not filter by filename extension here. NOAA/Herbie GFS objects
         # are published on AWS with names ending in f000/f003/... and have no
         # .grib2 suffix. Herbie still downloads them as valid GRIB2 files.
@@ -1501,8 +1517,8 @@ def regionalize(raw_files: list[Path], spool_root: Path, model_key: str,
                     # Some GRIB products expose non-standard time metadata; the
                     # downloaded forecast filename is the authoritative lead for
                     # these files, so do not silently discard every GFS message.
-                    if forecast_hour_override is not None:
-                        lead = forecast_hour_override
+                    if source_forecast_hour_override is not None:
+                        lead = source_forecast_hour_override
                     if lead is None or lead < 0 or lead > max_hour:
                         diagnostics["messages_rejected_by_hour"] += 1
                         continue
