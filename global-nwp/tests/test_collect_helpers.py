@@ -209,25 +209,31 @@ class CollectHelpersTest(unittest.TestCase):
         self.assertEqual(sum(len(parameters) for parameters, *_ in groups), 6)
         self.assertEqual(errors, [])
 
-    def test_gfs_downloads_both_products_concurrently_per_lead(self) -> None:
+    def test_gfs_pipelines_four_leads_and_batches_each_leads_products(self) -> None:
         state = {"active": 0, "peak": 0}
         lock = threading.Lock()
-        barrier = threading.Barrier(2)
+        barrier = threading.Barrier(8)
         run = datetime(2026, 11, 9, 0, tzinfo=timezone.utc)
+        batches: list[int] = []
 
         def fake_download(product, _run, lead, raw_dir):
             with lock:
                 state["active"] += 1
                 state["peak"] = max(state["peak"], state["active"])
             try:
-                barrier.wait(timeout=5)
+                barrier.wait(timeout=10)
                 target = raw_dir / product / f"f{lead:03d}.grib2"
                 target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(b"GRIB" + (b"\\x00" * 12) + b"7777")
+                target.write_bytes(b"GRIB" + (b"\x00" * 12) + b"7777")
                 return target
             finally:
                 with lock:
                     state["active"] -= 1
+
+        def fake_process_files(paths):
+            batches.append(len(paths))
+            for path in paths:
+                path.unlink(missing_ok=True)
 
         with tempfile.TemporaryDirectory() as temp:
             raw_dir = Path(temp) / "_raw" / "gfs"
@@ -235,12 +241,17 @@ class CollectHelpersTest(unittest.TestCase):
                 collect, "download_gfs_regional", side_effect=fake_download
             ):
                 downloaded, available, errors = collect.collect_herbie(
-                    "gfs", run, raw_dir, [0]
+                    "gfs",
+                    run,
+                    raw_dir,
+                    [0, 1, 2, 3],
+                    process_files=fake_process_files,
                 )
-            self.assertEqual(available, [0])
+            self.assertEqual(available, [0, 1, 2, 3])
             self.assertEqual(errors, [])
-            self.assertEqual(len(downloaded), 2)
-            self.assertEqual(state["peak"], 2)
+            self.assertEqual(downloaded, [])
+            self.assertEqual(sorted(batches), [2, 2, 2, 2])
+            self.assertEqual(state["peak"], 8)
 
     def test_eccc_tries_hpfx_before_the_primary_datamart(self) -> None:
         run = datetime(2026, 11, 9, 0, tzinfo=timezone.utc)
@@ -248,25 +259,31 @@ class CollectHelpersTest(unittest.TestCase):
         self.assertTrue(urls[0].startswith("http://hpfx.collab.science.gc.ca/"))
         self.assertTrue(urls[1].startswith("https://dd.weather.gc.ca/"))
 
-    def test_cmc_downloads_files_concurrently_but_keeps_one_lead(self) -> None:
+    def test_cmc_pipelines_two_gdps_leads_and_batches_their_files(self) -> None:
         state = {"active": 0, "peak": 0}
         lock = threading.Lock()
-        barrier = threading.Barrier(4)
+        barrier = threading.Barrier(8)
         run = datetime(2026, 11, 9, 0, tzinfo=timezone.utc)
         urls = [f"https://example.test/field-{index}.grib2" for index in range(4)]
+        batches: list[int] = []
 
         def fake_ensure(_url, destination, timeout):
             with lock:
                 state["active"] += 1
                 state["peak"] = max(state["peak"], state["active"])
             try:
-                barrier.wait(timeout=5)
+                barrier.wait(timeout=10)
                 destination.parent.mkdir(parents=True, exist_ok=True)
-                destination.write_bytes(b"GRIB" + (b"\\x00" * 12) + b"7777")
+                destination.write_bytes(b"GRIB" + (b"\x00" * 12) + b"7777")
                 return True
             finally:
                 with lock:
                     state["active"] -= 1
+
+        def fake_process_files(paths):
+            batches.append(len(paths))
+            for path in paths:
+                path.unlink(missing_ok=True)
 
         with tempfile.TemporaryDirectory() as temp:
             raw_dir = Path(temp) / "_raw" / "cmc_gdps"
@@ -276,12 +293,17 @@ class CollectHelpersTest(unittest.TestCase):
                 mock.patch.object(collect, "ensure_request", side_effect=fake_ensure),
             ):
                 downloaded, available, errors = collect.collect_eccc(
-                    "cmc_gdps", run, raw_dir, [0]
+                    "cmc_gdps",
+                    run,
+                    raw_dir,
+                    [0, 1],
+                    process_files=fake_process_files,
                 )
-            self.assertEqual(available, [0])
+            self.assertEqual(available, [0, 1])
             self.assertEqual(errors, [])
-            self.assertEqual(len(downloaded), 4)
-            self.assertEqual(state["peak"], 4)
+            self.assertEqual(downloaded, [])
+            self.assertEqual(sorted(batches), [4, 4])
+            self.assertEqual(state["peak"], 8)
 
     def test_dwd_run_hour_uses_reference_time(self) -> None:
         run_type = type(
