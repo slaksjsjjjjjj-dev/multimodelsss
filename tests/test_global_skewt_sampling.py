@@ -214,5 +214,47 @@ class GlobalSkewtSamplingTests(unittest.TestCase):
 
 
 
+    def test_icon_dwd_without_surface_thermodynamics_uses_lowest_native_level(self):
+        captured = {}
+        samples = {("orog", "surface", "0"): 210.0}
+        variables = [
+            {"short_name": "orog", "level_type": "surface", "level": "0", "units": "m"},
+        ]
+        pressures = [98000, 94000, 90000, 85000, 80000, 70000, 60000, 50000, 40000, 30000, 20000]
+        for index, p_pa in enumerate(pressures, start=1):
+            level = str(index)
+            for name, value, units in (
+                ("pres", p_pa, "Pa"),
+                ("t", 294.0 - index * 5.0, "K"),
+                ("q", 0.012 - index * 0.0007, "kg kg**-1"),
+                ("u", 3.0 + index, "m s**-1"),
+                ("v", 2.0 + index * 0.5, "m s**-1"),
+            ):
+                samples[(name, "hybrid", level)] = float(value)
+                variables.append({
+                    "short_name": name,
+                    "level_type": "hybrid",
+                    "level": level,
+                    "units": units,
+                })
+        manifest = {
+            "model_key": "icon_dwd",
+            "run_utc": "2026-11-14T00:00:00Z",
+            "variables": variables,
+        }
+        with patch.dict(sys.modules, fake_sharppy(captured)):
+            sounding, rows, terrain, meta = runner.extract_profile(
+                samples, manifest, -23.0, -43.0, "ICON / DWD"
+            )
+        self.assertEqual(len(rows), len(pressures))
+        self.assertAlmostEqual(terrain, 210.0)
+        self.assertAlmostEqual(rows[0]["pressure_hpa"], 980.0)
+        self.assertAlmostEqual(rows[0]["height_m"], 210.0)
+        self.assertTrue(meta["base_level_is_proxy"])
+        self.assertIn("menor nível vertical nativo", meta["surface_pressure_source"])
+        self.assertGreater(rows[1]["height_m"], rows[0]["height_m"])
+        self.assertIsNotNone(sounding)
+
+
 if __name__ == "__main__":
     unittest.main()
