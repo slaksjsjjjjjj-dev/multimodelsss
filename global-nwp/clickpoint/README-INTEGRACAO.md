@@ -1,61 +1,35 @@
-# Skew-T global Click-to-Point — Sideral
+# Click-to-Point Skew-T para os modelos globais operacionais
 
-Implementação do fluxo de sondagens inspirado no METBR para **GFS-AI, ICON-AI e ECMWF IFS**, exclusivamente.
+Escopo solicitado: **GFS, ICON / DWD e ECMWF IFS**. Produtos de IA/AIFS e ensembles foram excluídos.
 
-## Componentes publicados
+## Workflows no branch main
 
-- `.github/scripts/global_nwp_skewt_clickpoint.py`: runner executável, que lê os manifests de `nwp-data`, amostra a grade mais próxima e gera perfil JSON + imagem SPC.
-- `.github/workflows/GLOBAL_GFS_AI_SKEWT_CLICKPOINT.yml`
-- `.github/workflows/GLOBAL_ICON_AI_SKEWT_CLICKPOINT.yml`
+- `.github/workflows/GLOBAL_GFS_SKEWT_CLICKPOINT.yml`
+- `.github/workflows/GLOBAL_ICON_DWD_SKEWT_CLICKPOINT.yml`
 - `.github/workflows/GLOBAL_ECMWF_IFS_SKEWT_CLICKPOINT.yml`
 
-A cópia do runner na branch está como launcher Python com a fonte compactada e expandida em memória; o pacote de integração anexado à conversa contém a fonte integral e editável, mais os testes.
+Cada workflow recebe latitude, longitude, validade escolhida no mapa (`forecast_hour`) e o ID de 32 caracteres criado pelo backend. O workflow publica `status.json`, `manifest.json`, imagens PNG e perfis JSON no release correspondente ao ID.
 
-## Contrato de dados por modelo
+## Contrato do backend
 
-| Modelo | Diretório da branch `nwp-data` | Estrutura vertical |
-|---|---|---|
-| GFS-AI / AIGFS | `data/gfs_ai/south_america/` | Níveis `isobaricInhPa`; campos 2 m / 10 m |
-| ICON-AI / AICON | `data/icon_ai/south_america/` | 13 níveis nativos `generalVertical` |
-| ECMWF IFS | `data/ecmwf_ifs/south_america/` | Níveis isobáricos + superfície nativa |
+O backend já possui as rotas batch, mas o arquivo atual `backend/metbr_skewt_batch.py` ainda não registra os modelos globais. O patch `backend/metbr_skewt_batch.patch` acrescenta os três registros e encaminha `forecast_hour` ao GitHub Actions.
 
-Nenhum runner é criado para AIFS, ensembles ou modelos adicionais.
+O dispatcher usa `METBR_SKEWT_GITHUB_TOKEN`. Esse segredo no Render precisa de permissão `Actions: write` em `slaksjsjjjjjj-dev/multimodelsss`. A ausência ou insuficiência de permissão impede o retorno HTTP 204 do GitHub.
 
-### Referência vertical
+**O patch ainda não foi aplicado** porque a conexão GitHub desta sessão tem acesso somente de leitura ao repositório `progames12301-hash/sideral-backend`.
 
-- **GFS-AI:** os dados atuais não fornecem pressão nem orografia de superfície. O perfil usa o menor nível isobárico utilizável como referência próxima à superfície, marcada como proxy, sem registrá-la como elevação real do terreno.
-- **ICON-AI:** sem orografia publicada, a altura é integrada hidrostaticamente entre os 13 níveis e referenciada ao nível inferior do modelo. Não é altitude MSL nem AGL real.
-- **ECMWF IFS:** utiliza pressão de superfície e geopotencial/orografia de superfície do próprio IFS.
+## Estado dos dados
 
-Os metadados distinguem `terrain_elevation_m` (somente quando há superfície nativa) de `reference_height_m` e de `height_reference_m`. Para GFS-AI e ICON-AI, `height_agl_m` fica nulo para não sugerir altura AGL observada.
+O catálogo `global-nwp/catalog.json` identifica os diretórios e chaves convencionais corretos:
+- GFS: `data/gfs`
+- ICON / DWD: `data/icon_dwd`
+- ECMWF IFS: `data/ecmwf_ifs`
 
-## Integração do backend
+Na branch `nwp-data`, no momento da conferência, apenas `ecmwf_ifs` tem manifesto publicado entre esses três. `data/gfs` e `data/icon_dwd` ainda não existem nessa branch. Os diretórios `gfs_ai` e `icon_ai` não serão usados como substitutos.
 
-O backend existente `progames12301-hash/sideral-backend` precisa registrar as chaves `gfs_ai`, `icon_ai` e `ecmwf_ifs`, aceitar `forecast_hour` e encaminhá-la ao workflow. O patch correspondente fica no pacote local em `backend/metbr_skewt_batch.patch`.
+Assim, mesmo depois da ativação do backend, ECMWF IFS poderá consultar seu manifesto atual; GFS e ICON/DWD só gerarão perfis quando os respectivos manifests e arquivos `FNNN.json.gz` forem publicados.
 
-O backend não foi alterado por esta conexão (permissão atual somente leitura). Até o patch ser aplicado e o serviço atualizado, as chamadas do site ainda não serão roteadas para estes workflows.
+## Nenhuma execução automática confirmada
 
-Endpoints METBR já usados pelo frontend:
-- `POST /api/wrf/sounding/batch/request`
-- `GET /api/wrf/sounding/batch/status`
-- `GET /api/wrf/sounding/batch/image`
+Os workflows foram versionados no branch `main`, mas ainda não há execuções `workflow_dispatch` registradas para eles. Commits acionam o CI comum, não iniciam os runners de sondagem. A execução só começa quando o backend chama a API de dispatch após receber uma solicitação do HTML.
 
-O token do backend precisa de permissão `Actions: write` em `slaksjsjjjjjj-dev/multimodelsss`.
-
-## Páginas do site
-
-As versões preparadas de `gfs-ai.html`, `icon-ai.html` e `ecmwf-ifs.html` estão no pacote de integração local. Elas preservam os mapas/timeline originais e reaproveitam o modal e as exportações PNG/GIF/MP4 do fluxo METBR. O repositório do frontend não está disponível na conexão GitHub atual; portanto, essas páginas não foram publicadas no site.
-
-## Geração temporal e falhas
-
-São montadas as validades até F048, acrescidas da validade exata selecionada quando estiver além dessa janela. Se o horário clicado não existir no manifesto ou falhar, o workflow publica `status.json` de falha em vez de servir silenciosamente outro horário.
-
-## Verificação
-
-Os testes locais cobrem:
-- amostragem do ponto horizontal mais próximo;
-- conversão de umidade em ponto de orvalho;
-- perfis ECMWF IFS, GFS-AI e ICON-AI;
-- distinção entre superfície nativa e referência vertical aproximada.
-
-A publicação dos arquivos no GitHub está concluída; **a execução real dos workflows, o backend e o site ainda dependem da integração descrita acima**.
