@@ -1,0 +1,10 @@
+{
+  "schema": "sideral-multimodels-025-run-report-v1",
+  "run_id": "43602286078",
+  "region_count": 6,
+  "json_frame_count": 1020,
+  "png_frame_count": 1014,
+  "published_file_count": 2040,
+  "branch": "multimodels-data",
+  "status": "ready-to-publish"
+}
