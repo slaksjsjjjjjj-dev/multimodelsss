@@ -1,4 +1,4 @@
-name: ICON DWD Skew-T Click-to-Point
+name: ICON-AI Skew-T Click-to-Point
 
 on:
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      MODEL_KEY: "icon_dwd"
+      MODEL_KEY: "icon_ai"
       REQUEST_ID: ${{ inputs.request_id }}
       LATITUDE: ${{ inputs.latitude }}
       LONGITUDE: ${{ inputs.longitude }}
@@ -86,8 +86,8 @@ jobs:
         if: always()
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "icon-dwd-skewt-click-${{ inputs.request_id }}"
-          name: "Skew-T ICON DWD · ${{ inputs.request_id }}"
+          tag_name: "icon-ai-skewt-click-${{ inputs.request_id }}"
+          name: "Skew-T ICON-AI · ${{ inputs.request_id }}"
           target_commitish: main
           draft: false
           prerelease: true
