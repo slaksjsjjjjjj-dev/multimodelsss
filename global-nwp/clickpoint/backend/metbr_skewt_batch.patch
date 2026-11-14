@@ -32,7 +32,7 @@ diff --git a/backend/metbr_skewt_batch.py b/backend/metbr_skewt_batch.py
 +        "uses_forecast_hour": True,
 +    },
  }
-@@ -156,9 +179,18 @@
+@@ -156,5 +179,14 @@
      if config["uses_cycle"]:
          cycle = str(payload.get("cycle") or "latest").strip().lower()
          if cycle not in ALLOWED_CYCLES:
