@@ -62,7 +62,6 @@ jobs:
 
       - name: Gerar sondagens Click-to-Point
         id: generate
-        continue-on-error: true
         env:
           MPLBACKEND: Agg
         run: |
