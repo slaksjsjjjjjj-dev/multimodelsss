@@ -1,4 +1,4 @@
-name: GFS 0.25° Skew-T Click-to-Point
+name: GFS-AI Skew-T Click-to-Point
 
 on:
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      MODEL_KEY: "gfs"
+      MODEL_KEY: "gfs_ai"
       REQUEST_ID: ${{ inputs.request_id }}
       LATITUDE: ${{ inputs.latitude }}
       LONGITUDE: ${{ inputs.longitude }}
@@ -86,8 +86,8 @@ jobs:
         if: always()
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "gfs-skewt-click-${{ inputs.request_id }}"
-          name: "Skew-T GFS 0.25° · ${{ inputs.request_id }}"
+          tag_name: "gfs-ai-skewt-click-${{ inputs.request_id }}"
+          name: "Skew-T GFS-AI · ${{ inputs.request_id }}"
           target_commitish: main
           draft: false
           prerelease: true
