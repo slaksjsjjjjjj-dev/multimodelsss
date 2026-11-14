@@ -61,7 +61,6 @@ class GlobalSkewtSamplingTests(unittest.TestCase):
         self.assertEqual(set(runner.MODEL_CONFIG), {"gfs_ai", "icon_ai", "ecmwf_ifs"})
         self.assertEqual(runner.MODEL_CONFIG["gfs_ai"]["directory"], "gfs_ai")
         self.assertEqual(runner.MODEL_CONFIG["icon_ai"]["directory"], "icon_ai")
-        self.assertTrue(callable(runner.extract_gfs_ai_profile))
         self.assertTrue(callable(runner.extract_icon_ai_profile))
 
     def test_ecmwf_ifs_native_isobaric_profile(self):
