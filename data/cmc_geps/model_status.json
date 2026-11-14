@@ -1,0 +1,11 @@
+{
+  "schema": "sideral-global-nwp-model-status-v1",
+  "model_key": "cmc_geps",
+  "status": "partial",
+  "run_utc": "2026-11-14T00:00:00+00:00",
+  "message": "4 regiões preparadas; 81304 campos GRIB convertidos para JSON; 2 ocorrências de coleta/regrade registradas.",
+  "errors": [
+    "ensemble/geps/grib2/products/F000: nenhum GRIB2 publicado neste ciclo.",
+    "F000: nenhum produto ECCC disponível."
+  ]
+}
