@@ -1,0 +1,1544 @@
+{
+  "schema": "sideral-global-nwp-region-manifest-v1",
+  "model_key": "icon_ai",
+  "model": "ICON / AI (AICON)",
+  "provider": "DWD",
+  "source": "https://opendata.dwd.de/weather/nwp/v1/m/",
+  "resolution": "0.25° lat/lon após regrade da malha triangular nativa",
+  "run_utc": "2026-11-14T06:00:00+00:00",
+  "cycle_utc": "06",
+  "region": {
+    "id": "south_pacific_west",
+    "label": "Pacífico Sul — Ocidental",
+    "bounds": [
+      120,
+      -60,
+      180,
+      15
+    ]
+  },
+  "requested_forecast_hours": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    81,
+    84,
+    87,
+    90,
+    93,
+    96,
+    99,
+    102,
+    105,
+    108,
+    111,
+    114,
+    117,
+    120
+  ],
+  "forecast_hours": [
+    0,
+    3,
+    6,
+    9,
+    12,
+    15,
+    18,
+    21,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39,
+    42,
+    45,
+    48,
+    51,
+    54,
+    57,
+    60,
+    63,
+    66,
+    69,
+    72,
+    75,
+    78,
+    81,
+    84,
+    87,
+    90,
+    93,
+    96,
+    99,
+    102,
+    105,
+    108,
+    111,
+    114,
+    117,
+    120
+  ],
+  "missing_forecast_hours": [
+    1,
+    2,
+    4,
+    5,
+    7,
+    8,
+    10,
+    11,
+    13,
+    14,
+    16,
+    17,
+    19,
+    20,
+    22,
+    23,
+    25,
+    26,
+    28,
+    29,
+    31,
+    32,
+    34,
+    35,
+    37,
+    38,
+    40,
+    41,
+    43,
+    44,
+    46,
+    47,
+    49,
+    50,
+    52,
+    53,
+    55,
+    56,
+    58,
+    59,
+    61,
+    62,
+    64,
+    65,
+    67,
+    68,
+    70,
+    71,
+    73,
+    74,
+    76,
+    77
+  ],
+  "validities": [
+    {
+      "forecast_hour": 0,
+      "valid_time": "2026-11-14T06:00:00+00:00",
+      "file": "F000.json.gz",
+      "files": [
+        "F000.json.gz",
+        "F000-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F000.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F000-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F000.json.gz"
+    },
+    {
+      "forecast_hour": 3,
+      "valid_time": "2026-11-14T09:00:00+00:00",
+      "file": "F003.json.gz",
+      "files": [
+        "F003.json.gz",
+        "F003-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F003.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F003-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F003.json.gz"
+    },
+    {
+      "forecast_hour": 6,
+      "valid_time": "2026-11-14T12:00:00+00:00",
+      "file": "F006.json.gz",
+      "files": [
+        "F006.json.gz",
+        "F006-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F006.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F006-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F006.json.gz"
+    },
+    {
+      "forecast_hour": 9,
+      "valid_time": "2026-11-14T15:00:00+00:00",
+      "file": "F009.json.gz",
+      "files": [
+        "F009.json.gz",
+        "F009-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F009.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F009-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F009.json.gz"
+    },
+    {
+      "forecast_hour": 12,
+      "valid_time": "2026-11-14T18:00:00+00:00",
+      "file": "F012.json.gz",
+      "files": [
+        "F012.json.gz",
+        "F012-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F012.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F012-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F012.json.gz"
+    },
+    {
+      "forecast_hour": 15,
+      "valid_time": "2026-11-14T21:00:00+00:00",
+      "file": "F015.json.gz",
+      "files": [
+        "F015.json.gz",
+        "F015-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F015.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F015-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F015.json.gz"
+    },
+    {
+      "forecast_hour": 18,
+      "valid_time": "2026-11-15T00:00:00+00:00",
+      "file": "F018.json.gz",
+      "files": [
+        "F018.json.gz",
+        "F018-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F018.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F018-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F018.json.gz"
+    },
+    {
+      "forecast_hour": 21,
+      "valid_time": "2026-11-15T03:00:00+00:00",
+      "file": "F021.json.gz",
+      "files": [
+        "F021.json.gz",
+        "F021-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F021.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F021-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F021.json.gz"
+    },
+    {
+      "forecast_hour": 24,
+      "valid_time": "2026-11-15T06:00:00+00:00",
+      "file": "F024.json.gz",
+      "files": [
+        "F024.json.gz",
+        "F024-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F024.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F024-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F024.json.gz"
+    },
+    {
+      "forecast_hour": 27,
+      "valid_time": "2026-11-15T09:00:00+00:00",
+      "file": "F027.json.gz",
+      "files": [
+        "F027.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F027.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F027.json.gz"
+    },
+    {
+      "forecast_hour": 30,
+      "valid_time": "2026-11-15T12:00:00+00:00",
+      "file": "F030.json.gz",
+      "files": [
+        "F030.json.gz",
+        "F030-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F030.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F030-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F030.json.gz"
+    },
+    {
+      "forecast_hour": 33,
+      "valid_time": "2026-11-15T15:00:00+00:00",
+      "file": "F033.json.gz",
+      "files": [
+        "F033.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F033.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F033.json.gz"
+    },
+    {
+      "forecast_hour": 36,
+      "valid_time": "2026-11-15T18:00:00+00:00",
+      "file": "F036.json.gz",
+      "files": [
+        "F036.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F036.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F036.json.gz"
+    },
+    {
+      "forecast_hour": 39,
+      "valid_time": "2026-11-15T21:00:00+00:00",
+      "file": "F039.json.gz",
+      "files": [
+        "F039.json.gz",
+        "F039-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F039.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F039-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F039.json.gz"
+    },
+    {
+      "forecast_hour": 42,
+      "valid_time": "2026-11-16T00:00:00+00:00",
+      "file": "F042.json.gz",
+      "files": [
+        "F042.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F042.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F042.json.gz"
+    },
+    {
+      "forecast_hour": 45,
+      "valid_time": "2026-11-16T03:00:00+00:00",
+      "file": "F045.json.gz",
+      "files": [
+        "F045.json.gz",
+        "F045-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F045.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F045-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F045.json.gz"
+    },
+    {
+      "forecast_hour": 48,
+      "valid_time": "2026-11-16T06:00:00+00:00",
+      "file": "F048.json.gz",
+      "files": [
+        "F048.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F048.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F048.json.gz"
+    },
+    {
+      "forecast_hour": 51,
+      "valid_time": "2026-11-16T09:00:00+00:00",
+      "file": "F051.json.gz",
+      "files": [
+        "F051.json.gz",
+        "F051-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F051.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F051-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F051.json.gz"
+    },
+    {
+      "forecast_hour": 54,
+      "valid_time": "2026-11-16T12:00:00+00:00",
+      "file": "F054.json.gz",
+      "files": [
+        "F054.json.gz",
+        "F054-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F054.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F054-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F054.json.gz"
+    },
+    {
+      "forecast_hour": 57,
+      "valid_time": "2026-11-16T15:00:00+00:00",
+      "file": "F057.json.gz",
+      "files": [
+        "F057.json.gz",
+        "F057-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F057.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F057-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F057.json.gz"
+    },
+    {
+      "forecast_hour": 60,
+      "valid_time": "2026-11-16T18:00:00+00:00",
+      "file": "F060.json.gz",
+      "files": [
+        "F060.json.gz",
+        "F060-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F060.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F060-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F060.json.gz"
+    },
+    {
+      "forecast_hour": 63,
+      "valid_time": "2026-11-16T21:00:00+00:00",
+      "file": "F063.json.gz",
+      "files": [
+        "F063.json.gz",
+        "F063-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F063.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F063-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F063.json.gz"
+    },
+    {
+      "forecast_hour": 66,
+      "valid_time": "2026-11-17T00:00:00+00:00",
+      "file": "F066.json.gz",
+      "files": [
+        "F066.json.gz",
+        "F066-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F066.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F066-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F066.json.gz"
+    },
+    {
+      "forecast_hour": 69,
+      "valid_time": "2026-11-17T03:00:00+00:00",
+      "file": "F069.json.gz",
+      "files": [
+        "F069.json.gz",
+        "F069-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F069.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F069-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F069.json.gz"
+    },
+    {
+      "forecast_hour": 72,
+      "valid_time": "2026-11-17T06:00:00+00:00",
+      "file": "F072.json.gz",
+      "files": [
+        "F072.json.gz",
+        "F072-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F072.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F072-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F072.json.gz"
+    },
+    {
+      "forecast_hour": 75,
+      "valid_time": "2026-11-17T09:00:00+00:00",
+      "file": "F075.json.gz",
+      "files": [
+        "F075.json.gz",
+        "F075-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F075.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F075-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F075.json.gz"
+    },
+    {
+      "forecast_hour": 78,
+      "valid_time": "2026-11-17T12:00:00+00:00",
+      "file": "F078.json.gz",
+      "files": [
+        "F078.json.gz",
+        "F078-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F078.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F078-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F078.json.gz"
+    },
+    {
+      "forecast_hour": 81,
+      "valid_time": "2026-11-17T15:00:00+00:00",
+      "file": "F081.json.gz",
+      "files": [
+        "F081.json.gz",
+        "F081-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F081.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F081-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F081.json.gz"
+    },
+    {
+      "forecast_hour": 84,
+      "valid_time": "2026-11-17T18:00:00+00:00",
+      "file": "F084.json.gz",
+      "files": [
+        "F084.json.gz",
+        "F084-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F084.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F084-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F084.json.gz"
+    },
+    {
+      "forecast_hour": 87,
+      "valid_time": "2026-11-17T21:00:00+00:00",
+      "file": "F087.json.gz",
+      "files": [
+        "F087.json.gz",
+        "F087-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F087.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F087-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F087.json.gz"
+    },
+    {
+      "forecast_hour": 90,
+      "valid_time": "2026-11-18T00:00:00+00:00",
+      "file": "F090.json.gz",
+      "files": [
+        "F090.json.gz",
+        "F090-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F090.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F090-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F090.json.gz"
+    },
+    {
+      "forecast_hour": 93,
+      "valid_time": "2026-11-18T03:00:00+00:00",
+      "file": "F093.json.gz",
+      "files": [
+        "F093.json.gz",
+        "F093-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F093.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F093-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F093.json.gz"
+    },
+    {
+      "forecast_hour": 96,
+      "valid_time": "2026-11-18T06:00:00+00:00",
+      "file": "F096.json.gz",
+      "files": [
+        "F096.json.gz",
+        "F096-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F096.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F096-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F096.json.gz"
+    },
+    {
+      "forecast_hour": 99,
+      "valid_time": "2026-11-18T09:00:00+00:00",
+      "file": "F099.json.gz",
+      "files": [
+        "F099.json.gz",
+        "F099-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F099.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F099-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F099.json.gz"
+    },
+    {
+      "forecast_hour": 102,
+      "valid_time": "2026-11-18T12:00:00+00:00",
+      "file": "F102.json.gz",
+      "files": [
+        "F102.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F102.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F102.json.gz"
+    },
+    {
+      "forecast_hour": 105,
+      "valid_time": "2026-11-18T15:00:00+00:00",
+      "file": "F105.json.gz",
+      "files": [
+        "F105.json.gz",
+        "F105-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F105.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F105-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F105.json.gz"
+    },
+    {
+      "forecast_hour": 108,
+      "valid_time": "2026-11-18T18:00:00+00:00",
+      "file": "F108.json.gz",
+      "files": [
+        "F108.json.gz",
+        "F108-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F108.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F108-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F108.json.gz"
+    },
+    {
+      "forecast_hour": 111,
+      "valid_time": "2026-11-18T21:00:00+00:00",
+      "file": "F111.json.gz",
+      "files": [
+        "F111.json.gz",
+        "F111-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F111.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F111-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F111.json.gz"
+    },
+    {
+      "forecast_hour": 114,
+      "valid_time": "2026-11-19T00:00:00+00:00",
+      "file": "F114.json.gz",
+      "files": [
+        "F114.json.gz",
+        "F114-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F114.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F114-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F114.json.gz"
+    },
+    {
+      "forecast_hour": 117,
+      "valid_time": "2026-11-19T03:00:00+00:00",
+      "file": "F117.json.gz",
+      "files": [
+        "F117.json.gz",
+        "F117-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F117.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F117-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F117.json.gz"
+    },
+    {
+      "forecast_hour": 120,
+      "valid_time": "2026-11-19T06:00:00+00:00",
+      "file": "F120.json.gz",
+      "files": [
+        "F120.json.gz",
+        "F120-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 65,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F120.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F120-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F120.json.gz"
+    }
+  ],
+  "variables": [
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "1",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "11",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "12",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "13",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "3",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "4",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "5",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "6",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "7",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "8",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "pres",
+      "name": "Pressure",
+      "units": "Pa",
+      "level_type": "generalVertical",
+      "level": "9",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "1",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "11",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "12",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "13",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "3",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "4",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "5",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "6",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "7",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "8",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "generalVertical",
+      "level": "9",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "1",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "11",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "12",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "13",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "3",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "4",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "5",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "6",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "7",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "8",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "generalVertical",
+      "level": "9",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "1",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "11",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "12",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "13",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "3",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "4",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "5",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "6",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "7",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "8",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "9",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "1",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "11",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "12",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "13",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "3",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "4",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "5",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "6",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "7",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "8",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "generalVertical",
+      "level": "9",
+      "grid_type": "regular_ll"
+    }
+  ],
+  "variable_level_count": 65,
+  "field_count": 2665,
+  "data_format": "JSON gzip independente por validade; validades grandes podem ser divididas em FNNN.json.gz e FNNN-partNNN.json.gz. Use validities[].files/download_urls para recuperar todos os campos.",
+  "collection_status": "partial",
+  "attribution": null,
+  "collection_errors_count": 22,
+  "data_directory": "data/icon_ai/south_pacific_west/",
+  "files": [
+    "F000.json.gz",
+    "F000-part002.json.gz",
+    "F003.json.gz",
+    "F003-part002.json.gz",
+    "F006.json.gz",
+    "F006-part002.json.gz",
+    "F009.json.gz",
+    "F009-part002.json.gz",
+    "F012.json.gz",
+    "F012-part002.json.gz",
+    "F015.json.gz",
+    "F015-part002.json.gz",
+    "F018.json.gz",
+    "F018-part002.json.gz",
+    "F021.json.gz",
+    "F021-part002.json.gz",
+    "F024.json.gz",
+    "F024-part002.json.gz",
+    "F027.json.gz",
+    "F030.json.gz",
+    "F030-part002.json.gz",
+    "F033.json.gz",
+    "F036.json.gz",
+    "F039.json.gz",
+    "F039-part002.json.gz",
+    "F042.json.gz",
+    "F045.json.gz",
+    "F045-part002.json.gz",
+    "F048.json.gz",
+    "F051.json.gz",
+    "F051-part002.json.gz",
+    "F054.json.gz",
+    "F054-part002.json.gz",
+    "F057.json.gz",
+    "F057-part002.json.gz",
+    "F060.json.gz",
+    "F060-part002.json.gz",
+    "F063.json.gz",
+    "F063-part002.json.gz",
+    "F066.json.gz",
+    "F066-part002.json.gz",
+    "F069.json.gz",
+    "F069-part002.json.gz",
+    "F072.json.gz",
+    "F072-part002.json.gz",
+    "F075.json.gz",
+    "F075-part002.json.gz",
+    "F078.json.gz",
+    "F078-part002.json.gz",
+    "F081.json.gz",
+    "F081-part002.json.gz",
+    "F084.json.gz",
+    "F084-part002.json.gz",
+    "F087.json.gz",
+    "F087-part002.json.gz",
+    "F090.json.gz",
+    "F090-part002.json.gz",
+    "F093.json.gz",
+    "F093-part002.json.gz",
+    "F096.json.gz",
+    "F096-part002.json.gz",
+    "F099.json.gz",
+    "F099-part002.json.gz",
+    "F102.json.gz",
+    "F105.json.gz",
+    "F105-part002.json.gz",
+    "F108.json.gz",
+    "F108-part002.json.gz",
+    "F111.json.gz",
+    "F111-part002.json.gz",
+    "F114.json.gz",
+    "F114-part002.json.gz",
+    "F117.json.gz",
+    "F117-part002.json.gz",
+    "F120.json.gz",
+    "F120-part002.json.gz"
+  ],
+  "download_base_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/",
+  "file_urls": {
+    "F000.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F000.json.gz",
+    "F000-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F000-part002.json.gz",
+    "F003.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F003.json.gz",
+    "F003-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F003-part002.json.gz",
+    "F006.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F006.json.gz",
+    "F006-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F006-part002.json.gz",
+    "F009.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F009.json.gz",
+    "F009-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F009-part002.json.gz",
+    "F012.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F012.json.gz",
+    "F012-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F012-part002.json.gz",
+    "F015.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F015.json.gz",
+    "F015-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F015-part002.json.gz",
+    "F018.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F018.json.gz",
+    "F018-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F018-part002.json.gz",
+    "F021.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F021.json.gz",
+    "F021-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F021-part002.json.gz",
+    "F024.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F024.json.gz",
+    "F024-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F024-part002.json.gz",
+    "F027.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F027.json.gz",
+    "F030.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F030.json.gz",
+    "F030-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F030-part002.json.gz",
+    "F033.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F033.json.gz",
+    "F036.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F036.json.gz",
+    "F039.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F039.json.gz",
+    "F039-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F039-part002.json.gz",
+    "F042.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F042.json.gz",
+    "F045.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F045.json.gz",
+    "F045-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F045-part002.json.gz",
+    "F048.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F048.json.gz",
+    "F051.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F051.json.gz",
+    "F051-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F051-part002.json.gz",
+    "F054.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F054.json.gz",
+    "F054-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F054-part002.json.gz",
+    "F057.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F057.json.gz",
+    "F057-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F057-part002.json.gz",
+    "F060.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F060.json.gz",
+    "F060-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F060-part002.json.gz",
+    "F063.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F063.json.gz",
+    "F063-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F063-part002.json.gz",
+    "F066.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F066.json.gz",
+    "F066-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F066-part002.json.gz",
+    "F069.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F069.json.gz",
+    "F069-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F069-part002.json.gz",
+    "F072.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F072.json.gz",
+    "F072-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F072-part002.json.gz",
+    "F075.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F075.json.gz",
+    "F075-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F075-part002.json.gz",
+    "F078.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F078.json.gz",
+    "F078-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F078-part002.json.gz",
+    "F081.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F081.json.gz",
+    "F081-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F081-part002.json.gz",
+    "F084.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F084.json.gz",
+    "F084-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F084-part002.json.gz",
+    "F087.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F087.json.gz",
+    "F087-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F087-part002.json.gz",
+    "F090.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F090.json.gz",
+    "F090-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F090-part002.json.gz",
+    "F093.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F093.json.gz",
+    "F093-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F093-part002.json.gz",
+    "F096.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F096.json.gz",
+    "F096-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F096-part002.json.gz",
+    "F099.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F099.json.gz",
+    "F099-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F099-part002.json.gz",
+    "F102.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F102.json.gz",
+    "F105.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F105.json.gz",
+    "F105-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F105-part002.json.gz",
+    "F108.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F108.json.gz",
+    "F108-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F108-part002.json.gz",
+    "F111.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F111.json.gz",
+    "F111-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F111-part002.json.gz",
+    "F114.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F114.json.gz",
+    "F114-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F114-part002.json.gz",
+    "F117.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F117.json.gz",
+    "F117-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F117-part002.json.gz",
+    "F120.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F120.json.gz",
+    "F120-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/icon_ai/south_pacific_west/F120-part002.json.gz"
+  }
+}
