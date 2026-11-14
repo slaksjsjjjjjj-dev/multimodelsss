@@ -1,0 +1,8 @@
+{
+  "schema": "sideral-global-nwp-model-status-v1",
+  "model_key": "gefs_ai",
+  "status": "published-ready",
+  "run_utc": "2026-11-14T00:00:00+00:00",
+  "message": "4 regiões preparadas; 43152 campos GRIB convertidos para JSON; 0 ocorrências de coleta/regrade registradas.",
+  "errors": []
+}
