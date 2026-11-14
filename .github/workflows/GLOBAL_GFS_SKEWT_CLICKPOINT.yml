@@ -62,7 +62,6 @@ jobs:
 
       - name: Gerar perfis de sondagem
         id: generate
-        continue-on-error: true
         env:
           MPLBACKEND: Agg
         run: |
