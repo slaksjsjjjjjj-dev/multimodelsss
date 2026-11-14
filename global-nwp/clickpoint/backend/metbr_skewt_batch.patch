@@ -1,0 +1,56 @@
+diff --git a/backend/metbr_skewt_batch.py b/backend/metbr_skewt_batch.py
+--- a/backend/metbr_skewt_batch.py
++++ b/backend/metbr_skewt_batch.py
+@@ -52,7 +52,30 @@
+     "cbr_wrf_4km": {
+         "workflow": "wrf-skewt-clickpoint-cbr-4km.yml",
+         "release_prefix": "cbr-skewt-click",
+         "max_forecast_hour": 42,
+         "uses_cycle": False,
+     },
++    # Global Click-to-Point products: only the three models requested for
++    # this feature. AI model keys point to their own data directories.
++    "gfs_ai": {
++        "workflow": "GLOBAL_GFS_AI_SKEWT_CLICKPOINT.yml",
++        "release_prefix": "gfs-ai-skewt-click",
++        "max_forecast_hour": 999,
++        "uses_cycle": False,
++        "uses_forecast_hour": True,
++    },
++    "icon_ai": {
++        "workflow": "GLOBAL_ICON_AI_SKEWT_CLICKPOINT.yml",
++        "release_prefix": "icon-ai-skewt-click",
++        "max_forecast_hour": 999,
++        "uses_cycle": False,
++        "uses_forecast_hour": True,
++    },
++    "ecmwf_ifs": {
++        "workflow": "GLOBAL_ECMWF_IFS_SKEWT_CLICKPOINT.yml",
++        "release_prefix": "ecmwf-ifs-skewt-click",
++        "max_forecast_hour": 999,
++        "uses_cycle": False,
++        "uses_forecast_hour": True,
++    },
+ }
+@@ -156,9 +179,18 @@
+     if config["uses_cycle"]:
+         cycle = str(payload.get("cycle") or "latest").strip().lower()
+         if cycle not in ALLOWED_CYCLES:
+             raise ValueError("Rodada inválida. Use latest, 00, 06, 12, 18 ou 21.")
+         inputs["cycle"] = cycle
++
++    if config.get("uses_forecast_hour"):
++        try:
++            forecast_hour = int(payload.get("forecast_hour", 0))
++        except (TypeError, ValueError):
++            raise ValueError("Validade de previsão inválida.") from None
++        if forecast_hour < 0 or forecast_hour > int(config["max_forecast_hour"]):
++            raise ValueError("Validade fora do intervalo permitido para o modelo global.")
++        inputs["forecast_hour"] = str(forecast_hour)
+@@ -197,4 +229,6 @@
+     }
+     if config["uses_cycle"]:
+         result["cycle"] = inputs["cycle"]
++    if config.get("uses_forecast_hour"):
++        result["forecast_hour"] = int(inputs["forecast_hour"])
+     return result
