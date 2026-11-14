@@ -1,0 +1,2100 @@
+{
+  "schema": "sideral-global-nwp-region-manifest-v1",
+  "model_key": "cmc_geps",
+  "model": "CMC / GEPS",
+  "provider": "ECCC",
+  "source": "https://dd.weather.gc.ca/",
+  "resolution": "0.5°",
+  "run_utc": "2026-11-14T00:00:00+00:00",
+  "cycle_utc": "00",
+  "region": {
+    "id": "south_pacific_west",
+    "label": "Pacífico Sul — Ocidental",
+    "bounds": [
+      120,
+      -60,
+      180,
+      15
+    ]
+  },
+  "requested_forecast_hours": [
+    0,
+    3,
+    6,
+    9,
+    12,
+    15,
+    18,
+    21,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39,
+    42,
+    45,
+    48,
+    51,
+    54,
+    57,
+    60,
+    63,
+    66,
+    69,
+    72,
+    75,
+    78,
+    81,
+    84,
+    87,
+    90,
+    93,
+    96,
+    99,
+    102,
+    105,
+    108,
+    111,
+    114,
+    117,
+    120,
+    123,
+    126,
+    129,
+    132,
+    135,
+    138,
+    141,
+    144,
+    147,
+    150,
+    153,
+    156,
+    159,
+    162,
+    165,
+    168,
+    171,
+    174,
+    177,
+    180,
+    183,
+    186,
+    189,
+    192,
+    198,
+    204,
+    210,
+    216,
+    222,
+    228,
+    234,
+    240,
+    246,
+    252,
+    258,
+    264,
+    270,
+    276,
+    282,
+    288,
+    294,
+    300,
+    306,
+    312,
+    318,
+    324,
+    330,
+    336,
+    342,
+    348,
+    354,
+    360,
+    366,
+    372,
+    378,
+    384
+  ],
+  "forecast_hours": [
+    3,
+    6,
+    9,
+    12,
+    15,
+    18,
+    21,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39,
+    42,
+    45,
+    48,
+    51,
+    54,
+    57,
+    60,
+    63,
+    66,
+    69,
+    72,
+    75,
+    78,
+    81,
+    84,
+    87,
+    90,
+    93,
+    96,
+    99,
+    102,
+    105,
+    108,
+    111,
+    114,
+    117,
+    120,
+    123,
+    126,
+    129,
+    132,
+    135,
+    138,
+    141,
+    144,
+    147,
+    150,
+    153,
+    156,
+    159,
+    162,
+    165,
+    168,
+    171,
+    174,
+    177,
+    180,
+    183,
+    186,
+    189,
+    192,
+    198,
+    204,
+    210,
+    216,
+    222,
+    228,
+    234,
+    240,
+    246,
+    252,
+    258,
+    264,
+    270,
+    276,
+    282,
+    288,
+    294,
+    300,
+    306,
+    312,
+    318,
+    324,
+    330,
+    336,
+    342,
+    348,
+    354,
+    360,
+    366,
+    372,
+    378,
+    384
+  ],
+  "missing_forecast_hours": [
+    0
+  ],
+  "validities": [
+    {
+      "forecast_hour": 3,
+      "valid_time": "2026-11-14T03:00:00+00:00",
+      "file": "F003.json.gz",
+      "files": [
+        "F003.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 93,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F003.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F003.json.gz"
+    },
+    {
+      "forecast_hour": 6,
+      "valid_time": "2026-11-14T06:00:00+00:00",
+      "file": "F006.json.gz",
+      "files": [
+        "F006.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 126,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F006.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F006.json.gz"
+    },
+    {
+      "forecast_hour": 9,
+      "valid_time": "2026-11-14T09:00:00+00:00",
+      "file": "F009.json.gz",
+      "files": [
+        "F009.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 114,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F009.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F009.json.gz"
+    },
+    {
+      "forecast_hour": 12,
+      "valid_time": "2026-11-14T12:00:00+00:00",
+      "file": "F012.json.gz",
+      "files": [
+        "F012.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 254,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F012.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F012.json.gz"
+    },
+    {
+      "forecast_hour": 15,
+      "valid_time": "2026-11-14T15:00:00+00:00",
+      "file": "F015.json.gz",
+      "files": [
+        "F015.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 114,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F015.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F015.json.gz"
+    },
+    {
+      "forecast_hour": 18,
+      "valid_time": "2026-11-14T18:00:00+00:00",
+      "file": "F018.json.gz",
+      "files": [
+        "F018.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 126,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F018.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F018.json.gz"
+    },
+    {
+      "forecast_hour": 21,
+      "valid_time": "2026-11-14T21:00:00+00:00",
+      "file": "F021.json.gz",
+      "files": [
+        "F021.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 114,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F021.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F021.json.gz"
+    },
+    {
+      "forecast_hour": 24,
+      "valid_time": "2026-11-15T00:00:00+00:00",
+      "file": "F024.json.gz",
+      "files": [
+        "F024.json.gz",
+        "F024-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 441,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F024.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F024-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F024.json.gz"
+    },
+    {
+      "forecast_hour": 27,
+      "valid_time": "2026-11-15T03:00:00+00:00",
+      "file": "F027.json.gz",
+      "files": [
+        "F027.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F027.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F027.json.gz"
+    },
+    {
+      "forecast_hour": 30,
+      "valid_time": "2026-11-15T06:00:00+00:00",
+      "file": "F030.json.gz",
+      "files": [
+        "F030.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 139,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F030.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F030.json.gz"
+    },
+    {
+      "forecast_hour": 33,
+      "valid_time": "2026-11-15T09:00:00+00:00",
+      "file": "F033.json.gz",
+      "files": [
+        "F033.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F033.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F033.json.gz"
+    },
+    {
+      "forecast_hour": 36,
+      "valid_time": "2026-11-15T12:00:00+00:00",
+      "file": "F036.json.gz",
+      "files": [
+        "F036.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 359,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F036.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F036.json.gz"
+    },
+    {
+      "forecast_hour": 39,
+      "valid_time": "2026-11-15T15:00:00+00:00",
+      "file": "F039.json.gz",
+      "files": [
+        "F039.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F039.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F039.json.gz"
+    },
+    {
+      "forecast_hour": 42,
+      "valid_time": "2026-11-15T18:00:00+00:00",
+      "file": "F042.json.gz",
+      "files": [
+        "F042.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 139,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F042.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F042.json.gz"
+    },
+    {
+      "forecast_hour": 45,
+      "valid_time": "2026-11-15T21:00:00+00:00",
+      "file": "F045.json.gz",
+      "files": [
+        "F045.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F045.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F045.json.gz"
+    },
+    {
+      "forecast_hour": 48,
+      "valid_time": "2026-11-16T00:00:00+00:00",
+      "file": "F048.json.gz",
+      "files": [
+        "F048.json.gz",
+        "F048-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 464,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F048.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F048-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F048.json.gz"
+    },
+    {
+      "forecast_hour": 51,
+      "valid_time": "2026-11-16T03:00:00+00:00",
+      "file": "F051.json.gz",
+      "files": [
+        "F051.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F051.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F051.json.gz"
+    },
+    {
+      "forecast_hour": 54,
+      "valid_time": "2026-11-16T06:00:00+00:00",
+      "file": "F054.json.gz",
+      "files": [
+        "F054.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 139,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F054.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F054.json.gz"
+    },
+    {
+      "forecast_hour": 57,
+      "valid_time": "2026-11-16T09:00:00+00:00",
+      "file": "F057.json.gz",
+      "files": [
+        "F057.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F057.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F057.json.gz"
+    },
+    {
+      "forecast_hour": 60,
+      "valid_time": "2026-11-16T12:00:00+00:00",
+      "file": "F060.json.gz",
+      "files": [
+        "F060.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 359,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F060.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F060.json.gz"
+    },
+    {
+      "forecast_hour": 63,
+      "valid_time": "2026-11-16T15:00:00+00:00",
+      "file": "F063.json.gz",
+      "files": [
+        "F063.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F063.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F063.json.gz"
+    },
+    {
+      "forecast_hour": 66,
+      "valid_time": "2026-11-16T18:00:00+00:00",
+      "file": "F066.json.gz",
+      "files": [
+        "F066.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 139,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F066.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F066.json.gz"
+    },
+    {
+      "forecast_hour": 69,
+      "valid_time": "2026-11-16T21:00:00+00:00",
+      "file": "F069.json.gz",
+      "files": [
+        "F069.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F069.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F069.json.gz"
+    },
+    {
+      "forecast_hour": 72,
+      "valid_time": "2026-11-17T00:00:00+00:00",
+      "file": "F072.json.gz",
+      "files": [
+        "F072.json.gz",
+        "F072-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 487,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F072.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F072-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F072.json.gz"
+    },
+    {
+      "forecast_hour": 75,
+      "valid_time": "2026-11-17T03:00:00+00:00",
+      "file": "F075.json.gz",
+      "files": [
+        "F075.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F075.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F075.json.gz"
+    },
+    {
+      "forecast_hour": 78,
+      "valid_time": "2026-11-17T06:00:00+00:00",
+      "file": "F078.json.gz",
+      "files": [
+        "F078.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F078.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F078.json.gz"
+    },
+    {
+      "forecast_hour": 81,
+      "valid_time": "2026-11-17T09:00:00+00:00",
+      "file": "F081.json.gz",
+      "files": [
+        "F081.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F081.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F081.json.gz"
+    },
+    {
+      "forecast_hour": 84,
+      "valid_time": "2026-11-17T12:00:00+00:00",
+      "file": "F084.json.gz",
+      "files": [
+        "F084.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F084.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F084.json.gz"
+    },
+    {
+      "forecast_hour": 87,
+      "valid_time": "2026-11-17T15:00:00+00:00",
+      "file": "F087.json.gz",
+      "files": [
+        "F087.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F087.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F087.json.gz"
+    },
+    {
+      "forecast_hour": 90,
+      "valid_time": "2026-11-17T18:00:00+00:00",
+      "file": "F090.json.gz",
+      "files": [
+        "F090.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F090.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F090.json.gz"
+    },
+    {
+      "forecast_hour": 93,
+      "valid_time": "2026-11-17T21:00:00+00:00",
+      "file": "F093.json.gz",
+      "files": [
+        "F093.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F093.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F093.json.gz"
+    },
+    {
+      "forecast_hour": 96,
+      "valid_time": "2026-11-18T00:00:00+00:00",
+      "file": "F096.json.gz",
+      "files": [
+        "F096.json.gz",
+        "F096-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 498,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F096.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F096-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F096.json.gz"
+    },
+    {
+      "forecast_hour": 99,
+      "valid_time": "2026-11-18T03:00:00+00:00",
+      "file": "F099.json.gz",
+      "files": [
+        "F099.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F099.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F099.json.gz"
+    },
+    {
+      "forecast_hour": 102,
+      "valid_time": "2026-11-18T06:00:00+00:00",
+      "file": "F102.json.gz",
+      "files": [
+        "F102.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F102.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F102.json.gz"
+    },
+    {
+      "forecast_hour": 105,
+      "valid_time": "2026-11-18T09:00:00+00:00",
+      "file": "F105.json.gz",
+      "files": [
+        "F105.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F105.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F105.json.gz"
+    },
+    {
+      "forecast_hour": 108,
+      "valid_time": "2026-11-18T12:00:00+00:00",
+      "file": "F108.json.gz",
+      "files": [
+        "F108.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F108.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F108.json.gz"
+    },
+    {
+      "forecast_hour": 111,
+      "valid_time": "2026-11-18T15:00:00+00:00",
+      "file": "F111.json.gz",
+      "files": [
+        "F111.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F111.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F111.json.gz"
+    },
+    {
+      "forecast_hour": 114,
+      "valid_time": "2026-11-18T18:00:00+00:00",
+      "file": "F114.json.gz",
+      "files": [
+        "F114.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F114.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F114.json.gz"
+    },
+    {
+      "forecast_hour": 117,
+      "valid_time": "2026-11-18T21:00:00+00:00",
+      "file": "F117.json.gz",
+      "files": [
+        "F117.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F117.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F117.json.gz"
+    },
+    {
+      "forecast_hour": 120,
+      "valid_time": "2026-11-19T00:00:00+00:00",
+      "file": "F120.json.gz",
+      "files": [
+        "F120.json.gz",
+        "F120-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F120.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F120-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F120.json.gz"
+    },
+    {
+      "forecast_hour": 123,
+      "valid_time": "2026-11-19T03:00:00+00:00",
+      "file": "F123.json.gz",
+      "files": [
+        "F123.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F123.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F123.json.gz"
+    },
+    {
+      "forecast_hour": 126,
+      "valid_time": "2026-11-19T06:00:00+00:00",
+      "file": "F126.json.gz",
+      "files": [
+        "F126.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F126.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F126.json.gz"
+    },
+    {
+      "forecast_hour": 129,
+      "valid_time": "2026-11-19T09:00:00+00:00",
+      "file": "F129.json.gz",
+      "files": [
+        "F129.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F129.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F129.json.gz"
+    },
+    {
+      "forecast_hour": 132,
+      "valid_time": "2026-11-19T12:00:00+00:00",
+      "file": "F132.json.gz",
+      "files": [
+        "F132.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F132.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F132.json.gz"
+    },
+    {
+      "forecast_hour": 135,
+      "valid_time": "2026-11-19T15:00:00+00:00",
+      "file": "F135.json.gz",
+      "files": [
+        "F135.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F135.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F135.json.gz"
+    },
+    {
+      "forecast_hour": 138,
+      "valid_time": "2026-11-19T18:00:00+00:00",
+      "file": "F138.json.gz",
+      "files": [
+        "F138.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F138.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F138.json.gz"
+    },
+    {
+      "forecast_hour": 141,
+      "valid_time": "2026-11-19T21:00:00+00:00",
+      "file": "F141.json.gz",
+      "files": [
+        "F141.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F141.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F141.json.gz"
+    },
+    {
+      "forecast_hour": 144,
+      "valid_time": "2026-11-20T00:00:00+00:00",
+      "file": "F144.json.gz",
+      "files": [
+        "F144.json.gz",
+        "F144-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F144.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F144-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F144.json.gz"
+    },
+    {
+      "forecast_hour": 147,
+      "valid_time": "2026-11-20T03:00:00+00:00",
+      "file": "F147.json.gz",
+      "files": [
+        "F147.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F147.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F147.json.gz"
+    },
+    {
+      "forecast_hour": 150,
+      "valid_time": "2026-11-20T06:00:00+00:00",
+      "file": "F150.json.gz",
+      "files": [
+        "F150.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F150.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F150.json.gz"
+    },
+    {
+      "forecast_hour": 153,
+      "valid_time": "2026-11-20T09:00:00+00:00",
+      "file": "F153.json.gz",
+      "files": [
+        "F153.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F153.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F153.json.gz"
+    },
+    {
+      "forecast_hour": 156,
+      "valid_time": "2026-11-20T12:00:00+00:00",
+      "file": "F156.json.gz",
+      "files": [
+        "F156.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F156.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F156.json.gz"
+    },
+    {
+      "forecast_hour": 159,
+      "valid_time": "2026-11-20T15:00:00+00:00",
+      "file": "F159.json.gz",
+      "files": [
+        "F159.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F159.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F159.json.gz"
+    },
+    {
+      "forecast_hour": 162,
+      "valid_time": "2026-11-20T18:00:00+00:00",
+      "file": "F162.json.gz",
+      "files": [
+        "F162.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F162.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F162.json.gz"
+    },
+    {
+      "forecast_hour": 165,
+      "valid_time": "2026-11-20T21:00:00+00:00",
+      "file": "F165.json.gz",
+      "files": [
+        "F165.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F165.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F165.json.gz"
+    },
+    {
+      "forecast_hour": 168,
+      "valid_time": "2026-11-21T00:00:00+00:00",
+      "file": "F168.json.gz",
+      "files": [
+        "F168.json.gz",
+        "F168-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F168.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F168-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F168.json.gz"
+    },
+    {
+      "forecast_hour": 171,
+      "valid_time": "2026-11-21T03:00:00+00:00",
+      "file": "F171.json.gz",
+      "files": [
+        "F171.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F171.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F171.json.gz"
+    },
+    {
+      "forecast_hour": 174,
+      "valid_time": "2026-11-21T06:00:00+00:00",
+      "file": "F174.json.gz",
+      "files": [
+        "F174.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F174.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F174.json.gz"
+    },
+    {
+      "forecast_hour": 177,
+      "valid_time": "2026-11-21T09:00:00+00:00",
+      "file": "F177.json.gz",
+      "files": [
+        "F177.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F177.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F177.json.gz"
+    },
+    {
+      "forecast_hour": 180,
+      "valid_time": "2026-11-21T12:00:00+00:00",
+      "file": "F180.json.gz",
+      "files": [
+        "F180.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F180.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F180.json.gz"
+    },
+    {
+      "forecast_hour": 183,
+      "valid_time": "2026-11-21T15:00:00+00:00",
+      "file": "F183.json.gz",
+      "files": [
+        "F183.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F183.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F183.json.gz"
+    },
+    {
+      "forecast_hour": 186,
+      "valid_time": "2026-11-21T18:00:00+00:00",
+      "file": "F186.json.gz",
+      "files": [
+        "F186.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F186.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F186.json.gz"
+    },
+    {
+      "forecast_hour": 189,
+      "valid_time": "2026-11-21T21:00:00+00:00",
+      "file": "F189.json.gz",
+      "files": [
+        "F189.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 57,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F189.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F189.json.gz"
+    },
+    {
+      "forecast_hour": 192,
+      "valid_time": "2026-11-22T00:00:00+00:00",
+      "file": "F192.json.gz",
+      "files": [
+        "F192.json.gz",
+        "F192-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F192.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F192-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F192.json.gz"
+    },
+    {
+      "forecast_hour": 198,
+      "valid_time": "2026-11-22T06:00:00+00:00",
+      "file": "F198.json.gz",
+      "files": [
+        "F198.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F198.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F198.json.gz"
+    },
+    {
+      "forecast_hour": 204,
+      "valid_time": "2026-11-22T12:00:00+00:00",
+      "file": "F204.json.gz",
+      "files": [
+        "F204.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F204.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F204.json.gz"
+    },
+    {
+      "forecast_hour": 210,
+      "valid_time": "2026-11-22T18:00:00+00:00",
+      "file": "F210.json.gz",
+      "files": [
+        "F210.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F210.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F210.json.gz"
+    },
+    {
+      "forecast_hour": 216,
+      "valid_time": "2026-11-23T00:00:00+00:00",
+      "file": "F216.json.gz",
+      "files": [
+        "F216.json.gz",
+        "F216-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F216.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F216-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F216.json.gz"
+    },
+    {
+      "forecast_hour": 222,
+      "valid_time": "2026-11-23T06:00:00+00:00",
+      "file": "F222.json.gz",
+      "files": [
+        "F222.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F222.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F222.json.gz"
+    },
+    {
+      "forecast_hour": 228,
+      "valid_time": "2026-11-23T12:00:00+00:00",
+      "file": "F228.json.gz",
+      "files": [
+        "F228.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F228.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F228.json.gz"
+    },
+    {
+      "forecast_hour": 234,
+      "valid_time": "2026-11-23T18:00:00+00:00",
+      "file": "F234.json.gz",
+      "files": [
+        "F234.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F234.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F234.json.gz"
+    },
+    {
+      "forecast_hour": 240,
+      "valid_time": "2026-11-24T00:00:00+00:00",
+      "file": "F240.json.gz",
+      "files": [
+        "F240.json.gz",
+        "F240-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F240.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F240-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F240.json.gz"
+    },
+    {
+      "forecast_hour": 246,
+      "valid_time": "2026-11-24T06:00:00+00:00",
+      "file": "F246.json.gz",
+      "files": [
+        "F246.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F246.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F246.json.gz"
+    },
+    {
+      "forecast_hour": 252,
+      "valid_time": "2026-11-24T12:00:00+00:00",
+      "file": "F252.json.gz",
+      "files": [
+        "F252.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F252.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F252.json.gz"
+    },
+    {
+      "forecast_hour": 258,
+      "valid_time": "2026-11-24T18:00:00+00:00",
+      "file": "F258.json.gz",
+      "files": [
+        "F258.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F258.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F258.json.gz"
+    },
+    {
+      "forecast_hour": 264,
+      "valid_time": "2026-11-25T00:00:00+00:00",
+      "file": "F264.json.gz",
+      "files": [
+        "F264.json.gz",
+        "F264-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F264.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F264-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F264.json.gz"
+    },
+    {
+      "forecast_hour": 270,
+      "valid_time": "2026-11-25T06:00:00+00:00",
+      "file": "F270.json.gz",
+      "files": [
+        "F270.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F270.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F270.json.gz"
+    },
+    {
+      "forecast_hour": 276,
+      "valid_time": "2026-11-25T12:00:00+00:00",
+      "file": "F276.json.gz",
+      "files": [
+        "F276.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F276.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F276.json.gz"
+    },
+    {
+      "forecast_hour": 282,
+      "valid_time": "2026-11-25T18:00:00+00:00",
+      "file": "F282.json.gz",
+      "files": [
+        "F282.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F282.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F282.json.gz"
+    },
+    {
+      "forecast_hour": 288,
+      "valid_time": "2026-11-26T00:00:00+00:00",
+      "file": "F288.json.gz",
+      "files": [
+        "F288.json.gz",
+        "F288-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F288.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F288-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F288.json.gz"
+    },
+    {
+      "forecast_hour": 294,
+      "valid_time": "2026-11-26T06:00:00+00:00",
+      "file": "F294.json.gz",
+      "files": [
+        "F294.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F294.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F294.json.gz"
+    },
+    {
+      "forecast_hour": 300,
+      "valid_time": "2026-11-26T12:00:00+00:00",
+      "file": "F300.json.gz",
+      "files": [
+        "F300.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F300.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F300.json.gz"
+    },
+    {
+      "forecast_hour": 306,
+      "valid_time": "2026-11-26T18:00:00+00:00",
+      "file": "F306.json.gz",
+      "files": [
+        "F306.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F306.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F306.json.gz"
+    },
+    {
+      "forecast_hour": 312,
+      "valid_time": "2026-11-27T00:00:00+00:00",
+      "file": "F312.json.gz",
+      "files": [
+        "F312.json.gz",
+        "F312-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F312.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F312-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F312.json.gz"
+    },
+    {
+      "forecast_hour": 318,
+      "valid_time": "2026-11-27T06:00:00+00:00",
+      "file": "F318.json.gz",
+      "files": [
+        "F318.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F318.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F318.json.gz"
+    },
+    {
+      "forecast_hour": 324,
+      "valid_time": "2026-11-27T12:00:00+00:00",
+      "file": "F324.json.gz",
+      "files": [
+        "F324.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F324.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F324.json.gz"
+    },
+    {
+      "forecast_hour": 330,
+      "valid_time": "2026-11-27T18:00:00+00:00",
+      "file": "F330.json.gz",
+      "files": [
+        "F330.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F330.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F330.json.gz"
+    },
+    {
+      "forecast_hour": 336,
+      "valid_time": "2026-11-28T00:00:00+00:00",
+      "file": "F336.json.gz",
+      "files": [
+        "F336.json.gz",
+        "F336-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F336.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F336-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F336.json.gz"
+    },
+    {
+      "forecast_hour": 342,
+      "valid_time": "2026-11-28T06:00:00+00:00",
+      "file": "F342.json.gz",
+      "files": [
+        "F342.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F342.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F342.json.gz"
+    },
+    {
+      "forecast_hour": 348,
+      "valid_time": "2026-11-28T12:00:00+00:00",
+      "file": "F348.json.gz",
+      "files": [
+        "F348.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F348.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F348.json.gz"
+    },
+    {
+      "forecast_hour": 354,
+      "valid_time": "2026-11-28T18:00:00+00:00",
+      "file": "F354.json.gz",
+      "files": [
+        "F354.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F354.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F354.json.gz"
+    },
+    {
+      "forecast_hour": 360,
+      "valid_time": "2026-11-29T00:00:00+00:00",
+      "file": "F360.json.gz",
+      "files": [
+        "F360.json.gz",
+        "F360-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F360.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F360-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F360.json.gz"
+    },
+    {
+      "forecast_hour": 366,
+      "valid_time": "2026-11-29T06:00:00+00:00",
+      "file": "F366.json.gz",
+      "files": [
+        "F366.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F366.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F366.json.gz"
+    },
+    {
+      "forecast_hour": 372,
+      "valid_time": "2026-11-29T12:00:00+00:00",
+      "file": "F372.json.gz",
+      "files": [
+        "F372.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 347,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F372.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F372.json.gz"
+    },
+    {
+      "forecast_hour": 378,
+      "valid_time": "2026-11-29T18:00:00+00:00",
+      "file": "F378.json.gz",
+      "files": [
+        "F378.json.gz"
+      ],
+      "part_count": 1,
+      "field_count": 127,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F378.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F378.json.gz"
+    },
+    {
+      "forecast_hour": 384,
+      "valid_time": "2026-11-30T00:00:00+00:00",
+      "file": "F384.json.gz",
+      "files": [
+        "F384.json.gz",
+        "F384-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 521,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F384.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F384-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F384.json.gz"
+    }
+  ],
+  "variables": [
+    {
+      "short_name": "10fgg15",
+      "name": "10 metre wind gust of at least 15 m/s",
+      "units": "%",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "10si",
+      "name": "10 metre wind speed",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "2t",
+      "name": "2 metre temperature",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "CMC_geps",
+      "name": "CMC_geps",
+      "units": "unknown",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "heatx",
+      "name": "Heat index",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "max_10si",
+      "name": "Time-maximum 10 metre wind speed",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "max_i10fg",
+      "name": "Time-maximum 10 metre wind gust",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "prmsl",
+      "name": "Pressure reduced to MSL",
+      "units": "Pa",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vwsh",
+      "name": "Vertical speed shear",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "vwsh",
+      "name": "Vertical speed shear",
+      "units": "s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "wcf",
+      "name": "Wind chill factor",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "ws",
+      "name": "Wind speed",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "ws",
+      "name": "Wind speed",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "iprate",
+      "name": "Ice pellets precipitation rate",
+      "units": "kg m**-2 s**-1",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tp",
+      "name": "Total Precipitation",
+      "units": "kg m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg1",
+      "name": "Total precipitation of at least 1 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg10",
+      "name": "Total precipitation of at least 10 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg100",
+      "name": "Total precipitation of at least 100 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg25",
+      "name": "Total precipitation of at least 25 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg5",
+      "name": "Total precipitation of at least 5 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg50",
+      "name": "Total precipitation of at least 50 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tsnowp",
+      "name": "Total snow precipitation",
+      "units": "kg m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "10fgg10",
+      "name": "10 metre wind gust of at least 10 m/s",
+      "units": "%",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "fzrawe",
+      "name": "Accumulated freezing rain water equivalent",
+      "units": "kg m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tirf",
+      "name": "Time integral of rain flux",
+      "units": "kg m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg150",
+      "name": "Total precipitation of at least 150 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg20",
+      "name": "Total precipitation of at least 20 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg40",
+      "name": "Total precipitation of at least 40 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "max_2t",
+      "name": "Time-maximum 2 metre temperature",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "min_2t",
+      "name": "Time-minimum 2 metre temperature",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tpg200",
+      "name": "Total precipitation of at least 200 mm",
+      "units": "%",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    }
+  ],
+  "variable_level_count": 33,
+  "field_count": 20326,
+  "data_format": "JSON gzip independente por validade; validades grandes podem ser divididas em FNNN.json.gz e FNNN-partNNN.json.gz. Use validities[].files/download_urls para recuperar todos os campos.",
+  "collection_status": "partial",
+  "attribution": null,
+  "collection_errors_count": 2,
+  "data_directory": "data/cmc_geps/south_pacific_west/",
+  "files": [
+    "F003.json.gz",
+    "F006.json.gz",
+    "F009.json.gz",
+    "F012.json.gz",
+    "F015.json.gz",
+    "F018.json.gz",
+    "F021.json.gz",
+    "F024.json.gz",
+    "F024-part002.json.gz",
+    "F027.json.gz",
+    "F030.json.gz",
+    "F033.json.gz",
+    "F036.json.gz",
+    "F039.json.gz",
+    "F042.json.gz",
+    "F045.json.gz",
+    "F048.json.gz",
+    "F048-part002.json.gz",
+    "F051.json.gz",
+    "F054.json.gz",
+    "F057.json.gz",
+    "F060.json.gz",
+    "F063.json.gz",
+    "F066.json.gz",
+    "F069.json.gz",
+    "F072.json.gz",
+    "F072-part002.json.gz",
+    "F075.json.gz",
+    "F078.json.gz",
+    "F081.json.gz",
+    "F084.json.gz",
+    "F087.json.gz",
+    "F090.json.gz",
+    "F093.json.gz",
+    "F096.json.gz",
+    "F096-part002.json.gz",
+    "F099.json.gz",
+    "F102.json.gz",
+    "F105.json.gz",
+    "F108.json.gz",
+    "F111.json.gz",
+    "F114.json.gz",
+    "F117.json.gz",
+    "F120.json.gz",
+    "F120-part002.json.gz",
+    "F123.json.gz",
+    "F126.json.gz",
+    "F129.json.gz",
+    "F132.json.gz",
+    "F135.json.gz",
+    "F138.json.gz",
+    "F141.json.gz",
+    "F144.json.gz",
+    "F144-part002.json.gz",
+    "F147.json.gz",
+    "F150.json.gz",
+    "F153.json.gz",
+    "F156.json.gz",
+    "F159.json.gz",
+    "F162.json.gz",
+    "F165.json.gz",
+    "F168.json.gz",
+    "F168-part002.json.gz",
+    "F171.json.gz",
+    "F174.json.gz",
+    "F177.json.gz",
+    "F180.json.gz",
+    "F183.json.gz",
+    "F186.json.gz",
+    "F189.json.gz",
+    "F192.json.gz",
+    "F192-part002.json.gz",
+    "F198.json.gz",
+    "F204.json.gz",
+    "F210.json.gz",
+    "F216.json.gz",
+    "F216-part002.json.gz",
+    "F222.json.gz",
+    "F228.json.gz",
+    "F234.json.gz",
+    "F240.json.gz",
+    "F240-part002.json.gz",
+    "F246.json.gz",
+    "F252.json.gz",
+    "F258.json.gz",
+    "F264.json.gz",
+    "F264-part002.json.gz",
+    "F270.json.gz",
+    "F276.json.gz",
+    "F282.json.gz",
+    "F288.json.gz",
+    "F288-part002.json.gz",
+    "F294.json.gz",
+    "F300.json.gz",
+    "F306.json.gz",
+    "F312.json.gz",
+    "F312-part002.json.gz",
+    "F318.json.gz",
+    "F324.json.gz",
+    "F330.json.gz",
+    "F336.json.gz",
+    "F336-part002.json.gz",
+    "F342.json.gz",
+    "F348.json.gz",
+    "F354.json.gz",
+    "F360.json.gz",
+    "F360-part002.json.gz",
+    "F366.json.gz",
+    "F372.json.gz",
+    "F378.json.gz",
+    "F384.json.gz",
+    "F384-part002.json.gz"
+  ],
+  "download_base_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/",
+  "file_urls": {
+    "F003.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F003.json.gz",
+    "F006.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F006.json.gz",
+    "F009.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F009.json.gz",
+    "F012.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F012.json.gz",
+    "F015.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F015.json.gz",
+    "F018.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F018.json.gz",
+    "F021.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F021.json.gz",
+    "F024.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F024.json.gz",
+    "F024-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F024-part002.json.gz",
+    "F027.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F027.json.gz",
+    "F030.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F030.json.gz",
+    "F033.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F033.json.gz",
+    "F036.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F036.json.gz",
+    "F039.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F039.json.gz",
+    "F042.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F042.json.gz",
+    "F045.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F045.json.gz",
+    "F048.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F048.json.gz",
+    "F048-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F048-part002.json.gz",
+    "F051.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F051.json.gz",
+    "F054.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F054.json.gz",
+    "F057.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F057.json.gz",
+    "F060.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F060.json.gz",
+    "F063.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F063.json.gz",
+    "F066.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F066.json.gz",
+    "F069.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F069.json.gz",
+    "F072.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F072.json.gz",
+    "F072-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F072-part002.json.gz",
+    "F075.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F075.json.gz",
+    "F078.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F078.json.gz",
+    "F081.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F081.json.gz",
+    "F084.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F084.json.gz",
+    "F087.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F087.json.gz",
+    "F090.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F090.json.gz",
+    "F093.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F093.json.gz",
+    "F096.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F096.json.gz",
+    "F096-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F096-part002.json.gz",
+    "F099.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F099.json.gz",
+    "F102.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F102.json.gz",
+    "F105.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F105.json.gz",
+    "F108.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F108.json.gz",
+    "F111.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F111.json.gz",
+    "F114.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F114.json.gz",
+    "F117.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F117.json.gz",
+    "F120.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F120.json.gz",
+    "F120-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F120-part002.json.gz",
+    "F123.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F123.json.gz",
+    "F126.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F126.json.gz",
+    "F129.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F129.json.gz",
+    "F132.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F132.json.gz",
+    "F135.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F135.json.gz",
+    "F138.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F138.json.gz",
+    "F141.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F141.json.gz",
+    "F144.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F144.json.gz",
+    "F144-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F144-part002.json.gz",
+    "F147.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F147.json.gz",
+    "F150.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F150.json.gz",
+    "F153.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F153.json.gz",
+    "F156.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F156.json.gz",
+    "F159.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F159.json.gz",
+    "F162.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F162.json.gz",
+    "F165.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F165.json.gz",
+    "F168.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F168.json.gz",
+    "F168-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F168-part002.json.gz",
+    "F171.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F171.json.gz",
+    "F174.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F174.json.gz",
+    "F177.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F177.json.gz",
+    "F180.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F180.json.gz",
+    "F183.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F183.json.gz",
+    "F186.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F186.json.gz",
+    "F189.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F189.json.gz",
+    "F192.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F192.json.gz",
+    "F192-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F192-part002.json.gz",
+    "F198.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F198.json.gz",
+    "F204.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F204.json.gz",
+    "F210.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F210.json.gz",
+    "F216.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F216.json.gz",
+    "F216-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F216-part002.json.gz",
+    "F222.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F222.json.gz",
+    "F228.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F228.json.gz",
+    "F234.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F234.json.gz",
+    "F240.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F240.json.gz",
+    "F240-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F240-part002.json.gz",
+    "F246.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F246.json.gz",
+    "F252.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F252.json.gz",
+    "F258.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F258.json.gz",
+    "F264.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F264.json.gz",
+    "F264-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F264-part002.json.gz",
+    "F270.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F270.json.gz",
+    "F276.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F276.json.gz",
+    "F282.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F282.json.gz",
+    "F288.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F288.json.gz",
+    "F288-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F288-part002.json.gz",
+    "F294.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F294.json.gz",
+    "F300.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F300.json.gz",
+    "F306.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F306.json.gz",
+    "F312.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F312.json.gz",
+    "F312-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F312-part002.json.gz",
+    "F318.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F318.json.gz",
+    "F324.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F324.json.gz",
+    "F330.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F330.json.gz",
+    "F336.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F336.json.gz",
+    "F336-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F336-part002.json.gz",
+    "F342.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F342.json.gz",
+    "F348.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F348.json.gz",
+    "F354.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F354.json.gz",
+    "F360.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F360.json.gz",
+    "F360-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F360-part002.json.gz",
+    "F366.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F366.json.gz",
+    "F372.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F372.json.gz",
+    "F378.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F378.json.gz",
+    "F384.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F384.json.gz",
+    "F384-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/cmc_geps/south_pacific_west/F384-part002.json.gz"
+  }
+}
