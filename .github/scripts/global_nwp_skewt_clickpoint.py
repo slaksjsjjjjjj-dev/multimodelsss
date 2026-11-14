@@ -20,15 +20,15 @@ except zlib.error as _decompress_error:
     # Reempacota em memória para voltar a ter um bloco ZLIB com checksum válido.
     _SOURCE = zlib.decompress(zlib.compress(_SOURCE, 9))
 
-# Mantém o identificador convencional ICON/DWD alinhado ao workflow.
-_SOURCE = _SOURCE.replace(b'"icon": {', b'"icon_dwd": {')
-_SOURCE = _SOURCE.replace(b'"directory": "icon"', b'"directory": "icon_dwd"')
-_SOURCE = _SOURCE.replace(b'"label": "ICON"', b'"label": "ICON / DWD"')
-_SOURCE = _SOURCE.replace(b'"icon": "icon-skewt-click"', b'"icon_dwd": "icon-dwd-skewt-click"')
-_SOURCE = _SOURCE.replace(b'{"gfs", "icon"}', b'{"gfs", "icon_dwd"}')
+# Normaliza a identidade do ICON convencional para o nome usado pelos workflows.
+# A substituição global das chaves/valores exatos cobre aspas simples e duplas e
+# evita depender da formatação literal do dicionário no fonte compactado.
+_SOURCE = _SOURCE.replace(b'"icon"', b'"icon_dwd"').replace(b"'icon'", b"'icon_dwd'")
+_SOURCE = _SOURCE.replace(b"icon-skewt-click", b"icon-dwd-skewt-click")
+_SOURCE = _SOURCE.replace(b'"ICON"', b'"ICON / DWD"').replace(b"'ICON'", b"'ICON / DWD'")
 
 # Falha cedo e com mensagem explícita caso o payload não contenha o código esperado.
-if b"def main()" not in _SOURCE or b"ecmwf_ifs" not in _SOURCE or b"icon_dwd" not in _SOURCE:
+if b"def main" not in _SOURCE or b"MODEL_CONFIG" not in _SOURCE or b"ecmwf_ifs" not in _SOURCE or b"icon_dwd" not in _SOURCE:
     raise RuntimeError("Payload do runner incompleto ou incompatível com GFS / ICON DWD / ECMWF IFS.")
 
 compile(_SOURCE, __file__ + " [expanded]", "exec")
