@@ -1,0 +1,2135 @@
+{
+  "schema": "sideral-global-nwp-region-manifest-v1",
+  "model_key": "gefs_ai",
+  "model": "GEFS / AI (AIGEFS)",
+  "provider": "NOAA",
+  "source": "https://nomads.ncep.noaa.gov/",
+  "resolution": "0.25°",
+  "run_utc": "2026-11-14T00:00:00+00:00",
+  "cycle_utc": "00",
+  "region": {
+    "id": "south_america",
+    "label": "América do Sul",
+    "bounds": [
+      -85,
+      -60,
+      -30,
+      15
+    ]
+  },
+  "requested_forecast_hours": [
+    0,
+    6,
+    12,
+    18,
+    24,
+    30,
+    36,
+    42,
+    48,
+    54,
+    60,
+    66,
+    72,
+    78,
+    84,
+    90,
+    96,
+    102,
+    108,
+    114,
+    120,
+    126,
+    132,
+    138,
+    144,
+    150,
+    156,
+    162,
+    168,
+    174,
+    180,
+    186,
+    192,
+    198,
+    204,
+    210,
+    216,
+    222,
+    228,
+    234,
+    240,
+    246,
+    252,
+    258,
+    264,
+    270,
+    276,
+    282,
+    288,
+    294,
+    300,
+    306,
+    312,
+    318,
+    324,
+    330,
+    336,
+    342,
+    348,
+    354,
+    360,
+    366,
+    372,
+    378,
+    384
+  ],
+  "forecast_hours": [
+    0,
+    6,
+    12,
+    18,
+    24,
+    30,
+    36,
+    42,
+    48,
+    54,
+    60,
+    66,
+    72,
+    78,
+    84,
+    90,
+    96,
+    102,
+    108,
+    114,
+    120,
+    126,
+    132,
+    138,
+    144,
+    150,
+    156,
+    162,
+    168,
+    174,
+    180,
+    186,
+    192,
+    198,
+    204,
+    210,
+    216,
+    222,
+    228,
+    234,
+    240,
+    246,
+    252,
+    258,
+    264,
+    270,
+    276,
+    282,
+    288,
+    294,
+    300,
+    306,
+    312,
+    318,
+    324,
+    330,
+    336,
+    342,
+    348,
+    354,
+    360,
+    366,
+    372,
+    378,
+    384
+  ],
+  "missing_forecast_hours": [],
+  "validities": [
+    {
+      "forecast_hour": 0,
+      "valid_time": "2026-11-14T00:00:00+00:00",
+      "file": "F000.json.gz",
+      "files": [
+        "F000.json.gz",
+        "F000-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 164,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F000.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F000-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F000.json.gz"
+    },
+    {
+      "forecast_hour": 6,
+      "valid_time": "2026-11-14T06:00:00+00:00",
+      "file": "F006.json.gz",
+      "files": [
+        "F006.json.gz",
+        "F006-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F006.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F006-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F006.json.gz"
+    },
+    {
+      "forecast_hour": 12,
+      "valid_time": "2026-11-14T12:00:00+00:00",
+      "file": "F012.json.gz",
+      "files": [
+        "F012.json.gz",
+        "F012-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F012.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F012-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F012.json.gz"
+    },
+    {
+      "forecast_hour": 18,
+      "valid_time": "2026-11-14T18:00:00+00:00",
+      "file": "F018.json.gz",
+      "files": [
+        "F018.json.gz",
+        "F018-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F018.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F018-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F018.json.gz"
+    },
+    {
+      "forecast_hour": 24,
+      "valid_time": "2026-11-15T00:00:00+00:00",
+      "file": "F024.json.gz",
+      "files": [
+        "F024.json.gz",
+        "F024-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F024.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F024-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F024.json.gz"
+    },
+    {
+      "forecast_hour": 30,
+      "valid_time": "2026-11-15T06:00:00+00:00",
+      "file": "F030.json.gz",
+      "files": [
+        "F030.json.gz",
+        "F030-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F030.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F030-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F030.json.gz"
+    },
+    {
+      "forecast_hour": 36,
+      "valid_time": "2026-11-15T12:00:00+00:00",
+      "file": "F036.json.gz",
+      "files": [
+        "F036.json.gz",
+        "F036-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F036.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F036-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F036.json.gz"
+    },
+    {
+      "forecast_hour": 42,
+      "valid_time": "2026-11-15T18:00:00+00:00",
+      "file": "F042.json.gz",
+      "files": [
+        "F042.json.gz",
+        "F042-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F042.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F042-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F042.json.gz"
+    },
+    {
+      "forecast_hour": 48,
+      "valid_time": "2026-11-16T00:00:00+00:00",
+      "file": "F048.json.gz",
+      "files": [
+        "F048.json.gz",
+        "F048-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F048.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F048-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F048.json.gz"
+    },
+    {
+      "forecast_hour": 54,
+      "valid_time": "2026-11-16T06:00:00+00:00",
+      "file": "F054.json.gz",
+      "files": [
+        "F054.json.gz",
+        "F054-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F054.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F054-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F054.json.gz"
+    },
+    {
+      "forecast_hour": 60,
+      "valid_time": "2026-11-16T12:00:00+00:00",
+      "file": "F060.json.gz",
+      "files": [
+        "F060.json.gz",
+        "F060-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F060.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F060-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F060.json.gz"
+    },
+    {
+      "forecast_hour": 66,
+      "valid_time": "2026-11-16T18:00:00+00:00",
+      "file": "F066.json.gz",
+      "files": [
+        "F066.json.gz",
+        "F066-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F066.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F066-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F066.json.gz"
+    },
+    {
+      "forecast_hour": 72,
+      "valid_time": "2026-11-17T00:00:00+00:00",
+      "file": "F072.json.gz",
+      "files": [
+        "F072.json.gz",
+        "F072-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F072.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F072-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F072.json.gz"
+    },
+    {
+      "forecast_hour": 78,
+      "valid_time": "2026-11-17T06:00:00+00:00",
+      "file": "F078.json.gz",
+      "files": [
+        "F078.json.gz",
+        "F078-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F078.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F078-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F078.json.gz"
+    },
+    {
+      "forecast_hour": 84,
+      "valid_time": "2026-11-17T12:00:00+00:00",
+      "file": "F084.json.gz",
+      "files": [
+        "F084.json.gz",
+        "F084-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F084.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F084-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F084.json.gz"
+    },
+    {
+      "forecast_hour": 90,
+      "valid_time": "2026-11-17T18:00:00+00:00",
+      "file": "F090.json.gz",
+      "files": [
+        "F090.json.gz",
+        "F090-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F090.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F090-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F090.json.gz"
+    },
+    {
+      "forecast_hour": 96,
+      "valid_time": "2026-11-18T00:00:00+00:00",
+      "file": "F096.json.gz",
+      "files": [
+        "F096.json.gz",
+        "F096-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F096.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F096-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F096.json.gz"
+    },
+    {
+      "forecast_hour": 102,
+      "valid_time": "2026-11-18T06:00:00+00:00",
+      "file": "F102.json.gz",
+      "files": [
+        "F102.json.gz",
+        "F102-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F102.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F102-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F102.json.gz"
+    },
+    {
+      "forecast_hour": 108,
+      "valid_time": "2026-11-18T12:00:00+00:00",
+      "file": "F108.json.gz",
+      "files": [
+        "F108.json.gz",
+        "F108-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F108.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F108-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F108.json.gz"
+    },
+    {
+      "forecast_hour": 114,
+      "valid_time": "2026-11-18T18:00:00+00:00",
+      "file": "F114.json.gz",
+      "files": [
+        "F114.json.gz",
+        "F114-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F114.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F114-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F114.json.gz"
+    },
+    {
+      "forecast_hour": 120,
+      "valid_time": "2026-11-19T00:00:00+00:00",
+      "file": "F120.json.gz",
+      "files": [
+        "F120.json.gz",
+        "F120-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F120.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F120-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F120.json.gz"
+    },
+    {
+      "forecast_hour": 126,
+      "valid_time": "2026-11-19T06:00:00+00:00",
+      "file": "F126.json.gz",
+      "files": [
+        "F126.json.gz",
+        "F126-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F126.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F126-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F126.json.gz"
+    },
+    {
+      "forecast_hour": 132,
+      "valid_time": "2026-11-19T12:00:00+00:00",
+      "file": "F132.json.gz",
+      "files": [
+        "F132.json.gz",
+        "F132-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F132.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F132-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F132.json.gz"
+    },
+    {
+      "forecast_hour": 138,
+      "valid_time": "2026-11-19T18:00:00+00:00",
+      "file": "F138.json.gz",
+      "files": [
+        "F138.json.gz",
+        "F138-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F138.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F138-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F138.json.gz"
+    },
+    {
+      "forecast_hour": 144,
+      "valid_time": "2026-11-20T00:00:00+00:00",
+      "file": "F144.json.gz",
+      "files": [
+        "F144.json.gz",
+        "F144-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F144.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F144-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F144.json.gz"
+    },
+    {
+      "forecast_hour": 150,
+      "valid_time": "2026-11-20T06:00:00+00:00",
+      "file": "F150.json.gz",
+      "files": [
+        "F150.json.gz",
+        "F150-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F150.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F150-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F150.json.gz"
+    },
+    {
+      "forecast_hour": 156,
+      "valid_time": "2026-11-20T12:00:00+00:00",
+      "file": "F156.json.gz",
+      "files": [
+        "F156.json.gz",
+        "F156-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F156.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F156-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F156.json.gz"
+    },
+    {
+      "forecast_hour": 162,
+      "valid_time": "2026-11-20T18:00:00+00:00",
+      "file": "F162.json.gz",
+      "files": [
+        "F162.json.gz",
+        "F162-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F162.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F162-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F162.json.gz"
+    },
+    {
+      "forecast_hour": 168,
+      "valid_time": "2026-11-21T00:00:00+00:00",
+      "file": "F168.json.gz",
+      "files": [
+        "F168.json.gz",
+        "F168-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F168.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F168-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F168.json.gz"
+    },
+    {
+      "forecast_hour": 174,
+      "valid_time": "2026-11-21T06:00:00+00:00",
+      "file": "F174.json.gz",
+      "files": [
+        "F174.json.gz",
+        "F174-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F174.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F174-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F174.json.gz"
+    },
+    {
+      "forecast_hour": 180,
+      "valid_time": "2026-11-21T12:00:00+00:00",
+      "file": "F180.json.gz",
+      "files": [
+        "F180.json.gz",
+        "F180-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F180.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F180-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F180.json.gz"
+    },
+    {
+      "forecast_hour": 186,
+      "valid_time": "2026-11-21T18:00:00+00:00",
+      "file": "F186.json.gz",
+      "files": [
+        "F186.json.gz",
+        "F186-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F186.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F186-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F186.json.gz"
+    },
+    {
+      "forecast_hour": 192,
+      "valid_time": "2026-11-22T00:00:00+00:00",
+      "file": "F192.json.gz",
+      "files": [
+        "F192.json.gz",
+        "F192-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F192.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F192-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F192.json.gz"
+    },
+    {
+      "forecast_hour": 198,
+      "valid_time": "2026-11-22T06:00:00+00:00",
+      "file": "F198.json.gz",
+      "files": [
+        "F198.json.gz",
+        "F198-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F198.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F198-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F198.json.gz"
+    },
+    {
+      "forecast_hour": 204,
+      "valid_time": "2026-11-22T12:00:00+00:00",
+      "file": "F204.json.gz",
+      "files": [
+        "F204.json.gz",
+        "F204-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F204.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F204-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F204.json.gz"
+    },
+    {
+      "forecast_hour": 210,
+      "valid_time": "2026-11-22T18:00:00+00:00",
+      "file": "F210.json.gz",
+      "files": [
+        "F210.json.gz",
+        "F210-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F210.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F210-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F210.json.gz"
+    },
+    {
+      "forecast_hour": 216,
+      "valid_time": "2026-11-23T00:00:00+00:00",
+      "file": "F216.json.gz",
+      "files": [
+        "F216.json.gz",
+        "F216-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F216.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F216-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F216.json.gz"
+    },
+    {
+      "forecast_hour": 222,
+      "valid_time": "2026-11-23T06:00:00+00:00",
+      "file": "F222.json.gz",
+      "files": [
+        "F222.json.gz",
+        "F222-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F222.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F222-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F222.json.gz"
+    },
+    {
+      "forecast_hour": 228,
+      "valid_time": "2026-11-23T12:00:00+00:00",
+      "file": "F228.json.gz",
+      "files": [
+        "F228.json.gz",
+        "F228-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F228.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F228-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F228.json.gz"
+    },
+    {
+      "forecast_hour": 234,
+      "valid_time": "2026-11-23T18:00:00+00:00",
+      "file": "F234.json.gz",
+      "files": [
+        "F234.json.gz",
+        "F234-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F234.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F234-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F234.json.gz"
+    },
+    {
+      "forecast_hour": 240,
+      "valid_time": "2026-11-24T00:00:00+00:00",
+      "file": "F240.json.gz",
+      "files": [
+        "F240.json.gz",
+        "F240-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F240.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F240-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F240.json.gz"
+    },
+    {
+      "forecast_hour": 246,
+      "valid_time": "2026-11-24T06:00:00+00:00",
+      "file": "F246.json.gz",
+      "files": [
+        "F246.json.gz",
+        "F246-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F246.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F246-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F246.json.gz"
+    },
+    {
+      "forecast_hour": 252,
+      "valid_time": "2026-11-24T12:00:00+00:00",
+      "file": "F252.json.gz",
+      "files": [
+        "F252.json.gz",
+        "F252-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F252.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F252-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F252.json.gz"
+    },
+    {
+      "forecast_hour": 258,
+      "valid_time": "2026-11-24T18:00:00+00:00",
+      "file": "F258.json.gz",
+      "files": [
+        "F258.json.gz",
+        "F258-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F258.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F258-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F258.json.gz"
+    },
+    {
+      "forecast_hour": 264,
+      "valid_time": "2026-11-25T00:00:00+00:00",
+      "file": "F264.json.gz",
+      "files": [
+        "F264.json.gz",
+        "F264-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F264.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F264-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F264.json.gz"
+    },
+    {
+      "forecast_hour": 270,
+      "valid_time": "2026-11-25T06:00:00+00:00",
+      "file": "F270.json.gz",
+      "files": [
+        "F270.json.gz",
+        "F270-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F270.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F270-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F270.json.gz"
+    },
+    {
+      "forecast_hour": 276,
+      "valid_time": "2026-11-25T12:00:00+00:00",
+      "file": "F276.json.gz",
+      "files": [
+        "F276.json.gz",
+        "F276-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F276.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F276-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F276.json.gz"
+    },
+    {
+      "forecast_hour": 282,
+      "valid_time": "2026-11-25T18:00:00+00:00",
+      "file": "F282.json.gz",
+      "files": [
+        "F282.json.gz",
+        "F282-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F282.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F282-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F282.json.gz"
+    },
+    {
+      "forecast_hour": 288,
+      "valid_time": "2026-11-26T00:00:00+00:00",
+      "file": "F288.json.gz",
+      "files": [
+        "F288.json.gz",
+        "F288-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F288.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F288-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F288.json.gz"
+    },
+    {
+      "forecast_hour": 294,
+      "valid_time": "2026-11-26T06:00:00+00:00",
+      "file": "F294.json.gz",
+      "files": [
+        "F294.json.gz",
+        "F294-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F294.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F294-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F294.json.gz"
+    },
+    {
+      "forecast_hour": 300,
+      "valid_time": "2026-11-26T12:00:00+00:00",
+      "file": "F300.json.gz",
+      "files": [
+        "F300.json.gz",
+        "F300-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F300.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F300-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F300.json.gz"
+    },
+    {
+      "forecast_hour": 306,
+      "valid_time": "2026-11-26T18:00:00+00:00",
+      "file": "F306.json.gz",
+      "files": [
+        "F306.json.gz",
+        "F306-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F306.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F306-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F306.json.gz"
+    },
+    {
+      "forecast_hour": 312,
+      "valid_time": "2026-11-27T00:00:00+00:00",
+      "file": "F312.json.gz",
+      "files": [
+        "F312.json.gz",
+        "F312-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F312.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F312-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F312.json.gz"
+    },
+    {
+      "forecast_hour": 318,
+      "valid_time": "2026-11-27T06:00:00+00:00",
+      "file": "F318.json.gz",
+      "files": [
+        "F318.json.gz",
+        "F318-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F318.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F318-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F318.json.gz"
+    },
+    {
+      "forecast_hour": 324,
+      "valid_time": "2026-11-27T12:00:00+00:00",
+      "file": "F324.json.gz",
+      "files": [
+        "F324.json.gz",
+        "F324-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F324.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F324-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F324.json.gz"
+    },
+    {
+      "forecast_hour": 330,
+      "valid_time": "2026-11-27T18:00:00+00:00",
+      "file": "F330.json.gz",
+      "files": [
+        "F330.json.gz",
+        "F330-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F330.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F330-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F330.json.gz"
+    },
+    {
+      "forecast_hour": 336,
+      "valid_time": "2026-11-28T00:00:00+00:00",
+      "file": "F336.json.gz",
+      "files": [
+        "F336.json.gz",
+        "F336-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F336.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F336-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F336.json.gz"
+    },
+    {
+      "forecast_hour": 342,
+      "valid_time": "2026-11-28T06:00:00+00:00",
+      "file": "F342.json.gz",
+      "files": [
+        "F342.json.gz",
+        "F342-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F342.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F342-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F342.json.gz"
+    },
+    {
+      "forecast_hour": 348,
+      "valid_time": "2026-11-28T12:00:00+00:00",
+      "file": "F348.json.gz",
+      "files": [
+        "F348.json.gz",
+        "F348-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F348.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F348-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F348.json.gz"
+    },
+    {
+      "forecast_hour": 354,
+      "valid_time": "2026-11-28T18:00:00+00:00",
+      "file": "F354.json.gz",
+      "files": [
+        "F354.json.gz",
+        "F354-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F354.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F354-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F354.json.gz"
+    },
+    {
+      "forecast_hour": 360,
+      "valid_time": "2026-11-29T00:00:00+00:00",
+      "file": "F360.json.gz",
+      "files": [
+        "F360.json.gz",
+        "F360-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F360.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F360-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F360.json.gz"
+    },
+    {
+      "forecast_hour": 366,
+      "valid_time": "2026-11-29T06:00:00+00:00",
+      "file": "F366.json.gz",
+      "files": [
+        "F366.json.gz",
+        "F366-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F366.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F366-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F366.json.gz"
+    },
+    {
+      "forecast_hour": 372,
+      "valid_time": "2026-11-29T12:00:00+00:00",
+      "file": "F372.json.gz",
+      "files": [
+        "F372.json.gz",
+        "F372-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F372.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F372-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F372.json.gz"
+    },
+    {
+      "forecast_hour": 378,
+      "valid_time": "2026-11-29T18:00:00+00:00",
+      "file": "F378.json.gz",
+      "files": [
+        "F378.json.gz",
+        "F378-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F378.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F378-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F378.json.gz"
+    },
+    {
+      "forecast_hour": 384,
+      "valid_time": "2026-11-30T00:00:00+00:00",
+      "file": "F384.json.gz",
+      "files": [
+        "F384.json.gz",
+        "F384-part002.json.gz"
+      ],
+      "part_count": 2,
+      "field_count": 166,
+      "download_urls": [
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F384.json.gz",
+        "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F384-part002.json.gz"
+      ],
+      "download_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F384.json.gz"
+    }
+  ],
+  "variables": [
+    {
+      "short_name": "10u",
+      "name": "10 metre U wind component",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "10v",
+      "name": "10 metre V wind component",
+      "units": "m s**-1",
+      "level_type": "heightAboveGround",
+      "level": "10",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "2t",
+      "name": "2 metre temperature",
+      "units": "K",
+      "level_type": "heightAboveGround",
+      "level": "2",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "gh",
+      "name": "Geopotential height",
+      "units": "gpm",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "prmsl",
+      "name": "Pressure reduced to MSL",
+      "units": "Pa",
+      "level_type": "meanSea",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "q",
+      "name": "Specific humidity",
+      "units": "kg kg**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "t",
+      "name": "Temperature",
+      "units": "K",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "tp",
+      "name": "Total Precipitation",
+      "units": "kg m**-2",
+      "level_type": "surface",
+      "level": "0",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "u",
+      "name": "U component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "v",
+      "name": "V component of wind",
+      "units": "m s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "100",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "1000",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "150",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "200",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "250",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "300",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "400",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "50",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "500",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "600",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "700",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "850",
+      "grid_type": "regular_ll"
+    },
+    {
+      "short_name": "w",
+      "name": "Vertical velocity",
+      "units": "Pa s**-1",
+      "level_type": "isobaricInhPa",
+      "level": "925",
+      "grid_type": "regular_ll"
+    }
+  ],
+  "variable_level_count": 83,
+  "field_count": 10788,
+  "data_format": "JSON gzip independente por validade; validades grandes podem ser divididas em FNNN.json.gz e FNNN-partNNN.json.gz. Use validities[].files/download_urls para recuperar todos os campos.",
+  "collection_status": "complete",
+  "attribution": null,
+  "collection_errors_count": 0,
+  "data_directory": "data/gefs_ai/south_america/",
+  "files": [
+    "F000.json.gz",
+    "F000-part002.json.gz",
+    "F006.json.gz",
+    "F006-part002.json.gz",
+    "F012.json.gz",
+    "F012-part002.json.gz",
+    "F018.json.gz",
+    "F018-part002.json.gz",
+    "F024.json.gz",
+    "F024-part002.json.gz",
+    "F030.json.gz",
+    "F030-part002.json.gz",
+    "F036.json.gz",
+    "F036-part002.json.gz",
+    "F042.json.gz",
+    "F042-part002.json.gz",
+    "F048.json.gz",
+    "F048-part002.json.gz",
+    "F054.json.gz",
+    "F054-part002.json.gz",
+    "F060.json.gz",
+    "F060-part002.json.gz",
+    "F066.json.gz",
+    "F066-part002.json.gz",
+    "F072.json.gz",
+    "F072-part002.json.gz",
+    "F078.json.gz",
+    "F078-part002.json.gz",
+    "F084.json.gz",
+    "F084-part002.json.gz",
+    "F090.json.gz",
+    "F090-part002.json.gz",
+    "F096.json.gz",
+    "F096-part002.json.gz",
+    "F102.json.gz",
+    "F102-part002.json.gz",
+    "F108.json.gz",
+    "F108-part002.json.gz",
+    "F114.json.gz",
+    "F114-part002.json.gz",
+    "F120.json.gz",
+    "F120-part002.json.gz",
+    "F126.json.gz",
+    "F126-part002.json.gz",
+    "F132.json.gz",
+    "F132-part002.json.gz",
+    "F138.json.gz",
+    "F138-part002.json.gz",
+    "F144.json.gz",
+    "F144-part002.json.gz",
+    "F150.json.gz",
+    "F150-part002.json.gz",
+    "F156.json.gz",
+    "F156-part002.json.gz",
+    "F162.json.gz",
+    "F162-part002.json.gz",
+    "F168.json.gz",
+    "F168-part002.json.gz",
+    "F174.json.gz",
+    "F174-part002.json.gz",
+    "F180.json.gz",
+    "F180-part002.json.gz",
+    "F186.json.gz",
+    "F186-part002.json.gz",
+    "F192.json.gz",
+    "F192-part002.json.gz",
+    "F198.json.gz",
+    "F198-part002.json.gz",
+    "F204.json.gz",
+    "F204-part002.json.gz",
+    "F210.json.gz",
+    "F210-part002.json.gz",
+    "F216.json.gz",
+    "F216-part002.json.gz",
+    "F222.json.gz",
+    "F222-part002.json.gz",
+    "F228.json.gz",
+    "F228-part002.json.gz",
+    "F234.json.gz",
+    "F234-part002.json.gz",
+    "F240.json.gz",
+    "F240-part002.json.gz",
+    "F246.json.gz",
+    "F246-part002.json.gz",
+    "F252.json.gz",
+    "F252-part002.json.gz",
+    "F258.json.gz",
+    "F258-part002.json.gz",
+    "F264.json.gz",
+    "F264-part002.json.gz",
+    "F270.json.gz",
+    "F270-part002.json.gz",
+    "F276.json.gz",
+    "F276-part002.json.gz",
+    "F282.json.gz",
+    "F282-part002.json.gz",
+    "F288.json.gz",
+    "F288-part002.json.gz",
+    "F294.json.gz",
+    "F294-part002.json.gz",
+    "F300.json.gz",
+    "F300-part002.json.gz",
+    "F306.json.gz",
+    "F306-part002.json.gz",
+    "F312.json.gz",
+    "F312-part002.json.gz",
+    "F318.json.gz",
+    "F318-part002.json.gz",
+    "F324.json.gz",
+    "F324-part002.json.gz",
+    "F330.json.gz",
+    "F330-part002.json.gz",
+    "F336.json.gz",
+    "F336-part002.json.gz",
+    "F342.json.gz",
+    "F342-part002.json.gz",
+    "F348.json.gz",
+    "F348-part002.json.gz",
+    "F354.json.gz",
+    "F354-part002.json.gz",
+    "F360.json.gz",
+    "F360-part002.json.gz",
+    "F366.json.gz",
+    "F366-part002.json.gz",
+    "F372.json.gz",
+    "F372-part002.json.gz",
+    "F378.json.gz",
+    "F378-part002.json.gz",
+    "F384.json.gz",
+    "F384-part002.json.gz"
+  ],
+  "download_base_url": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/",
+  "file_urls": {
+    "F000.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F000.json.gz",
+    "F000-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F000-part002.json.gz",
+    "F006.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F006.json.gz",
+    "F006-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F006-part002.json.gz",
+    "F012.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F012.json.gz",
+    "F012-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F012-part002.json.gz",
+    "F018.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F018.json.gz",
+    "F018-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F018-part002.json.gz",
+    "F024.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F024.json.gz",
+    "F024-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F024-part002.json.gz",
+    "F030.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F030.json.gz",
+    "F030-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F030-part002.json.gz",
+    "F036.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F036.json.gz",
+    "F036-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F036-part002.json.gz",
+    "F042.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F042.json.gz",
+    "F042-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F042-part002.json.gz",
+    "F048.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F048.json.gz",
+    "F048-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F048-part002.json.gz",
+    "F054.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F054.json.gz",
+    "F054-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F054-part002.json.gz",
+    "F060.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F060.json.gz",
+    "F060-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F060-part002.json.gz",
+    "F066.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F066.json.gz",
+    "F066-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F066-part002.json.gz",
+    "F072.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F072.json.gz",
+    "F072-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F072-part002.json.gz",
+    "F078.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F078.json.gz",
+    "F078-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F078-part002.json.gz",
+    "F084.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F084.json.gz",
+    "F084-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F084-part002.json.gz",
+    "F090.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F090.json.gz",
+    "F090-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F090-part002.json.gz",
+    "F096.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F096.json.gz",
+    "F096-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F096-part002.json.gz",
+    "F102.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F102.json.gz",
+    "F102-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F102-part002.json.gz",
+    "F108.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F108.json.gz",
+    "F108-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F108-part002.json.gz",
+    "F114.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F114.json.gz",
+    "F114-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F114-part002.json.gz",
+    "F120.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F120.json.gz",
+    "F120-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F120-part002.json.gz",
+    "F126.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F126.json.gz",
+    "F126-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F126-part002.json.gz",
+    "F132.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F132.json.gz",
+    "F132-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F132-part002.json.gz",
+    "F138.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F138.json.gz",
+    "F138-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F138-part002.json.gz",
+    "F144.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F144.json.gz",
+    "F144-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F144-part002.json.gz",
+    "F150.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F150.json.gz",
+    "F150-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F150-part002.json.gz",
+    "F156.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F156.json.gz",
+    "F156-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F156-part002.json.gz",
+    "F162.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F162.json.gz",
+    "F162-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F162-part002.json.gz",
+    "F168.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F168.json.gz",
+    "F168-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F168-part002.json.gz",
+    "F174.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F174.json.gz",
+    "F174-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F174-part002.json.gz",
+    "F180.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F180.json.gz",
+    "F180-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F180-part002.json.gz",
+    "F186.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F186.json.gz",
+    "F186-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F186-part002.json.gz",
+    "F192.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F192.json.gz",
+    "F192-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F192-part002.json.gz",
+    "F198.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F198.json.gz",
+    "F198-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F198-part002.json.gz",
+    "F204.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F204.json.gz",
+    "F204-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F204-part002.json.gz",
+    "F210.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F210.json.gz",
+    "F210-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F210-part002.json.gz",
+    "F216.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F216.json.gz",
+    "F216-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F216-part002.json.gz",
+    "F222.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F222.json.gz",
+    "F222-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F222-part002.json.gz",
+    "F228.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F228.json.gz",
+    "F228-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F228-part002.json.gz",
+    "F234.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F234.json.gz",
+    "F234-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F234-part002.json.gz",
+    "F240.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F240.json.gz",
+    "F240-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F240-part002.json.gz",
+    "F246.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F246.json.gz",
+    "F246-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F246-part002.json.gz",
+    "F252.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F252.json.gz",
+    "F252-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F252-part002.json.gz",
+    "F258.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F258.json.gz",
+    "F258-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F258-part002.json.gz",
+    "F264.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F264.json.gz",
+    "F264-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F264-part002.json.gz",
+    "F270.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F270.json.gz",
+    "F270-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F270-part002.json.gz",
+    "F276.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F276.json.gz",
+    "F276-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F276-part002.json.gz",
+    "F282.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F282.json.gz",
+    "F282-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F282-part002.json.gz",
+    "F288.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F288.json.gz",
+    "F288-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F288-part002.json.gz",
+    "F294.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F294.json.gz",
+    "F294-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F294-part002.json.gz",
+    "F300.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F300.json.gz",
+    "F300-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F300-part002.json.gz",
+    "F306.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F306.json.gz",
+    "F306-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F306-part002.json.gz",
+    "F312.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F312.json.gz",
+    "F312-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F312-part002.json.gz",
+    "F318.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F318.json.gz",
+    "F318-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F318-part002.json.gz",
+    "F324.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F324.json.gz",
+    "F324-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F324-part002.json.gz",
+    "F330.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F330.json.gz",
+    "F330-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F330-part002.json.gz",
+    "F336.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F336.json.gz",
+    "F336-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F336-part002.json.gz",
+    "F342.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F342.json.gz",
+    "F342-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F342-part002.json.gz",
+    "F348.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F348.json.gz",
+    "F348-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F348-part002.json.gz",
+    "F354.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F354.json.gz",
+    "F354-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F354-part002.json.gz",
+    "F360.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F360.json.gz",
+    "F360-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F360-part002.json.gz",
+    "F366.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F366.json.gz",
+    "F366-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F366-part002.json.gz",
+    "F372.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F372.json.gz",
+    "F372-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F372-part002.json.gz",
+    "F378.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F378.json.gz",
+    "F378-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F378-part002.json.gz",
+    "F384.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F384.json.gz",
+    "F384-part002.json.gz": "https://raw.githubusercontent.com/slaksjsjjjjjj-dev/multimodelsss/nwp-data/data/gefs_ai/south_america/F384-part002.json.gz"
+  }
+}
