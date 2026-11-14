@@ -51,6 +51,31 @@ _SOURCE = _SOURCE.replace(
     1,
 )
 
+# Normalize the legacy argparse block. The compressed payload currently contains
+# a damaged parser declaration; rebuild this small block instead of relying on
+# fragile literal spellings inside the payload.
+_MAIN_MARKER = b"def main() -> int:\n"
+_ARGS_BOUNDARY = b"    output_dir = args.output_dir.resolve()"
+if _MAIN_MARKER not in _SOURCE:
+    raise RuntimeError("Runner global Skew-T sem a função main().")
+_HEAD, _MAIN_TAIL = _SOURCE.split(_MAIN_MARKER, 1)
+if _ARGS_BOUNDARY not in _MAIN_TAIL:
+    raise RuntimeError("Bloco de argumentos do runner não pôde ser localizado.")
+_PARSER_BLOCK = b"""    parser = argparse.ArgumentParser(
+        description="Gera sondagens Skew-T globais para GFS, ICON/DWD e ECMWF IFS."
+    )
+    parser.add_argument("--model-key", required=True, choices=sorted(MODEL_CONFIG))
+    parser.add_argument("--latitude", required=True, type=float)
+    parser.add_argument("--longitude", required=True, type=float)
+    parser.add_argument("--forecast-hour", required=True, type=int)
+    parser.add_argument("--request-id", required=True)
+    parser.add_argument("--renderer", required=True, type=Path)
+    parser.add_argument("--output-dir", required=True, type=Path)
+    args = parser.parse_args()
+
+"""
+_SOURCE = _HEAD + _MAIN_MARKER + _PARSER_BLOCK + _MAIN_TAIL[_MAIN_TAIL.index(_ARGS_BOUNDARY):]
+
 # All conventional models must expose real terrain-relative height above ground.
 _SOURCE = _SOURCE.replace(
     b'"base_level_is_proxy": model_key in {"gfs", "icon_dwd"},',
