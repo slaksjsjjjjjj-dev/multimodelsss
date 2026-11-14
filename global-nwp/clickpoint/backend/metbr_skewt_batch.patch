@@ -1,8 +1,7 @@
 diff --git a/backend/metbr_skewt_batch.py b/backend/metbr_skewt_batch.py
 --- a/backend/metbr_skewt_batch.py
 +++ b/backend/metbr_skewt_batch.py
-@@ -52,6 +52,30 @@ MODEL_RUNNERS: dict[str, dict[str, Any]] = {
-         "release_prefix": "cbr-skewt-click",
+@@ -55,6 +55,27 @@
          "max_forecast_hour": 42,
          "uses_cycle": False,
      },
@@ -28,8 +27,9 @@ diff --git a/backend/metbr_skewt_batch.py b/backend/metbr_skewt_batch.py
 +        "uses_forecast_hour": True,
 +    },
  }
-@@ -176,6 +200,16 @@ def dispatch_request(payload: dict[str, Any], client_ip: str = "") -> dict[str,
-         if cycle not in ALLOWED_CYCLES:
+ 
+ 
+@@ -161,6 +182,16 @@
              raise ValueError("Rodada inválida. Use latest, 00, 06, 12, 18 ou 21.")
          inputs["cycle"] = cycle
  
@@ -43,12 +43,15 @@ diff --git a/backend/metbr_skewt_batch.py b/backend/metbr_skewt_batch.py
 +                f"Validade fora do intervalo F000–F{int(config['max_forecast_hour']):03d}."
 +            )
 +        inputs["forecast_hour"] = str(forecast_hour)
-+
      body = {"ref": "main", "inputs": inputs}
-@@ -235,6 +269,8 @@ def dispatch_request(payload: dict[str, Any], client_ip: str = "") -> dict[str,
+     try:
+         response = requests.post(url, headers=headers, json=body, timeout=(10, 25))
+@@ -199,6 +230,8 @@
      }
      if config["uses_cycle"]:
          result["cycle"] = inputs["cycle"]
 +    if config.get("uses_forecast_hour"):
 +        result["forecast_hour"] = int(inputs["forecast_hour"])
      return result
+ 
+ def _get_json_asset(request_id: str, asset_name: str, model_key: str = "metbr") -> dict[str, Any] | None:
